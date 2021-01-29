@@ -7,12 +7,13 @@ error_reporting(E_ALL);
 $serverName = "localhost";
 $username = "root";
 $password = "";
-$databaseName = "php_react";
+$databaseName = "db-data";
 $conn = mysqli_connect($serverName, $username, $password, $databaseName);
 
-$recText = $_POST['text'];
+$db_username = $_POST['username'];
+$db_password = $_POST['password'];
 
-$query = "INSERT INTO messages (message) VALUES('$recText')";
+$query = "INSERT INTO users (username, password) VALUES('$db_username', '$db_password')";
 
 $result = mysqli_query($conn, $query);
 if ( false===$result ) {

@@ -2,6 +2,8 @@ import './App.css';
 import React/*, { useEffect, useState }*/ from "react";
 import { TextField, Button } from '@material-ui/core';
 import SendIcon from '@material-ui/icons/Send';
+import axios from 'axios';
+
 
 export default function LoginScreen() {
 
@@ -43,6 +45,13 @@ export default function LoginScreen() {
     setpError(temp2);
     setp2Error(temp3);
     if (!(temp1 | temp2 | temp3)) { 
+      var formData = new FormData();
+      formData.append("username", nameTextfieldValue);
+      formData.append("password", passwordTextfieldValue);
+      const url = "http://localhost:80/react-backend/";
+      axios.post(url, formData)
+      .then(res => console.log(res.data))
+      .catch(err => console.log(err));
       setIsLoggedIn(true)
     }
   }
@@ -50,58 +59,69 @@ export default function LoginScreen() {
   if (!isLoggedIn) { //If the user has not yet logged in render the login component
 
     return (
-      <div>
-        <div>
-          <h>Live<b>Feed</b></h>
+      <div className="whole">
+        <div className="header">
+          <h><span className="logo-header">LiveFeed</span></h>
+          <p>The 2021 DBCampus Project</p>
         </div>
-        <div className="form">
-          <TextField
-            font-size='16px'
-            id='outlined-textarea'
-            label='Username'
-            placeholder='Write your name here'
-            variant='outlined'
-            onChange={handleNameTextfield}
-            error={nameError}
-            helperText={nameError ? 'Must be at least 4 Characters' : ' '}
-          ></TextField>
-        </div>
-        <div className="form">
-          <TextField
-            font-size='16px'
-            id='outlined-textarea'
-            label='Password'
-            type="password"
-            placeholder='Enter password here'
-            variant='outlined'
-            onChange={handlePasswordTextfield}
-            error={pError}
-            helperText={pError ? 'Must be at least 4 Characters' : ' '}
-          ></TextField>
-        </div>
-        <div className="form">
-          <TextField
-            font-size='16px'
-            id='outlined-textarea'
-            label='Confirm Password'
-            type="password"
-            placeholder='Enter password here'
-            variant='outlined'
-            onChange={handlePassword2Textfield}
-            error={p2Error}
-            helperText={p2Error ? 'Passwords must match' : ' '}
-          ></TextField>
-        </div>
-        <div className="form">
-          <Button
-            variant='contained'
-            color='primary'
-            size='medium'
-            endIcon={<SendIcon />}
-            onClick={sendValue}
-          >
-            Sign Up
-          </Button>
+
+        <div className="main">
+
+          <p className="logo-header">Sign Up</p>
+          <form className="form-container">
+            <div className="form">
+              <TextField
+                font-size='16px'
+                id='outlined-textarea'
+                label='Username'
+                placeholder='Write your name here'
+                variant='outlined'
+                onChange={handleNameTextfield}
+                error={nameError}
+                className="input"
+                helperText={nameError ? 'Must be at least 4 Characters' : ' '}
+              ></TextField>
+            </div>
+            <div className="form">
+              <TextField
+                font-size='16px'
+                id='outlined-textarea'
+                label='Password'
+                type="password"
+                placeholder='Enter password here'
+                variant='outlined'
+                onChange={handlePasswordTextfield}
+                error={pError}
+                className="input"
+                helperText={pError ? 'Must be at least 4 Characters' : ' '}
+              ></TextField>
+            </div>
+            <div className="form">
+              <TextField
+                font-size='16px'
+                id='outlined-textarea'
+                label='Confirm Password'
+                type="password"
+                placeholder='Enter password here'
+                variant='outlined'
+                onChange={handlePassword2Textfield}
+                error={p2Error}
+                className="input"
+                helperText={p2Error ? 'Passwords must match' : ' '}
+              ></TextField>
+            </div>
+            <div className="form">
+              <Button
+                variant='contained'
+                color='primary'
+                size='medium'
+                endIcon={<SendIcon />}
+                onClick={sendValue}
+              >
+                Sign Up
+              </Button>
+            </div>
+          </form>
         </div>
       </div>
     );
@@ -117,4 +137,5 @@ const MainComponent = ({ name }) => {
   return (
     <p> Hello {name}! </p>
   );
+
 }
