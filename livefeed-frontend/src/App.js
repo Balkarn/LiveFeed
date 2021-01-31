@@ -30,6 +30,11 @@ const LoginComponent = ({setIsLoggedIn}) => {
   const [SIGNUPpError, SIGNUPsetpError] = React.useState(false);
   const [SIGNUPp2Error, SIGNUPsetp2Error] = React.useState(false);
 
+  const [LOGINnameTextfieldValue, LOGINsetNameTextfieldValue] = React.useState('');
+  const [LOGINpasswordTextfieldValue, LOGINsetPasswordTextfieldValue] = React.useState('');
+  const [LOGINnameError, LOGINsetNameError] = React.useState(false);
+  const [LOGINpError, LOGINsetpError] = React.useState(false);
+
   const [tabValue, setTabValue] = React.useState(0);
 
   const handleTabChange = (event, newValue) => {
@@ -57,7 +62,22 @@ const LoginComponent = ({setIsLoggedIn}) => {
     SIGNUPsetp2Error(eventVal !== SIGNUPpasswordTextfieldValue);
   }
 
-  //Function when the send button is clicked
+  //Function called whenever the name textfield is changed
+  const LOGINhandleNameTextfield = event => {
+    var eventVal = event.target.value; //setting a state isn't synchronous so store value in a temp variable
+    LOGINsetNameTextfieldValue(eventVal);
+    LOGINsetNameError(eventVal.length < 4);
+  }
+
+  //Function called whenever the password textfield is changed
+  const LOGINhandlePasswordTextfield = event => {
+    var eventVal = event.target.value; //setting a state isn't synchronous so store value in a temp variable
+    LOGINsetPasswordTextfieldValue(eventVal);
+    LOGINsetpError(eventVal.length < 4);
+  }
+
+
+  //Function when the sign up button is clicked
   const SIGNUPsendValue = () => {
     var temp1 = SIGNUPnameTextfieldValue.length < 4 //setting a state isn't synchronous so store value in a temp variable
     var temp2 = SIGNUPpasswordTextfieldValue.length < 4
@@ -73,6 +93,18 @@ const LoginComponent = ({setIsLoggedIn}) => {
       axios.post(url, formData)
         .then(res => console.log(res.data))
         .catch(err => console.log(err));
+      setIsLoggedIn(true)
+    }
+  }
+
+  //Function when the log in button is clicked
+  //TODO Connect to backend
+  const LOGINsendValue = () => {
+    var temp1 = LOGINnameTextfieldValue.length < 4 //setting a state isn't synchronous so store value in a temp variable
+    var temp2 = LOGINpasswordTextfieldValue.length < 4
+    LOGINsetNameError(temp1);
+    LOGINsetpError(temp2);
+    if (!(temp1 | temp2)) {
       setIsLoggedIn(true)
     }
   }
@@ -103,6 +135,7 @@ const LoginComponent = ({setIsLoggedIn}) => {
                   font-size='16px'
                   id='outlined-textarea'
                   label='Username'
+                  value={SIGNUPnameTextfieldValue}
                   placeholder='Write your name here'
                   variant='outlined'
                   required
@@ -118,6 +151,7 @@ const LoginComponent = ({setIsLoggedIn}) => {
                   font-size='16px'
                   id='outlined-textarea'
                   label='Password'
+                  value={SIGNUPpasswordTextfieldValue}
                   type="password"
                   required
                   fullWidth="true"
@@ -135,6 +169,7 @@ const LoginComponent = ({setIsLoggedIn}) => {
                   id='outlined-textarea'
                   label='Confirm Password'
                   type="password"
+                  value={SIGNUPpassword2TextfieldValue}
                   required
                   fullWidth="true"
                   placeholder='Enter password here'
@@ -159,7 +194,53 @@ const LoginComponent = ({setIsLoggedIn}) => {
               </div>
             </div>
           : 
-          "not"
+            <div>
+              <div className="textfield">
+                <TextField
+                  font-size='16px'
+                  id='outlined-textarea'
+                  label='Username'
+                  placeholder='Write your name here'
+                  variant='outlined'
+                  value={LOGINnameTextfieldValue}
+                  required
+                  fullWidth="true"
+                  onChange={LOGINhandleNameTextfield}
+                  error={LOGINnameError}
+                  className="input"
+                  helperText={LOGINnameError ? 'Must be at least 4 Characters' : ' '}
+                />
+              </div>
+              <div className="textfield">
+                <TextField
+                  font-size='16px'
+                  id='outlined-textarea'
+                  label='Password'
+                  type="password"
+                  value={LOGINpasswordTextfieldValue}
+                  required
+                  fullWidth="true"
+                  placeholder='Enter password here'
+                  variant='outlined'
+                  onChange={LOGINhandlePasswordTextfield}
+                  error={LOGINpError}
+                  className="input"
+                  helperText={LOGINpError ? 'Must be at least 4 Characters' : ' '}
+                />
+              </div>
+              <div className="button">
+                <Button
+                  variant='contained'
+                  color='primary'
+                  size='medium'
+                  fullWidth="true"
+                  endIcon={<CheckIcon />}
+                  onClick={LOGINsendValue}
+                >
+                  Log In
+                </Button>
+              </div>
+            </div>
           
           }
           
