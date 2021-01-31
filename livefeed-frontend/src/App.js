@@ -44,7 +44,7 @@ export default function LoginScreen() {
     setNameError(temp1);
     setpError(temp2);
     setp2Error(temp3);
-    if (!(temp1 | temp2 | temp3)) { 
+    if (!(temp1 | temp2 | temp3)) {
       var formData = new FormData();
       formData.append("username", nameTextfieldValue);
       formData.append("password", passwordTextfieldValue);
@@ -80,7 +80,7 @@ export default function LoginScreen() {
                 error={nameError}
                 className="input"
                 helperText={nameError ? 'Must be at least 4 Characters' : ' '}
-              ></TextField>
+              />
             </div>
             <div className="form">
               <TextField
@@ -94,7 +94,7 @@ export default function LoginScreen() {
                 error={pError}
                 className="input"
                 helperText={pError ? 'Must be at least 4 Characters' : ' '}
-              ></TextField>
+              />
             </div>
             <div className="form">
               <TextField
@@ -108,7 +108,7 @@ export default function LoginScreen() {
                 error={p2Error}
                 className="input"
                 helperText={p2Error ? 'Passwords must match' : ' '}
-              ></TextField>
+              />
             </div>
             <div className="form">
               <Button
