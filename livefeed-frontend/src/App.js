@@ -1,5 +1,5 @@
 import './App.css';
-import React/*, { useEffect, useState }*/ from "react";
+import React, { useEffect/*, useState*/    } from "react";
 import { TextField, Button } from '@material-ui/core';
 import axios from 'axios';
 import 'fontsource-roboto';
@@ -22,6 +22,10 @@ export default function Main() {
 }
 
 const LoginComponent = ({setIsLoggedIn}) => {
+
+  useEffect(() => {
+    document.body.style.backgroundColor = "#15bfff"
+  }, []); // Only run once
 
   const [SIGNUPnameTextfieldValue, SIGNUPsetNameTextfieldValue] = React.useState('');
   const [SIGNUPpasswordTextfieldValue, SIGNUPsetPasswordTextfieldValue] = React.useState('');
@@ -131,6 +135,7 @@ const LoginComponent = ({setIsLoggedIn}) => {
           {tabValue === 1 ?
             <div>
               <div className="textfield">
+
                 <TextField
                   font-size='16px'
                   id='outlined-textarea'
@@ -145,8 +150,10 @@ const LoginComponent = ({setIsLoggedIn}) => {
                   className="input"
                   helperText={SIGNUPnameError ? 'Must be at least 4 Characters' : ' '}
                 />
+
               </div>
               <div className="textfield">
+
                 <TextField
                   font-size='16px'
                   id='outlined-textarea'
@@ -162,6 +169,7 @@ const LoginComponent = ({setIsLoggedIn}) => {
                   className="input"
                   helperText={SIGNUPpError ? 'Must be at least 4 Characters' : ' '}
                 />
+
               </div>
               <div className="textfield">
                 <TextField
@@ -181,6 +189,7 @@ const LoginComponent = ({setIsLoggedIn}) => {
                 />
               </div>
               <div className="button">
+
                 <Button
                   variant='contained'
                   color='primary'
@@ -191,11 +200,13 @@ const LoginComponent = ({setIsLoggedIn}) => {
                 >
                     Sign Up
                 </Button>
+
               </div>
             </div>
           : 
             <div>
               <div className="textfield">
+
                 <TextField
                   font-size='16px'
                   id='outlined-textarea'
@@ -210,8 +221,10 @@ const LoginComponent = ({setIsLoggedIn}) => {
                   className="input"
                   helperText={LOGINnameError ? 'Must be at least 4 Characters' : ' '}
                 />
+
               </div>
               <div className="textfield">
+
                 <TextField
                   font-size='16px'
                   id='outlined-textarea'
@@ -227,8 +240,10 @@ const LoginComponent = ({setIsLoggedIn}) => {
                   className="input"
                   helperText={LOGINpError ? 'Must be at least 4 Characters' : ' '}
                 />
+
               </div>
               <div className="button">
+
                 <Button
                   variant='contained'
                   color='primary'
@@ -239,9 +254,9 @@ const LoginComponent = ({setIsLoggedIn}) => {
                 >
                   Log In
                 </Button>
+
               </div>
             </div>
-          
           }
           
         </Paper>
