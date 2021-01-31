@@ -4,7 +4,11 @@ import { TextField, Button } from '@material-ui/core';
 import SendIcon from '@material-ui/icons/Send';
 import axios from 'axios';
 import 'fontsource-roboto';
-
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import PostAddIcon from '@material-ui/icons/PostAdd';
+import Paper from '@material-ui/core/Paper';
+import InputIcon from '@material-ui/icons/Input';
 
 export default function Main() {
 
@@ -25,6 +29,11 @@ const LoginComponent = ({setIsLoggedIn}) => {
   const [nameError, setNameError] = React.useState(false);
   const [pError, setpError] = React.useState(false);
   const [p2Error, setp2Error] = React.useState(false);
+  const [tabValue, setTabValue] = React.useState(0);
+
+  const handleTabChange = (event, newValue) => {
+    setTabValue(newValue);
+  };
 
   //Function called whenever the name textfield is changed
   const handleNameTextfield = event => {
@@ -75,9 +84,17 @@ const LoginComponent = ({setIsLoggedIn}) => {
       </div>
 
       <div className="main">
-
-        <p className="logo-header">Sign Up</p>
-        <form className="form-container">
+        <Paper elevation={10} >
+        <Tabs
+          value={tabValue}
+          onChange={handleTabChange}
+          variant="fullWidth"
+          indicatorColor="primary"
+          textColor="primary"
+        >
+          <Tab icon={<InputIcon />} label="Log In" />
+          <Tab icon={<PostAddIcon />} label="Sign Up" />
+        </Tabs>
           <div className="form">
             <TextField
               font-size='16px'
@@ -133,7 +150,7 @@ const LoginComponent = ({setIsLoggedIn}) => {
               Sign Up
             </Button>
           </div>
-        </form>
+        </Paper>
       </div>
     </div>
   );
