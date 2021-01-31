@@ -3,9 +3,21 @@ import React/*, { useEffect, useState }*/ from "react";
 import { TextField, Button } from '@material-ui/core';
 import SendIcon from '@material-ui/icons/Send';
 import axios from 'axios';
+import 'fontsource-roboto';
 
 
-export default function LoginScreen() {
+export default function Main() {
+
+  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  
+  if (!isLoggedIn) {
+    return <LoginComponent setIsLoggedIn={setIsLoggedIn}/>
+  } else { //Otherwise render the main screen
+    return (<HomeScreen/>);
+  }
+}
+
+const LoginComponent = ({setIsLoggedIn}) => {
 
   const [nameTextfieldValue, setNameTextfieldValue] = React.useState('');
   const [passwordTextfieldValue, setPasswordTextfieldValue] = React.useState('');
@@ -13,7 +25,6 @@ export default function LoginScreen() {
   const [nameError, setNameError] = React.useState(false);
   const [pError, setpError] = React.useState(false);
   const [p2Error, setp2Error] = React.useState(false);
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
 
   //Function called whenever the name textfield is changed
   const handleNameTextfield = event => {
@@ -50,88 +61,86 @@ export default function LoginScreen() {
       formData.append("password", passwordTextfieldValue);
       const url = "http://localhost:80/react-backend/";
       axios.post(url, formData)
-      .then(res => console.log(res.data))
-      .catch(err => console.log(err));
+        .then(res => console.log(res.data))
+        .catch(err => console.log(err));
       setIsLoggedIn(true)
     }
   }
 
-  if (!isLoggedIn) { //If the user has not yet logged in render the login component
-
-    return (
-      <div className="whole">
-        <div className="header">
-          <h><span className="logo-header">LiveFeed</span></h>
-          <p>The 2021 DBCampus Project</p>
-        </div>
-
-        <div className="main">
-
-          <p className="logo-header">Sign Up</p>
-          <form className="form-container">
-            <div className="form">
-              <TextField
-                font-size='16px'
-                id='outlined-textarea'
-                label='Username'
-                placeholder='Write your name here'
-                variant='outlined'
-                onChange={handleNameTextfield}
-                error={nameError}
-                className="input"
-                helperText={nameError ? 'Must be at least 4 Characters' : ' '}
-              />
-            </div>
-            <div className="form">
-              <TextField
-                font-size='16px'
-                id='outlined-textarea'
-                label='Password'
-                type="password"
-                placeholder='Enter password here'
-                variant='outlined'
-                onChange={handlePasswordTextfield}
-                error={pError}
-                className="input"
-                helperText={pError ? 'Must be at least 4 Characters' : ' '}
-              />
-            </div>
-            <div className="form">
-              <TextField
-                font-size='16px'
-                id='outlined-textarea'
-                label='Confirm Password'
-                type="password"
-                placeholder='Enter password here'
-                variant='outlined'
-                onChange={handlePassword2Textfield}
-                error={p2Error}
-                className="input"
-                helperText={p2Error ? 'Passwords must match' : ' '}
-              />
-            </div>
-            <div className="form">
-              <Button
-                variant='contained'
-                color='primary'
-                size='medium'
-                endIcon={<SendIcon />}
-                onClick={sendValue}
-              >
-                Sign Up
-              </Button>
-            </div>
-          </form>
-        </div>
+  return (
+    <div className="whole">
+      <div className="header">
+        <h><span className="logo-header">LiveFeed</span></h>
+        <p>The 2021 DBCampus Project</p>
       </div>
-    );
 
-  } else { //Otherwise render the main screen
-    return (<MainComponent name={nameTextfieldValue} />);
-  }
+      <div className="main">
+
+        <p className="logo-header">Sign Up</p>
+        <form className="form-container">
+          <div className="form">
+            <TextField
+              font-size='16px'
+              id='outlined-textarea'
+              label='Username'
+              placeholder='Write your name here'
+              variant='outlined'
+              required
+              onChange={handleNameTextfield}
+              error={nameError}
+              className="input"
+              helperText={nameError ? 'Must be at least 4 Characters' : ' '}
+            />
+          </div>
+          <div className="form">
+            <TextField
+              font-size='16px'
+              id='outlined-textarea'
+              label='Password'
+              type="password"
+              required
+              placeholder='Enter password here'
+              variant='outlined'
+              onChange={handlePasswordTextfield}
+              error={pError}
+              className="input"
+              helperText={pError ? 'Must be at least 4 Characters' : ' '}
+            />
+          </div>
+          <div className="form">
+            <TextField
+              font-size='16px'
+              id='outlined-textarea'
+              label='Confirm Password'
+              type="password"
+              required
+              placeholder='Enter password here'
+              variant='outlined'
+              onChange={handlePassword2Textfield}
+              error={p2Error}
+              className="input"
+              helperText={p2Error ? 'Passwords must match' : ' '}
+            />
+          </div>
+          <div className="form">
+            <Button
+              variant='contained'
+              color='primary'
+              size='medium'
+              endIcon={<SendIcon />}
+              onClick={sendValue}
+            >
+              Sign Up
+            </Button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+
 }
 
-const MainComponent = ({ name }) => {
+const HomeScreen = ({ name }) => {
 
   //Displays the username
   return (
