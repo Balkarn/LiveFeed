@@ -4,6 +4,8 @@ ini_set('display_errors', '1');
 ini_set('display_startup_errors', '1');
 error_reporting(E_ALL);
 
+// To connect to your local DB, rename /react-backend/config.ini.bak to /react-backend/config.ini and edit
+// it with your details.
 $db_cred = parse_ini_file('config.ini', true);
 $conn = mysqli_connect($db_cred['DatabaseCredentials']['serverName'], $db_cred['DatabaseCredentials']['username'], $db_cred['DatabaseCredentials']['password'], $db_cred['DatabaseCredentials']['databaseName']);
 
