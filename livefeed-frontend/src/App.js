@@ -9,15 +9,37 @@ import PostAddIcon from '@material-ui/icons/PostAdd';
 import Paper from '@material-ui/core/Paper';
 import InputIcon from '@material-ui/icons/Input';
 import CheckIcon from '@material-ui/icons/Check';
+import AppBar from '@material-ui/core/AppBar';
+
+import EventIcon from '@material-ui/icons/Event';
+import CreateIcon from '@material-ui/icons/Create';
+import ForwardIcon from '@material-ui/icons/Forward';
+import HistoryIcon from '@material-ui/icons/History';
+import SettingsIcon from '@material-ui/icons/Settings';
 
 export default function Main() {
 
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  const [tabValue, setTabValue] = React.useState(2);
   
+
   if (!isLoggedIn) {
     return <LoginComponent setIsLoggedIn={setIsLoggedIn}/>
   } else { //Otherwise render the main screen
-    return (<HomeScreen/>);
+    return (
+      <div className="whole">
+        <TabBar setTabValue={setTabValue} />
+        <div className="main">
+          <Paper>
+            {tabValue === 0 && "Host an Event"}
+            {tabValue === 1 && "Your Templates:"}
+            {tabValue === 2 && "Enter Event ID"}
+            {tabValue === 3 && "Event History"}
+            {tabValue === 4 && "Account Settings"}
+          </Paper>
+        </div>
+      </div>
+    );
   }
 }
 
@@ -266,11 +288,37 @@ const LoginComponent = ({setIsLoggedIn}) => {
 
 }
 
-const HomeScreen = ({ name }) => {
+const TabBar = ({setTabValue}) => {
+
+  const [value, setValue] = React.useState(2)
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+    setTabValue(newValue);
+  }
 
   //Displays the username
   return (
-    <p> Hello {name}! </p>
+    <div>
+
+      <AppBar position="static" color="default" >
+        <Tabs
+          value={value}
+          onChange={handleChange}
+          scrollButtons="off"
+          variant="fullWidth"
+          indicatorColor="primary"
+          textColor="primary"
+        >
+          <Tab label="Host Event" icon={<EventIcon />} />
+          <Tab label="Template Creator" icon={<CreateIcon />} />
+          <Tab label="Join Event" icon={<ForwardIcon />} />
+          <Tab label="Event History" icon={<HistoryIcon />} />
+          <Tab label="Account Settings" icon={<SettingsIcon />} />
+        </Tabs>
+      </AppBar>
+      
+    </div>
   );
 
 }
