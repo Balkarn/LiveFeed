@@ -2,6 +2,7 @@
 ini_set('display_errors', '1');
 ini_set('display_startup_errors', '1');
 error_reporting(E_ALL);
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 class DatabaseInteraction {
 
@@ -23,29 +24,71 @@ class DatabaseInteraction {
       die("-[ConnectionError] Failed to connect to MySQL: ".$this->conn->connect_error);
     }
   }
+  /*
+   *  
+   *
+   * */
+  function prepared_stmt($query, $result, $var_types, ...$bind_vars) {
+    try {
+      $stmt = $this->conn->prepare($query);
+      $stmt->bind_param($var_types, ...$bind_vars);
+      $stmt->execute();
+      if (!$result) {
+        $stmt->close();
+      }
+      return $stmt;
+    } catch (mysqli_sql_exception $e) {
+      echo "-[SQLError] Query failed: (" . $this->conn->errno . ") " . $this->conn->error . "\n";
+      throw $e;
+    }
+  }
 
   function add_user($username, $password) {
     $this->connect();
-    // INSERT INTO users (FirstName, LastName, Email, Role) VALUES ("Fred", "George", "fred@livefeed.com", "attendee");
-    // INSERT INTO login VALUES (?, ?, ?)
-    $stmt = $this->conn->prepare("INSERT INTO users (FirstName, LastName, Email, Role) VALUES ('Fred', 'George', 'fred@livefeed.com', 'attendee')");
-    if (!$stmt->execute())
-      die("-[DatabaseError]: ". mysqli_error($this->conn));
-    $stmt->close();
+    $this->conn->autocommit(false);
+    try {
+      $this->prepared_stmt("INSERT INTO users VALUES (NULL, 'Fred', 'George', 'fred@livefeed.com', ?)", false, "s", "user");
 
-    $id = $this->conn->insert_id;
-    $hash = password_hash($password, 'PASSWORD_DEFAULT');
+      $id = $this->conn->insert_id;
+      if (!($hash = password_hash($password, PASSWORD_DEFAULT))) {
+        echo "-Error generating the password hash. \n";
+        $this->conn->rollback();
+        $this->conn->close();
+        return false;
+      }
 
-    $stmt = $this->conn->prepare("INSERT INTO users VALUES (?, ?, ?)");
-    $stmt->bind_param("iss", $id, $username, $hash);
-    if ($stmt->execute())
-      echo 'Successfully inserted user.';
-    else
-      echo "-[DatabaseError]: ". mysqli_error($this->conn);
-    $stmt->close();
-
-    $this->conn->close();
+      $this->prepared_stmt("INSERT INTO login VALUES (?, ?, ?)", false, "iss", $id, $username, $hash);
+      echo "Successfully inserted user.\n";
+      $this->conn->autocommit(true);
+      return true;
+    } catch (mysqli_sql_exception $e) {
+      $this->conn->rollback();
+      return false;
+    } finally {
+      $this->conn->close();
+    }
   }
+
+  function login($username, $password) {
+    $this->connect();
+    if (($stmt = $this->prepared_stmt("SELECT * FROM login WHERE Username=? LIMIT 1", true, "s", $username)) == null) {
+      $this->conn->close();
+      return false;
+    }
+    if (!($res = $stmt->get_result())){
+      $this->conn->close();
+      return false;
+    }
+    $row = $res->fetch_assoc();
+    $stmt->close();
+    $this->conn->close();
+
+    if ($row && password_verify($password, $row['PasswordHash']))
+      return $row['UserID'];
+    else
+      return -1;
+  }
+
 }
 
 
@@ -59,6 +102,17 @@ function signup() {
   $database->add_user($db_username, $db_password);
 }
 
+// Basic tests
+// Need to replace with PHPUnit unit tests
+echo "Create User: \n";
+echo ''.$database->add_user("adrian", "ABCDE") . "\n";
+echo ''.$database->add_user("adrian1", "ABCDE") . "\n";
+echo ''.$database->add_user("al2", "IDWEDRP(*&89") . "\n";
+echo "Login: \n";
+echo 'adrian, ABCDE, '.$database->login("adrian", "ABCDE") . "\n";
+echo 'adriann, ABCDE, '.$database->login("adriann", "ABCDE") . "\n";
+echo 'adrian, IDWEDRP(*&89, '.$database->login("adrian", "IDWEDRP(*&89") . "\n";
+echo 'adriann, IDWEDRP(*&89, '.$database->login("adriann", "IDWEDRP(*&89") . "\n";
 
 ?> 
 
