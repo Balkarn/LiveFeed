@@ -104,7 +104,7 @@ const LoginComponent = ({setIsLoggedIn}) => {
 
 
   //Function when the sign up button is clicked
-  // Need FName, LName, Email, Role ('host'/'attendee')
+  // Need FName, LName, Email, Role ('host'/'user')
   const SIGNUPsendValue = () => {
     var temp1 = SIGNUPnameTextfieldValue.length < 4 //setting a state isn't synchronous so store value in a temp variable
     var temp2 = SIGNUPpasswordTextfieldValue.length < 4
