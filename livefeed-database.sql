@@ -132,10 +132,7 @@ DROP TABLE IF EXISTS `login`;
 CREATE TABLE `login` (
   `UserID` int(11) NOT NULL,
   `Username` varchar(45) NOT NULL,
-  `PasswordHash` varchar(45) NOT NULL,
-  `Salt` varchar(10) NOT NULL,
-  `KeySize` int(11) NOT NULL,
-  `Iterations` int(11) NOT NULL,
+  `PasswordHash` varchar(255) NOT NULL,
   PRIMARY KEY (`UserID`),
   CONSTRAINT `login-userid` FOREIGN KEY (`UserID`) REFERENCES `users` (`UserID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -422,4 +419,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-02-04  0:14:49
+-- Dump completed on 2021-02-08  0:37:06
