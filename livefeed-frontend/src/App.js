@@ -104,6 +104,7 @@ const LoginComponent = ({setIsLoggedIn}) => {
 
 
   //Function when the sign up button is clicked
+  // Need FName, LName, Email, Role ('host'/'attendee')
   const SIGNUPsendValue = () => {
     var temp1 = SIGNUPnameTextfieldValue.length < 4 //setting a state isn't synchronous so store value in a temp variable
     var temp2 = SIGNUPpasswordTextfieldValue.length < 4
@@ -111,7 +112,7 @@ const LoginComponent = ({setIsLoggedIn}) => {
     SIGNUPsetNameError(temp1);
     SIGNUPsetpError(temp2);
     SIGNUPsetp2Error(temp3);
-    if (!(temp1 | temp2 | temp3)) {
+    if (!(temp1 || temp2 || temp3)) {
       var formData = new FormData();
       formData.append("username", SIGNUPnameTextfieldValue);
       formData.append("password", SIGNUPpasswordTextfieldValue);
@@ -130,7 +131,7 @@ const LoginComponent = ({setIsLoggedIn}) => {
     var temp2 = LOGINpasswordTextfieldValue.length < 4
     LOGINsetNameError(temp1);
     LOGINsetpError(temp2);
-    if (!(temp1 | temp2)) {
+    if (!(temp1 || temp2)) {
       setIsLoggedIn(true)
     }
   }
