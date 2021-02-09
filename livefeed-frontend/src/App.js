@@ -38,6 +38,7 @@ const LoginComponent = ({setIsLoggedIn}) => {
   const [LOGINpasswordTextfieldValue, LOGINsetPasswordTextfieldValue] = React.useState('');
   const [LOGINnameError, LOGINsetNameError] = React.useState(false);
   const [LOGINpError, LOGINsetpError] = React.useState(false);
+  const [LOGINFail, LOGINsetFail] = React.useState(false);
 
   const [tabValue, setTabValue] = React.useState(0);
 
@@ -93,6 +94,7 @@ const LoginComponent = ({setIsLoggedIn}) => {
       var formData = new FormData();
       formData.append("username", SIGNUPnameTextfieldValue);
       formData.append("password", SIGNUPpasswordTextfieldValue);
+      formData.append("action", "SIGN-UP");
       const url = "http://localhost:80/react-backend/";
       axios.post(url, formData)
         .then(res => console.log(res.data))
@@ -109,7 +111,34 @@ const LoginComponent = ({setIsLoggedIn}) => {
     LOGINsetNameError(temp1);
     LOGINsetpError(temp2);
     if (!(temp1 | temp2)) {
-      setIsLoggedIn(true)
+      var formData = new FormData();
+      formData.append("username", LOGINnameTextfieldValue);
+      formData.append("password", LOGINpasswordTextfieldValue);
+      formData.append("action", "LOGIN");
+      const url = "http://localhost:80/react-backend/";
+
+      axios.post(url, formData)
+        .then(res => {
+
+          console.log(res.data);
+
+          if (res.data.includes("LOGIN_SUCCESS")) {
+
+            if (LOGINFail) {
+              LOGINsetFail(false);
+            }
+
+            setIsLoggedIn(true);
+
+          } else {
+
+            LOGINsetFail(true);
+
+          }
+        })
+        .catch(err => console.log(err));
+
+      
     }
   }
 
@@ -254,7 +283,7 @@ const LoginComponent = ({setIsLoggedIn}) => {
                 >
                   Log In
                 </Button>
-
+                { LOGINFail ? <p> Login unsuccessful - Incorrect username or password. </p> : null }
               </div>
             </div>
           }
