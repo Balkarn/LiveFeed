@@ -9,15 +9,37 @@ import PostAddIcon from '@material-ui/icons/PostAdd';
 import Paper from '@material-ui/core/Paper';
 import InputIcon from '@material-ui/icons/Input';
 import CheckIcon from '@material-ui/icons/Check';
+import AppBar from '@material-ui/core/AppBar';
+
+import EventIcon from '@material-ui/icons/Event';
+import CreateIcon from '@material-ui/icons/Create';
+import ForwardIcon from '@material-ui/icons/Forward';
+import HistoryIcon from '@material-ui/icons/History';
+import SettingsIcon from '@material-ui/icons/Settings';
 
 export default function Main() {
 
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  const [tabValue, setTabValue] = React.useState(2);
   
+
   if (!isLoggedIn) {
     return <LoginComponent setIsLoggedIn={setIsLoggedIn}/>
   } else { //Otherwise render the main screen
-    return (<HomeScreen/>);
+    return (
+      <div className="whole">
+        <TabBar setTabValue={setTabValue} />
+        <div className="main">
+          <Paper>
+            {tabValue === 0 && "Host an Event"}
+            {tabValue === 1 && "Your Templates:"}
+            {tabValue === 2 && "Enter Event ID"}
+            {tabValue === 3 && "Event History"}
+            {tabValue === 4 && "Account Settings"}
+          </Paper>
+        </div>
+      </div>
+    );
   }
 }
 
@@ -83,6 +105,7 @@ const LoginComponent = ({setIsLoggedIn}) => {
 
 
   //Function when the sign up button is clicked
+  // Need FName, LName, Email, Role ('host'/'user')
   const SIGNUPsendValue = () => {
     var temp1 = SIGNUPnameTextfieldValue.length < 4 //setting a state isn't synchronous so store value in a temp variable
     var temp2 = SIGNUPpasswordTextfieldValue.length < 4
@@ -90,7 +113,7 @@ const LoginComponent = ({setIsLoggedIn}) => {
     SIGNUPsetNameError(temp1);
     SIGNUPsetpError(temp2);
     SIGNUPsetp2Error(temp3);
-    if (!(temp1 | temp2 | temp3)) {
+    if (!(temp1 || temp2 || temp3)) {
       var formData = new FormData();
       formData.append("username", SIGNUPnameTextfieldValue);
       formData.append("password", SIGNUPpasswordTextfieldValue);
@@ -110,6 +133,7 @@ const LoginComponent = ({setIsLoggedIn}) => {
     var temp2 = LOGINpasswordTextfieldValue.length < 4
     LOGINsetNameError(temp1);
     LOGINsetpError(temp2);
+<<<<<<< HEAD
     if (!(temp1 | temp2)) {
       var formData = new FormData();
       formData.append("username", LOGINnameTextfieldValue);
@@ -139,6 +163,10 @@ const LoginComponent = ({setIsLoggedIn}) => {
         .catch(err => console.log(err));
 
       
+=======
+    if (!(temp1 || temp2)) {
+      setIsLoggedIn(true)
+>>>>>>> 16954139ede1d7459ce9c664d45fe0eaf307a3db
     }
   }
 
@@ -295,11 +323,37 @@ const LoginComponent = ({setIsLoggedIn}) => {
 
 }
 
-const HomeScreen = ({ name }) => {
+const TabBar = ({setTabValue}) => {
+
+  const [value, setValue] = React.useState(2)
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+    setTabValue(newValue);
+  }
 
   //Displays the username
   return (
-    <p> Hello {name}! </p>
+    <div>
+
+      <AppBar position="static" color="default" >
+        <Tabs
+          value={value}
+          onChange={handleChange}
+          scrollButtons="off"
+          variant="fullWidth"
+          indicatorColor="primary"
+          textColor="primary"
+        >
+          <Tab label="Host Event" icon={<EventIcon />} />
+          <Tab label="Template Creator" icon={<CreateIcon />} />
+          <Tab label="Join Event" icon={<ForwardIcon />} />
+          <Tab label="Event History" icon={<HistoryIcon />} />
+          <Tab label="Account Settings" icon={<SettingsIcon />} />
+        </Tabs>
+      </AppBar>
+      
+    </div>
   );
 
 }
