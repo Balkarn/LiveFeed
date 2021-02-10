@@ -16,6 +16,30 @@ import CreateIcon from '@material-ui/icons/Create';
 import ForwardIcon from '@material-ui/icons/Forward';
 import HistoryIcon from '@material-ui/icons/History';
 import SettingsIcon from '@material-ui/icons/Settings';
+import BuildIcon from '@material-ui/icons/Build';
+
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/ListItemText';
+import Avatar from '@material-ui/core/Avatar';
+import IconButton from '@material-ui/core/IconButton';
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import FolderIcon from '@material-ui/icons/Folder';
+import DeleteIcon from '@material-ui/icons/Delete';
+import Divider from '@material-ui/core/Divider';
+
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 export default function Main() {
 
@@ -34,13 +58,92 @@ export default function Main() {
           <Paper elevation={10}>
             <div className="page">
               {tabValue === 0 && "Host an Event"}
-              {tabValue === 1 && "Your Templates:"}
+              {tabValue === 1 && <TemplateComponent/>}
               {tabValue === 2 && "Enter Event ID"}
               {tabValue === 3 && "Event History"}
               {tabValue === 4 && "Account Settings"}
             </div>
           </Paper>
         </div>
+      </div>
+    );
+  }
+}
+
+
+
+const TemplateComponent = () => {
+
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  if (false) {
+  } else {
+    return (
+      <div className="list">
+        <div className="centering">
+          <h1>Your Templates:</h1>
+        </div>
+          <List>
+              <ListItem>
+                <ListItemText
+                  primary="Template 1"
+                />
+                <ListItemSecondaryAction>
+                  <IconButton>
+                    <BuildIcon color="primary" />
+                  </IconButton>
+                  <IconButton>
+                    <DeleteIcon color="secondary" />
+                  </IconButton>
+                </ListItemSecondaryAction>
+              </ListItem>
+              <Divider/>
+              <ListItem>
+                <ListItemText
+                  primary="Template 2"
+                />
+                <ListItemSecondaryAction>
+                  <IconButton>
+                    <BuildIcon color="primary" />
+                  </IconButton>
+                  <IconButton>
+                    <DeleteIcon color="secondary" />
+                  </IconButton>
+                </ListItemSecondaryAction>
+              </ListItem>
+          </List> 
+        <div className="centering">
+          <Button variant="contained" color="primary" endIcon={<CreateIcon />} onClick={handleClickOpen}>
+            Create New Template
+          </Button>
+        </div>
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">{"Create A Template"}</DialogTitle>
+          <DialogContent>
+            <div className="popup">aaaaaaaaa<br />a<br />aaaa<br />aaa<br />aaaaaaaaaa<br /><br /><br /><br /><br />aaaaaaaaaaaaaaaaaaa</div>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose} color="primary">
+              Done
+            </Button>
+            <Button onClick={handleClose} color="secondary">
+              Cancel
+          </Button>
+          </DialogActions>
+        </Dialog>
       </div>
     );
   }

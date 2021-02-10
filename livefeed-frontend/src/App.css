@@ -1,5 +1,5 @@
 body {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Roboto', sans-serif;
 }
 
 .App {
@@ -79,14 +79,25 @@ body {
 
 
 .page {
-  width: 90vw;
+  width: 60vw;
   height: calc(90vh - 90px);
   display: flex;
-  justify-content: center;
   align-items: center;
   flex-direction: column;
 }
 
+.popup {
+  width: 30vw;
+  height: 60vh;
+}
+
+.list {
+  width: 40vw;
+}
+
+.centering {
+  text-align: center;
+}
 /* Form */
 
 .textfield {
