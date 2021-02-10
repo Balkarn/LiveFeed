@@ -28,12 +28,12 @@ class DatabaseInteraction {
   /*
    * Function to abstract the creation and execution of a prepared statement. Used for executing queries which include
    * values derived from user input.
-   * 
+   *
    * @param query A string of the sql query to be executed
    * @param result A boolean value to describe whether the query is expected to return a result: false means no result
    * is expected and the function should execute stmt->close; true means the function should not close the stmt, so the
    * user should close it manually after calling the function and manipulating the results
-   * @param var_types A string with letters for the variable types of each value in bind_vars e.g. "iss" (i:integer,
+   * @param var_types A string with letters for the variable types of each value in bind_vars e.g. "iss". (i:integer,
    * d:double, s:string, b:blob)
    * @param bind_vars The values to replace the '?' placeholders in the query
    *
