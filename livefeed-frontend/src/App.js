@@ -29,13 +29,16 @@ export default function Main() {
     return (
       <div className="whole">
         <TabBar setTabValue={setTabValue} />
-        <div className="main">
-          <Paper>
-            {tabValue === 0 && "Host an Event"}
-            {tabValue === 1 && "Your Templates:"}
-            {tabValue === 2 && "Enter Event ID"}
-            {tabValue === 3 && "Event History"}
-            {tabValue === 4 && "Account Settings"}
+
+        <div className="main2">
+          <Paper elevation={10}>
+            <div className="page">
+              {tabValue === 0 && "Host an Event"}
+              {tabValue === 1 && "Your Templates:"}
+              {tabValue === 2 && "Enter Event ID"}
+              {tabValue === 3 && "Event History"}
+              {tabValue === 4 && "Account Settings"}
+            </div>
           </Paper>
         </div>
       </div>
