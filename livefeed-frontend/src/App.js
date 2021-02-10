@@ -5,41 +5,31 @@ import axios from 'axios';
 import 'fontsource-roboto';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import PostAddIcon from '@material-ui/icons/PostAdd';
 import Paper from '@material-ui/core/Paper';
-import InputIcon from '@material-ui/icons/Input';
-import CheckIcon from '@material-ui/icons/Check';
 import AppBar from '@material-ui/core/AppBar';
-
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/ListItemText';
+import IconButton from '@material-ui/core/IconButton';
+import Divider from '@material-ui/core/Divider';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Snackbar from '@material-ui/core/Snackbar';
+import SnackbarContent from '@material-ui/core/SnackbarContent';
 import EventIcon from '@material-ui/icons/Event';
 import CreateIcon from '@material-ui/icons/Create';
 import ForwardIcon from '@material-ui/icons/Forward';
 import HistoryIcon from '@material-ui/icons/History';
 import SettingsIcon from '@material-ui/icons/Settings';
 import BuildIcon from '@material-ui/icons/Build';
-
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Avatar from '@material-ui/core/Avatar';
-import IconButton from '@material-ui/core/IconButton';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import FolderIcon from '@material-ui/icons/Folder';
+import CloseIcon from '@material-ui/icons/Close';
 import DeleteIcon from '@material-ui/icons/Delete';
-import Divider from '@material-ui/core/Divider';
-
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import InputIcon from '@material-ui/icons/Input';
+import CheckIcon from '@material-ui/icons/Check';
+import PostAddIcon from '@material-ui/icons/PostAdd';
 
 export default function Main() {
 
@@ -69,8 +59,6 @@ export default function Main() {
     );
   }
 }
-
-
 
 const TemplateComponent = () => {
 
@@ -127,13 +115,27 @@ const TemplateComponent = () => {
         </div>
         <Dialog
           open={open}
-          onClose={handleClose}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
         >
           <DialogTitle id="alert-dialog-title">{"Create A Template"}</DialogTitle>
           <DialogContent>
-            <div className="popup">aaaaaaaaa<br />a<br />aaaa<br />aaa<br />aaaaaaaaaa<br /><br /><br /><br /><br />aaaaaaaaaaaaaaaaaaa</div>
+
+            <TextField
+              font-size='16px'
+              id='outlined-textarea'
+              label='Template Title'
+              value={null}
+              placeholder='Name your template'
+              variant='outlined'
+              required
+              fullWidth="true"
+              onChange={null}
+              error={false}
+              className="input"
+              helperText={false ? 'Must be at least 4 Characters' : ' '}
+            />
+            <Divider/>
+            <div className="popup"><br/>aaaaaaaaa<br />a<br />aaaa<br />aaa<br />aaaaaaaaaa<br /><br /><br /><br /><br />aaaaaaaaaaaaaaaaaaa</div>
+
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose} color="primary">
@@ -141,7 +143,7 @@ const TemplateComponent = () => {
             </Button>
             <Button onClick={handleClose} color="secondary">
               Cancel
-          </Button>
+            </Button>
           </DialogActions>
         </Dialog>
       </div>
@@ -168,6 +170,8 @@ const LoginComponent = ({setIsLoggedIn}) => {
   const [LOGINpError, LOGINsetpError] = React.useState(false);
 
   const [tabValue, setTabValue] = React.useState(0);
+
+  const [open, setOpen] = React.useState(false);
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
@@ -227,6 +231,8 @@ const LoginComponent = ({setIsLoggedIn}) => {
         .then(res => console.log(res.data))
         .catch(err => console.log(err));
       setIsLoggedIn(true)
+    } else {
+      setOpen(true)
     }
   }
 
@@ -239,8 +245,21 @@ const LoginComponent = ({setIsLoggedIn}) => {
     LOGINsetpError(temp2);
     if (!(temp1 || temp2)) {
       setIsLoggedIn(true)
+    } else {
+      setOpen(true)
     }
   }
+
+
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
+
 
   return (
     <div className="whole">
@@ -390,6 +409,28 @@ const LoginComponent = ({setIsLoggedIn}) => {
           
         </Paper>
       </div>
+      <Snackbar
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+        open={open}
+        autoHideDuration={4000}
+        onClose={handleClose}
+
+      >
+        <SnackbarContent style={{
+          backgroundColor: '#ef5350',
+        }}
+          message="Invalid details"
+          action={
+            <IconButton size="small" aria-label="close" color="inherit" onClick={handleClose}>
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          }
+        />
+      </Snackbar>
+
     </div>
   );
 

@@ -98,6 +98,9 @@ body {
 .centering {
   text-align: center;
 }
+
+.errorClass { color: 'red' }
+
 /* Form */
 
 .textfield {
