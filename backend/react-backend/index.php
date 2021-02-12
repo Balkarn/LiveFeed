@@ -108,50 +108,36 @@ class DatabaseInteraction {
 		  $templateId = $this->conn->insert_id;
 
 		  $simpleQArray = array();
-		  $simpleQCounter = 0;
 		  $multipleArray = array();
-		  $multipleCounter = 0;
 		  $ratingArray = array();
-		  $ratingCounter = 0;
 		  for ($i=0; $i<count($questionsArray); $i++) {
 		  	if (($questionsArray[$i][1] == 'open' || $questionsArray[$i][1] == 'mood') && count($questionsArray[$i]) == 2) {
 				  $simpleQArray[] = $templateId;
 				  $simpleQArray[] = $questionsArray[$i][0];
 				  $simpleQArray[] = $questionsArray[$i][1];
-				  $simpleQCounter ++;
 			  } elseif ($questionsArray[$i][1] == 'multiple' && count($questionsArray[$i]) == 6) {
-		  		$multipleArray[$multipleCounter] = array();
-				  $multipleArray[$multipleCounter][] = $questionsArray[$i][0]; //Question
-				  $multipleArray[$multipleCounter][] = $questionsArray[$i][1]; //Question Type
-				  $multipleArray[$multipleCounter][] = $questionsArray[$i][2]; //Op1
-				  $multipleArray[$multipleCounter][] = $questionsArray[$i][3]; //Op2
-				  $multipleArray[$multipleCounter][] = $questionsArray[$i][4]; //Op3
-				  $multipleArray[$multipleCounter][] = $questionsArray[$i][5]; //Op4
-				  $multipleCounter ++;
+		  		$multipleArray[] = $i;
 			  } elseif ($questionsArray[$i][1] == 'rating' && count($questionsArray[$i]) == 4) {
-		  		$ratingArray[$ratingCounter] = array();
-				  $ratingArray[$ratingCounter][] = $questionsArray[$i][0]; //Question
-				  $ratingArray[$ratingCounter][] = $questionsArray[$i][1]; //Question Type
-				  $ratingArray[$ratingCounter][] = $questionsArray[$i][2]; //Min
-				  $ratingArray[$ratingCounter][] = $questionsArray[$i][3]; //Max
-				  $ratingCounter ++;
+		  		$ratingArray[] = $i;
 			  }
 		  }
 
-		  if ($simpleQCounter >= 1) {
-			  $inserts = str_repeat("(NULL, ?, ?, ?), ", $simpleQCounter-1);
+		  if (count($simpleQArray) >= 1) {
+			  $inserts = str_repeat("(NULL, ?, ?, ?), ", count($simpleQArray)-1);
 			  $inserts .= "(NULL, ?, ?, ?)";
-			  $insertsTypes = str_repeat("iss", $simpleQCounter);
+			  $insertsTypes = str_repeat("iss", count($simpleQArray));
 			  $this->prepared_stmt($reqResult, "INSERT INTO template_questions VALUES ".$inserts, false, $insertsTypes, ...$simpleQArray);
 		  }
 
-		  foreach($multipleArray as $item) {
+		  foreach($multipleArray as $itemIdx) {
+		  	$item = $questionsArray[$itemIdx];
 			  $this->prepared_stmt($reqResult, "INSERT INTO template_questions VALUES (NULL, ?, ?, ?)", false, "iss", $templateId, $item[0], $item[1]);
 			  $questionId = $this->conn->insert_id;
 			  $this->prepared_stmt($reqResult, "INSERT INTO question_options VALUES (?, ?, ?, ?, ?)", false, "issss", $questionId, ...array_slice($item, 2, 4));
 		  }
 
-		  foreach($ratingArray as $item) {
+		  foreach($ratingArray as $itemIdx) {
+			  $item = $questionsArray[$itemIdx];
 			  $this->prepared_stmt($reqResult, "INSERT INTO template_questions VALUES (NULL, ?, ?, ?)", false, "iss", $templateId, $item[0], $item[1]);
 			  $questionId = $this->conn->insert_id;
 			  $this->prepared_stmt($reqResult, "INSERT INTO question_ratings VALUES (?, ?, ?)", false, "iii", $questionId, ...array_slice($item, 2, 2));
@@ -220,7 +206,6 @@ echo json_encode($reqResult);
 // Need to replace with PHPUnit unit tests
 /*
 echo "Create User: \n";
-echo ''.$database->add_user("adrian2", "ABCDE", "a", "b", "c", "user") . "\n";
 echo "Login: \n";
 echo 'adrian, ABCDE, '.$database->login("adrian", "ABCDE") . "\n";
 echo 'adriann, ABCDE, '.$database->login("adriann", "ABCDE") . "\n";
@@ -234,6 +219,8 @@ $questions = array(
 		array("Q3", "open"),
 		array("Q4", "rating", 1, 9),
 );
+echo ''.$database->add_user($reqResult, "adrian2", "ABCDE", "a", "b", "c", "user") . "\n";
+
 $database->add_template($reqResult, "ABC", 1, $questions);
 var_dump($reqResult)
 */
