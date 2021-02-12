@@ -80,7 +80,7 @@ const TemplateComponent = () => {
           <h1>Your Templates:</h1>
         </div>
           <List>
-              <ListItem>
+              {/* <ListItem>
                 <ListItemText
                   primary="Template 1"
                 />
@@ -106,7 +106,25 @@ const TemplateComponent = () => {
                     <DeleteIcon color="secondary" />
                   </IconButton>
                 </ListItemSecondaryAction>
+              </ListItem> */}
+            {[0, 1, 2, 3,4,5,6,7,8,9,10,11,12,13,14,15,16].map((item) => (
+              <div>
+              <ListItem>
+                <ListItemText
+                  primary={`Template ${item}`}
+                />
+                <ListItemSecondaryAction>
+                  <IconButton>
+                    <BuildIcon color="primary" />
+                  </IconButton>
+                  <IconButton>
+                    <DeleteIcon color="secondary" />
+                  </IconButton>
+                </ListItemSecondaryAction>
               </ListItem>
+              <Divider/>
+              </div>
+            ))}
           </List> 
         <div className="centering">
           <Button variant="contained" color="primary" endIcon={<CreateIcon />} onClick={handleClickOpen}>
@@ -115,6 +133,8 @@ const TemplateComponent = () => {
         </div>
         <Dialog
           open={open}
+          fullWidth={true}
+          maxWidth={'lg'}
         >
           <DialogTitle id="alert-dialog-title">{"Create A Template"}</DialogTitle>
           <DialogContent>
@@ -256,6 +276,8 @@ const LoginComponent = ({setIsLoggedIn}) => {
             }
           })
           .catch(err => console.log(err));
+
+      setIsLoggedIn(true) //TEMPORARY LINE FOR TESTING WITHOUT DATABASE
     } else {
       setOpen(true)
     }
