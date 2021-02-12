@@ -75,57 +75,59 @@ const TemplateComponent = () => {
   if (false) {
   } else {
     return (
-      <div className="list">
+      <div>
         <div className="centering">
           <h1>Your Templates:</h1>
         </div>
+        <div className="list">
           <List>
-              {/* <ListItem>
-                <ListItemText
-                  primary="Template 1"
-                />
-                <ListItemSecondaryAction>
-                  <IconButton>
-                    <BuildIcon color="primary" />
-                  </IconButton>
-                  <IconButton>
-                    <DeleteIcon color="secondary" />
-                  </IconButton>
-                </ListItemSecondaryAction>
-              </ListItem>
-              <Divider/>
-              <ListItem>
-                <ListItemText
-                  primary="Template 2"
-                />
-                <ListItemSecondaryAction>
-                  <IconButton>
-                    <BuildIcon color="primary" />
-                  </IconButton>
-                  <IconButton>
-                    <DeleteIcon color="secondary" />
-                  </IconButton>
-                </ListItemSecondaryAction>
-              </ListItem> */}
-            {[0, 1, 2, 3,4,5,6,7,8,9,10,11,12,13,14,15,16].map((item) => (
-              <div>
-              <ListItem>
-                <ListItemText
-                  primary={`Template ${item}`}
-                />
-                <ListItemSecondaryAction>
-                  <IconButton>
-                    <BuildIcon color="primary" />
-                  </IconButton>
-                  <IconButton>
-                    <DeleteIcon color="secondary" />
-                  </IconButton>
-                </ListItemSecondaryAction>
-              </ListItem>
-              <Divider/>
-              </div>
-            ))}
-          </List> 
+                {/* <ListItem>
+                  <ListItemText
+                    primary="Template 1"
+                  />
+                  <ListItemSecondaryAction>
+                    <IconButton>
+                      <BuildIcon color="primary" />
+                    </IconButton>
+                    <IconButton>
+                      <DeleteIcon color="secondary" />
+                    </IconButton>
+                  </ListItemSecondaryAction>
+                </ListItem>
+                <Divider/>
+                <ListItem>
+                  <ListItemText
+                    primary="Template 2"
+                  />
+                  <ListItemSecondaryAction>
+                    <IconButton>
+                      <BuildIcon color="primary" />
+                    </IconButton>
+                    <IconButton>
+                      <DeleteIcon color="secondary" />
+                    </IconButton>
+                  </ListItemSecondaryAction>
+                </ListItem> */}
+              {["Sample Meeting Template", "Sample Lecture Template", "Sample Social Event Template"/*, 3,4,5,6,7,8,9,10,11,12,13,14,15,16*/].map((item) => (
+                <div>
+                <ListItem>
+                  <ListItemText
+                    primary={`${item}`}
+                  />
+                  <ListItemSecondaryAction>
+                    <IconButton>
+                      <BuildIcon color="primary" />
+                    </IconButton>
+                    <IconButton>
+                      <DeleteIcon color="secondary" />
+                    </IconButton>
+                  </ListItemSecondaryAction>
+                </ListItem>
+                <Divider/>
+                </div>
+              ))}
+            </List> 
+          </div>
         <div className="centering">
           <Button variant="contained" color="primary" endIcon={<CreateIcon />} onClick={handleClickOpen}>
             Create New Template

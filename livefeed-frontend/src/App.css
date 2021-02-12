@@ -93,6 +93,8 @@ body {
 
 .list {
   width: 40vw;
+  height: calc(90vh - 90px - 150px);
+  overflow: auto;
 }
 
 .centering {
