@@ -35,7 +35,7 @@ export default function Main() {
 
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const [tabValue, setTabValue] = React.useState(2);
-  
+	  
 
   if (!isLoggedIn) {
     return <LoginComponent setIsLoggedIn={setIsLoggedIn}/>
@@ -152,11 +152,14 @@ const TemplateComponent = () => {
 }
 
 const LoginComponent = ({setIsLoggedIn}) => {
-
+	
   useEffect(() => {
     document.body.style.backgroundColor = "#15bfff"
   }, []); // Only run once
 
+  var qs = require('qs');
+  const phpurl = "http://localhost:80/react-backend/";
+	
   const [SIGNUPnameTextfieldValue, SIGNUPsetNameTextfieldValue] = React.useState('');
   const [SIGNUPpasswordTextfieldValue, SIGNUPsetPasswordTextfieldValue] = React.useState('');
   const [SIGNUPpassword2TextfieldValue, SIGNUPsetPassword2TextfieldValue] = React.useState('');
@@ -211,8 +214,7 @@ const LoginComponent = ({setIsLoggedIn}) => {
     LOGINsetPasswordTextfieldValue(eventVal);
     LOGINsetpError(eventVal.length < 4);
   }
-
-
+	
   //Function when the sign up button is clicked
   // Need FName, LName, Email, Role ('host'/'user')
   const SIGNUPsendValue = () => {
@@ -223,14 +225,37 @@ const LoginComponent = ({setIsLoggedIn}) => {
     SIGNUPsetpError(temp2);
     SIGNUPsetp2Error(temp3);
     if (!(temp1 || temp2 || temp3)) {
-      var formData = new FormData();
-      formData.append("username", SIGNUPnameTextfieldValue);
-      formData.append("password", SIGNUPpasswordTextfieldValue);
-      const url = "http://localhost:80/react-backend/";
-      axios.post(url, formData)
-        .then(res => console.log(res.data))
-        .catch(err => console.log(err));
-      setIsLoggedIn(true)
+
+      // random email generation algorithm, so the database can be set to only allow unique email addresses to prevent spam user creation
+      var email = '';
+      var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      for ( var i = 0; i < 10; i++ ) {
+        email += characters.charAt(Math.floor(Math.random() * 62));
+      }
+
+      var role = ''
+      if (Math.random() < 0.4) {
+        role = 'host';
+      } else {
+        role = 'user'
+      }
+
+      var data = {
+        function:'signup',
+        arguments:[SIGNUPnameTextfieldValue, SIGNUPpasswordTextfieldValue, "Ronald", "Reagan", email+"@aol.com", role]
+      }
+
+      axios.post(phpurl, qs.stringify(data))
+          .then(res => {
+            console.log(res) //DELETE
+            if (res.data.error) {
+              console.log(res.data.error)
+            }
+            if (res.data.result) {
+              setIsLoggedIn(true)
+            }
+          })
+          .catch(err => console.log(err));
     } else {
       setOpen(true)
     }
@@ -244,13 +269,26 @@ const LoginComponent = ({setIsLoggedIn}) => {
     LOGINsetNameError(temp1);
     LOGINsetpError(temp2);
     if (!(temp1 || temp2)) {
-      setIsLoggedIn(true)
+
+      var data = {
+        function:"login",
+        arguments:[LOGINnameTextfieldValue, LOGINpasswordTextfieldValue]
+      }
+      axios.post(phpurl, qs.stringify(data))
+          .then(res => {
+            console.log(res) //DELETE
+            if (res.data.error) {
+              console.log(res.data.error)
+            }
+            if (res.data.result) {
+              setIsLoggedIn(true)
+            }
+          })
+          .catch(err => console.log(err));
     } else {
       setOpen(true)
     }
   }
-
-
 
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
