@@ -63,13 +63,35 @@ export default function Main() {
 const TemplateComponent = () => {
 
   const [open, setOpen] = React.useState(false);
+  const [templateNames, setTemplateNames] = React.useState([]);
+  const [templateQuestions, setTemplateQuestions] = React.useState([]);
+
+  const [currentTemplateName, setCurrentTemplateName] = React.useState('')
+  const [currentTemplateQuestions, setCurrentTemplateQuestions] = React.useState([]);
+
+  useEffect(() => {
+    setTemplateNames(["Sample Meeting Template", "Sample Lecture Template", "Sample Social Event Template"/*, 3,4,5,6,7,8,9,10,11,12,13,14,15,16*/]);
+    setTemplateQuestions([[],[],[]]);
+  }, []); // Only run once on mount
+
+  //Function called whenever the name textfield is changed
+  const handleTemplateNameTextfield = event => {
+    var eventVal = event.target.value; //setting a state isn't synchronous so store value in a temp variable
+    setCurrentTemplateName(eventVal);
+  }
 
   const handleClickOpen = () => {
+    setCurrentTemplateName("")
+    setCurrentTemplateQuestions([]);
     setOpen(true);
   };
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const addQuestion = () => {
+    setCurrentTemplateQuestions([...currentTemplateQuestions, ""])
   };
 
   if (false) {
@@ -81,34 +103,8 @@ const TemplateComponent = () => {
         </div>
         <div className="list">
           <List>
-                {/* <ListItem>
-                  <ListItemText
-                    primary="Template 1"
-                  />
-                  <ListItemSecondaryAction>
-                    <IconButton>
-                      <BuildIcon color="primary" />
-                    </IconButton>
-                    <IconButton>
-                      <DeleteIcon color="secondary" />
-                    </IconButton>
-                  </ListItemSecondaryAction>
-                </ListItem>
-                <Divider/>
-                <ListItem>
-                  <ListItemText
-                    primary="Template 2"
-                  />
-                  <ListItemSecondaryAction>
-                    <IconButton>
-                      <BuildIcon color="primary" />
-                    </IconButton>
-                    <IconButton>
-                      <DeleteIcon color="secondary" />
-                    </IconButton>
-                  </ListItemSecondaryAction>
-                </ListItem> */}
-              {["Sample Meeting Template", "Sample Lecture Template", "Sample Social Event Template"/*, 3,4,5,6,7,8,9,10,11,12,13,14,15,16*/].map((item) => (
+            <Divider /> 
+              {templateNames.map((item) => (
                 <div>
                 <ListItem>
                   <ListItemText
@@ -126,8 +122,8 @@ const TemplateComponent = () => {
                 <Divider/>
                 </div>
               ))}
-            </List> 
-          </div>
+          </List> 
+        </div>
         <div className="centering">
           <Button variant="contained" color="primary" endIcon={<CreateIcon />} onClick={handleClickOpen}>
             Create New Template
@@ -145,20 +141,38 @@ const TemplateComponent = () => {
               font-size='16px'
               id='outlined-textarea'
               label='Template Title'
-              value={null}
+              value={currentTemplateName}
               placeholder='Name your template'
-              variant='outlined'
+              variant='filled'
               required
               fullWidth="true"
-              onChange={null}
+              onChange={handleTemplateNameTextfield}
               error={false}
               className="input"
               helperText={false ? 'Must be at least 4 Characters' : ' '}
             />
-            <Divider/>
-            <div className="popup"><br/>aaaaaaaaa<br />a<br />aaaa<br />aaa<br />aaaaaaaaaa<br /><br /><br /><br /><br />aaaaaaaaaaaaaaaaaaa</div>
+
+            {currentTemplateQuestions.map((item) => (
+              <TextField
+                font-size='16px'
+                id='outlined-textarea'
+                label='Question'
+                value={null}
+                placeholder='Name your template'
+                variant='outlined'
+                required
+                fullWidth="true"
+                onChange={null}
+                error={false}
+                className="input"
+                helperText={false ? 'Must be at least 4 Characters' : ' '}
+              />
+            ))}
 
           </DialogContent>
+          <Button onClick={addQuestion} variant="contained" color="primary">
+            Add Question
+            </Button>
           <DialogActions>
             <Button onClick={handleClose} color="primary">
               Done
