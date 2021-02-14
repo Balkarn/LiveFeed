@@ -288,6 +288,27 @@ class DatabaseInteraction {
 		}
 	}
 
+	function add_template_feedback(&$reqResult, $templateId, $questionId, $userId, $meetingId, $feedback) {
+		$this->connect();
+		$this->conn->autocommit(false);
+		try {
+			$this->prepared_stmt($reqResult, "INSERT INTO feedback VALUES (NULL, ?, ?, CURRENT_TIMESTAMP)", false,
+					"ii", $userId, $meetingId);
+			$id = $this->conn->insert_id;
+
+			$this->prepared_stmt($reqResult, "INSERT INTO template_feedback VALUES (?,?,?,?)", false,
+					"iiis", $id, $templateId, $questionId, $feedback);
+
+			$this->conn->autocommit(true);
+			return true;
+		} catch (mysqli_sql_exception $e) {
+			$this->conn->rollback();
+			return false;
+		} finally {
+			$this->conn->close();
+		}
+	}
+
 }
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST');
@@ -354,6 +375,13 @@ if (!isset($_POST['error'])) {
 				$reqResult['error'] = "Invalid arguments used.";
 			} else { # argument format: userId, meetingId, mood
 				$database->add_mood_feedback($reqResult, ...$_POST['arguments']);
+			}
+			break;
+		case 'addtemplatefeedback':
+			if (!is_array($_POST['arguments']) || count($_POST['arguments']) < 5) {
+				$reqResult['error'] = "Invalid arguments used.";
+			} else { # argument format: templateId, questionId, userId, meetingId, feedback
+				$database->add_template_feedback($reqResult, ...$_POST['arguments']);
 			}
 			break;
 		default:
