@@ -210,6 +210,41 @@ class DatabaseInteraction {
 		return true;
   }
 
+  /*
+   * @param meetingName
+   * @param meetingStart A string of format "yyyy-mm-dd hh:mm:ss"
+   * @param meetingEnd A string of format "yyyy-mm-dd hh:mm:ss"
+   * @param templates A list of templateIds that are assigned to the meeting
+   */
+  function create_meeting(&$reqResult, $meetingName, $meetingStart, $meetingEnd, $userId, $templates) {
+	  $this->connect();
+	  $this->conn->autocommit(false);
+	  try {
+			$this->prepared_stmt($reqResult, "INSERT INTO meetings VALUES (NULL, ?, ?, ?, ?)", false,
+					"sssi", $meetingName, $meetingStart, $meetingEnd, $userId);
+			$id = $this->conn->insert_id;
+			if (count($templates) >= 1) {
+				$placeholders = str_repeat("(?,?), ", count($templates)-1);
+				$placeholders .= "(?,?)";
+			}
+		  $varTypes = str_repeat("ii", count($templates));
+			$vars = array();
+			foreach ($templates as $t) {
+				$vars[] = $t;
+				$vars[] = $id;
+		  }
+
+			$this->prepared_stmt($reqResult, "INSERT INTO meeting_templates VALUES ".$placeholders, false, $varTypes, $vars);
+
+		  $this->conn->autocommit(true);
+		  return true;
+	  } catch (mysqli_sql_exception $e) {
+		  $this->conn->rollback();
+		  return false;
+	  } finally {
+		  $this->conn->close();
+	  }
+  }
 }
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST');
@@ -255,6 +290,13 @@ if (!isset($_POST['error'])) {
 				$reqResult['error'] = "Invalid arguments used.";
 			} else { # argument format: templateCreatorId
 				$database->get_user_templates($reqResult, ...$_POST['arguments']);
+			}
+			break;
+		case 'createmeeting':
+			if (!is_array($_POST['arguments']) || count($_POST['arguments']) < 5) {
+				$reqResult['error'] = "Invalid arguments used.";
+			} else { # argument format: templateCreatorId
+				$database->create_meeting($reqResult, ...$_POST['arguments']);
 			}
 			break;
 		default:
