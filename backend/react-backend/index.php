@@ -254,7 +254,7 @@ if (!isset($_POST['error'])) {
 			if (!is_array($_POST['arguments']) || count($_POST['arguments']) < 1) {
 				$reqResult['error'] = "Invalid arguments used.";
 			} else { # argument format: templateCreatorId
-				$database->add_template($reqResult, ...$_POST['arguments']);
+				$database->get_user_templates($reqResult, ...$_POST['arguments']);
 			}
 			break;
 		default:
