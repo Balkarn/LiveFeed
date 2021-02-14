@@ -245,6 +245,49 @@ class DatabaseInteraction {
 		  $this->conn->close();
 	  }
   }
+
+  function add_general_feedback(&$reqResult, $userId, $meetingId, $feedback) {
+	  $this->connect();
+	  $this->conn->autocommit(false);
+	  try {
+		  $this->prepared_stmt($reqResult, "INSERT INTO feedback VALUES (NULL, ?, ?, CURRENT_TIMESTAMP)", false,
+				  "ii", $userId, $meetingId);
+		  $id = $this->conn->insert_id;
+
+		  $this->prepared_stmt($reqResult, "INSERT INTO general_feedback VALUES (?,?)", false, "is",
+				  $id, $feedback);
+
+		  $this->conn->autocommit(true);
+		  return true;
+	  } catch (mysqli_sql_exception $e) {
+		  $this->conn->rollback();
+		  return false;
+	  } finally {
+		  $this->conn->close();
+	  }
+  }
+
+	function add_mood_feedback(&$reqResult, $userId, $meetingId, $feedback) {
+		$this->connect();
+		$this->conn->autocommit(false);
+		try {
+			$this->prepared_stmt($reqResult, "INSERT INTO feedback VALUES (NULL, ?, ?, CURRENT_TIMESTAMP)", false,
+					"ii", $userId, $meetingId);
+			$id = $this->conn->insert_id;
+
+			$this->prepared_stmt($reqResult, "INSERT INTO mood_feedback VALUES (?,?)", false, "is",
+					$id, $feedback);
+
+			$this->conn->autocommit(true);
+			return true;
+		} catch (mysqli_sql_exception $e) {
+			$this->conn->rollback();
+			return false;
+		} finally {
+			$this->conn->close();
+		}
+	}
+
 }
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST');
@@ -295,8 +338,22 @@ if (!isset($_POST['error'])) {
 		case 'createmeeting':
 			if (!is_array($_POST['arguments']) || count($_POST['arguments']) < 5) {
 				$reqResult['error'] = "Invalid arguments used.";
-			} else { # argument format: templateCreatorId
+			} else { # argument format: meetingName, meetingStart, meetingEnd, userId, [templateId1, Id2, ...]
 				$database->create_meeting($reqResult, ...$_POST['arguments']);
+			}
+			break;
+		case 'addgeneralfeedback':
+			if (!is_array($_POST['arguments']) || count($_POST['arguments']) < 3) {
+				$reqResult['error'] = "Invalid arguments used.";
+			} else { # argument format: userId, meetingId, feedback
+				$database->add_general_feedback($reqResult, ...$_POST['arguments']);
+			}
+			break;
+		case 'addmoodfeedback':
+			if (!is_array($_POST['arguments']) || count($_POST['arguments']) < 3) {
+				$reqResult['error'] = "Invalid arguments used.";
+			} else { # argument format: userId, meetingId, mood
+				$database->add_mood_feedback($reqResult, ...$_POST['arguments']);
 			}
 			break;
 		default:
