@@ -154,6 +154,62 @@ class DatabaseInteraction {
 
   }
 
+  function get_user_templates(&$reqResult, $userId) {
+		$this->connect();
+		$query = "SELECT TemplateID, TemplateName, QuestionID, Question, QuestionType, OptionA, OptionB, OptionC, OptionD, MinRating, MaxRating
+	FROM `db-data`.templates
+	INNER JOIN `db-data`.template_questions USING (TemplateID)
+	LEFT JOIN `db-data`.question_options USING (QuestionID)
+	LEFT JOIN `db-data`.question_ratings USING (QuestionID)
+	WHERE TemplateCreator=?";
+		if (($stmt = $this->prepared_stmt($reqResult, $query, true, "s", $userId)) == null) {
+			$this->conn->close();
+			return false;
+		}
+		if (!($res = $stmt->get_result())) {
+			$this->conn->close();
+			return false;
+		}
+		$reqResult['result'] = array();
+	    /* Response structure
+			 * {
+			 *  TemplateID:
+			 *   {
+			 *    TemplateName
+			 *    {Question1}
+			 *    {Question2}
+	     *    {...}
+			 *   }
+			 * }
+			 */
+		while ($row=$res->fetch_assoc()) {
+			if (!isset($reqResult['result'][$row['TemplateID']])) {
+				$reqResult['result'][$row['TemplateID']] = array();
+				$reqResult['result'][$row['TemplateID']][] = $row['TemplateName'];
+			}
+			switch ($row['QuestionType']) {
+				case 'open':
+				case 'mood':
+					$reqResult['result'][$row['TemplateID']][] = array_slice($row, 2, 3);
+					break;
+				case 'multiple':
+					$reqResult['result'][$row['TemplateID']][] = array_slice($row, 2, 7);
+					break;
+				case 'rating':
+					$reqResult['result'][$row['TemplateID']][] = array_merge(array_slice($row, 2, 3), array_slice($row, 9, 2));
+					break;
+				default:
+					break;
+			}
+
+		}
+
+		$stmt->close();
+		$this->conn->close();
+
+		return true;
+  }
+
 }
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST');
@@ -194,6 +250,13 @@ if (!isset($_POST['error'])) {
 				$reqResult['result'] = $database->add_template($reqResult, ...$_POST['arguments']);
 			}
 			break;
+		case 'getusertemplates':
+			if (!is_array($_POST['arguments']) || count($_POST['arguments']) < 1) {
+				$reqResult['error'] = "Invalid arguments used.";
+			} else { # argument format: templateCreatorId
+				$database->add_template($reqResult, ...$_POST['arguments']);
+			}
+			break;
 		default:
 			$reqResult['error'] = 'Function named: '.$_POST['function'].' was not found.';
 			break;
@@ -222,9 +285,11 @@ $questions = array(
 echo ''.$database->add_user($reqResult, "adrian2", "ABCDE", "a", "b", "c", "user") . "\n";
 
 $database->add_template($reqResult, "ABC", 1, $questions);
+
+
+$database->get_user_templates($reqResult, 1);
 var_dump($reqResult)
 */
-
 ?>
 
 
