@@ -246,6 +246,25 @@ class DatabaseInteraction {
 	  }
   }
 
+  function validate_meeting_code(&$reqResult, $meetingCode) {
+	  $this->connect();
+	  if (($stmt = $this->prepared_stmt($reqResult, "SELECT * FROM meetings WHERE MeetingCode=? AND EndTime=NULL 
+                         AND StartTime<=now() + INTERVAL 10 MINUTE; LIMIT 1", true, "s", $meetingCode)) == null) {
+		  $this->conn->close();
+		  return false;
+	  }
+	  if (!($res = $stmt->get_result())){
+		  $this->conn->close();
+		  return false;
+	  }
+	  $row = $res->fetch_assoc();
+	  $stmt->close();
+	  $this->conn->close();
+
+	  return $row['StartTime'];
+
+  }
+
   function add_general_feedback(&$reqResult, $userId, $meetingId, $feedback) {
 	  $this->connect();
 	  $this->conn->autocommit(false);
@@ -382,6 +401,13 @@ if (!isset($_POST['error'])) {
 				$reqResult['error'] = "Invalid arguments used.";
 			} else { # argument format: templateId, questionId, userId, meetingId, feedback
 				$database->add_template_feedback($reqResult, ...$_POST['arguments']);
+			}
+			break;
+		case 'validatemeetingcode':
+			if (!is_array($_POST['arguments']) || count($_POST['arguments']) < 1) {
+				$reqResult['error'] = "Invalid arguments used.";
+			} else { # argument format: meetingcode
+				$database->validate_meeting_code($reqResult, ...$_POST['arguments']);
 			}
 			break;
 		default:
