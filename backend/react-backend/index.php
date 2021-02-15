@@ -249,7 +249,7 @@ class DatabaseInteraction {
   function validate_meeting_code(&$reqResult, $meetingCode) {
 	  $this->connect();
 	  if (($stmt = $this->prepared_stmt($reqResult, "SELECT * FROM meetings WHERE MeetingCode=? AND EndTime=NULL 
-                         AND StartTime<=now() + INTERVAL 10 MINUTE; LIMIT 1", true, "s", $meetingCode)) == null) {
+                         AND StartTime<=(now() + INTERVAL 10 MINUTE) LIMIT 1", true, "s", $meetingCode)) == null) {
 		  $this->conn->close();
 		  return false;
 	  }
