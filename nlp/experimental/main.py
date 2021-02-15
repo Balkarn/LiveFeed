@@ -69,6 +69,7 @@ def flair_test(texts: Tuple) -> None:
         else:
             sentiment = "negative"
             colour = 1
+        print(s.labels)
         print(colour_print(colour, sentiment + ", " + str(score) + ", " + text))
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 body {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Roboto', sans-serif;
 }
 
 .App {
@@ -66,6 +66,42 @@ body {
   flex-direction: column;
   margin-top: 15vh;
 }
+
+.main2 {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 5vh;
+}
+
+
+.page {
+  width: 60vw;
+  height: calc(90vh - 90px);
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.popup {
+  width: 30vw;
+  height: 60vh;
+}
+
+.list {
+  width: 40vw;
+  height: calc(90vh - 90px - 150px);
+  overflow: auto;
+}
+
+.centering {
+  text-align: center;
+}
+
+.errorClass { color: 'red' }
 
 /* Form */
 
