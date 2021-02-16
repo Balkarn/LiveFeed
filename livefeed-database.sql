@@ -38,15 +38,6 @@ CREATE TABLE `feedback` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `feedback`
---
-
-LOCK TABLES `feedback` WRITE;
-/*!40000 ALTER TABLE `feedback` DISABLE KEYS */;
-/*!40000 ALTER TABLE `feedback` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `feedback_clauses`
 --
 
@@ -62,15 +53,6 @@ CREATE TABLE `feedback_clauses` (
   CONSTRAINT `feedback_clauses-feedbackid` FOREIGN KEY (`FeedbackID`) REFERENCES `feedback` (`FeedbackID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `feedback_clauses`
---
-
-LOCK TABLES `feedback_clauses` WRITE;
-/*!40000 ALTER TABLE `feedback_clauses` DISABLE KEYS */;
-/*!40000 ALTER TABLE `feedback_clauses` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `frequent_feedback`
@@ -90,15 +72,6 @@ CREATE TABLE `frequent_feedback` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `frequent_feedback`
---
-
-LOCK TABLES `frequent_feedback` WRITE;
-/*!40000 ALTER TABLE `frequent_feedback` DISABLE KEYS */;
-/*!40000 ALTER TABLE `frequent_feedback` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `general_feedback`
 --
 
@@ -114,15 +87,6 @@ CREATE TABLE `general_feedback` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `general_feedback`
---
-
-LOCK TABLES `general_feedback` WRITE;
-/*!40000 ALTER TABLE `general_feedback` DISABLE KEYS */;
-/*!40000 ALTER TABLE `general_feedback` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `login`
 --
 
@@ -134,18 +98,10 @@ CREATE TABLE `login` (
   `Username` varchar(45) NOT NULL,
   `PasswordHash` varchar(255) NOT NULL,
   PRIMARY KEY (`UserID`),
+  UNIQUE KEY `Username_UNIQUE` (`Username`),
   CONSTRAINT `login-userid` FOREIGN KEY (`UserID`) REFERENCES `users` (`UserID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `login`
---
-
-LOCK TABLES `login` WRITE;
-/*!40000 ALTER TABLE `login` DISABLE KEYS */;
-/*!40000 ALTER TABLE `login` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `meeting_templates`
@@ -165,15 +121,6 @@ CREATE TABLE `meeting_templates` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `meeting_templates`
---
-
-LOCK TABLES `meeting_templates` WRITE;
-/*!40000 ALTER TABLE `meeting_templates` DISABLE KEYS */;
-/*!40000 ALTER TABLE `meeting_templates` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `meetings`
 --
 
@@ -183,6 +130,7 @@ DROP TABLE IF EXISTS `meetings`;
 CREATE TABLE `meetings` (
   `MeetingID` int(11) NOT NULL AUTO_INCREMENT,
   `MeetingName` varchar(45) NOT NULL,
+  `MeetingCode` varchar(8) NOT NULL,
   `StartTime` datetime NOT NULL,
   `EndTime` datetime DEFAULT NULL,
   `HostID` int(11) NOT NULL,
@@ -191,15 +139,6 @@ CREATE TABLE `meetings` (
   CONSTRAINT `meeting-hostid` FOREIGN KEY (`HostID`) REFERENCES `users` (`UserID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `meetings`
---
-
-LOCK TABLES `meetings` WRITE;
-/*!40000 ALTER TABLE `meetings` DISABLE KEYS */;
-/*!40000 ALTER TABLE `meetings` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `mood_average`
@@ -217,15 +156,6 @@ CREATE TABLE `mood_average` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `mood_average`
---
-
-LOCK TABLES `mood_average` WRITE;
-/*!40000 ALTER TABLE `mood_average` DISABLE KEYS */;
-/*!40000 ALTER TABLE `mood_average` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `mood_feedback`
 --
 
@@ -239,15 +169,6 @@ CREATE TABLE `mood_feedback` (
   CONSTRAINT `mood_feedback-feedbackid` FOREIGN KEY (`FeedbackID`) REFERENCES `feedback` (`FeedbackID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `mood_feedback`
---
-
-LOCK TABLES `mood_feedback` WRITE;
-/*!40000 ALTER TABLE `mood_feedback` DISABLE KEYS */;
-/*!40000 ALTER TABLE `mood_feedback` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `question_options`
@@ -268,15 +189,6 @@ CREATE TABLE `question_options` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `question_options`
---
-
-LOCK TABLES `question_options` WRITE;
-/*!40000 ALTER TABLE `question_options` DISABLE KEYS */;
-/*!40000 ALTER TABLE `question_options` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `question_ratings`
 --
 
@@ -291,15 +203,6 @@ CREATE TABLE `question_ratings` (
   CONSTRAINT `question_ratings-questionid` FOREIGN KEY (`QuestionID`) REFERENCES `template_questions` (`QuestionID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `question_ratings`
---
-
-LOCK TABLES `question_ratings` WRITE;
-/*!40000 ALTER TABLE `question_ratings` DISABLE KEYS */;
-/*!40000 ALTER TABLE `question_ratings` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `template_feedback`
@@ -323,15 +226,6 @@ CREATE TABLE `template_feedback` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `template_feedback`
---
-
-LOCK TABLES `template_feedback` WRITE;
-/*!40000 ALTER TABLE `template_feedback` DISABLE KEYS */;
-/*!40000 ALTER TABLE `template_feedback` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `template_questions`
 --
 
@@ -346,17 +240,8 @@ CREATE TABLE `template_questions` (
   PRIMARY KEY (`QuestionID`),
   KEY `template_questions-templateid_idx` (`TemplateID`),
   CONSTRAINT `template_questions-templateid` FOREIGN KEY (`TemplateID`) REFERENCES `templates` (`TemplateID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `template_questions`
---
-
-LOCK TABLES `template_questions` WRITE;
-/*!40000 ALTER TABLE `template_questions` DISABLE KEYS */;
-/*!40000 ALTER TABLE `template_questions` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `templates`
@@ -372,17 +257,8 @@ CREATE TABLE `templates` (
   PRIMARY KEY (`TemplateID`),
   KEY `templates-templatecreator_idx` (`TemplateCreator`),
   CONSTRAINT `templates-templatecreator` FOREIGN KEY (`TemplateCreator`) REFERENCES `users` (`UserID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `templates`
---
-
-LOCK TABLES `templates` WRITE;
-/*!40000 ALTER TABLE `templates` DISABLE KEYS */;
-/*!40000 ALTER TABLE `templates` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `users`
@@ -398,17 +274,8 @@ CREATE TABLE `users` (
   `Email` varchar(100) NOT NULL,
   `Role` enum('host','user') NOT NULL,
   PRIMARY KEY (`UserID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `users`
---
-
-LOCK TABLES `users` WRITE;
-/*!40000 ALTER TABLE `users` DISABLE KEYS */;
-/*!40000 ALTER TABLE `users` ENABLE KEYS */;
-UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -419,4 +286,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-02-08  0:37:06
+-- Dump completed on 2021-02-16 18:13:22
