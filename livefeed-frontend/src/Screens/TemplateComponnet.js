@@ -125,6 +125,7 @@ const TemplateComponent = () => {
               ))}
   
             </DialogContent>
+            
             <Button onClick={addQuestion} variant="contained" color="primary">
               Add Question
               </Button>
