@@ -1,5 +1,5 @@
 import React, { useEffect/*, useState*/    } from "react";
-import { TextField, Button } from '@material-ui/core';
+import { TextField, Button, Checkbox } from '@material-ui/core';
 import 'fontsource-roboto';
 
 import List from '@material-ui/core/List';
@@ -14,14 +14,40 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
 import IconButton from '@material-ui/core/IconButton';
-import AlarmIcon from '@material-ui/icons/Alarm';
 import DeleteIcon from '@material-ui/icons/Delete';
 import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
 import CreateIcon from '@material-ui/icons/Create';
 
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+
 import meetings from '../test-data/meetings';
+import templates from '../test-data/templates';
 
 const HostEventComponent = () => {
+
+    const [current_meetings, setMeetings] = React.useState([...meetings]);
+
+    const addNewMeeting = (meeting_name) => {
+
+        const meeting = {
+            meeting_name: meeting_name,
+            meeting_time: "15:00",
+            meeting_date: "12/05/2021",
+        };
+        
+        setMeetings([...meetings, meeting]);
+    }
+
+    const handleNewMeeting = () => {
+
+        addNewMeeting(currentEventName);
+
+        setCurrentEventName('');
+        setCurrentEventDesc('');
+        setOpen(false);
+        setOpenTemplateSelector(false);
+
+    }
 
     const [open, setOpen] = React.useState(false);
     const handleClickOpen = () => {
@@ -29,12 +55,24 @@ const HostEventComponent = () => {
     }
     const handleClose = () => {
         setOpen(false);
+        setOpenTemplateSelector(false);
     }
 
     const [currentEventName, setCurrentEventName] = React.useState('');
     const handleCurrentEventNameTextField = event => {
         var eventName = event.target.value;
         setCurrentEventName(eventName);
+    }
+
+    const [currentEventDesc, setCurrentEventDesc] = React.useState('');
+    const handleCurrentEventDescTextField = event => {
+        var eventDesc = event.target.value;
+        setCurrentEventDesc(eventDesc);
+    }
+
+    const [openTemplateSelector, setOpenTemplateSelector] = React.useState(false);
+    const handleSelectTemplates = () => {
+        setOpenTemplateSelector(true);
     }
 
     return (
@@ -44,7 +82,7 @@ const HostEventComponent = () => {
 
         <div className="list">
             <List>
-                {meetings.map( meeting => (
+                {current_meetings.map( meeting => (
                     <>
                     <Divider />
                     <ListItem>
@@ -90,7 +128,7 @@ const HostEventComponent = () => {
                 <form className="form-margin-top">
 
                     <TextField 
-                        font-size='16px'
+                        font-size='12px'
                         id='outlined-textarea'
                         label='Event Name'
                         value={currentEventName}
@@ -105,15 +143,15 @@ const HostEventComponent = () => {
                     />
 
                     <TextField 
-                        font-size='16px'
+                        font-size='12px'
                         id='outlined-textarea'
                         label='Event Description'
-                        value={currentEventName}
-                        placeholder='Enter the name of your event'
+                        value={currentEventDesc}
+                        placeholder='Enter a description of your event'
                         variant='filled'
                         required
                         fullWidth="true"
-                        onChange={handleCurrentEventNameTextField}
+                        onChange={handleCurrentEventDescTextField}
                         error={false}
                         className="input"
                         helperText={false ? 'Must be at least 4 Characters' : ' '}
@@ -148,7 +186,24 @@ const HostEventComponent = () => {
                     />
 
                     <div>
-                        <Button variant="contained" color='primary'>Select Templates</Button>
+                        { openTemplateSelector ? 
+
+                            templates.map( template => (
+                                
+                                <div className="vertical-align">
+                                    <FormControlLabel
+                                    control={<Checkbox name="antoine" />}
+                                    label={template.template_name}
+                                    />
+                                </div>
+
+                            ))
+
+                        : 
+                        
+                        <Button variant="contained" color='primary' onClick={handleSelectTemplates}>Select Templates</Button> 
+                        
+                        }
                     </div>
 
                 </form>
@@ -158,7 +213,7 @@ const HostEventComponent = () => {
             </DialogContent>
 
             <DialogActions>
-                <Button onClick={handleClose} color="primary">Done</Button>
+                <Button onClick={handleNewMeeting} color="primary">Save Meeting</Button>
                 <Button onClick={handleClose} color="secondary">Cancel</Button>
             </DialogActions>
 

@@ -19,3 +19,7 @@ code {
 .form-margin-top > * {
   margin-top: 2vh !important;
 }
+
+.vertical-align {
+  display: flex;
+}
