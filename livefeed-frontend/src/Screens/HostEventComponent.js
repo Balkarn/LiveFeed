@@ -20,35 +20,77 @@ import CreateIcon from '@material-ui/icons/Create';
 
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 
-import meetings from '../test-data/meetings';
+import events from '../test-data/meetings';
 import templates from '../test-data/templates';
+
+import makeid from '../Functions/generateString';
 
 const HostEventComponent = () => {
 
-    const [current_meetings, setMeetings] = React.useState([...meetings]);
+    const [current_events, setEvent] = React.useState([...events]);
 
-    const addNewMeeting = (meeting_name) => {
-
-        const meeting = {
-            meeting_name: meeting_name,
-            meeting_time: "15:00",
-            meeting_date: "12/05/2021",
-        };
-        
-        setMeetings([...meetings, meeting]);
+    // Delete Event 
+    const handleDeleteEvent = (_event) => {
+        let filtered_events = current_events.filter( event => event !== _event);
+        setEvent(filtered_events); 
     }
 
+
+    // Add new event -- SAVE BUTTON 
     const handleNewMeeting = () => {
 
-        addNewMeeting(currentEventName);
+        const _event = {
+            event_name: currentEventName,
+            event_time: currentEventTime,
+            event_date: currentEventDate,
+            event_access_code: makeid(8),
+        };
+        
+        setEvent( current_events => [...current_events, _event]);
 
         setCurrentEventName('');
         setCurrentEventDesc('');
+        setCurrentEventDate('');
+        setCurrentEventTime('');
         setOpen(false);
         setOpenTemplateSelector(false);
 
     }
 
+    // Event Name
+    const [currentEventName, setCurrentEventName] = React.useState('');
+    const handleCurrentEventNameTextField = event => {
+        var eventName = event.target.value;
+        setCurrentEventName(eventName);
+    }
+
+    // Event Description
+    const [currentEventDesc, setCurrentEventDesc] = React.useState('');
+    const handleCurrentEventDescTextField = event => {
+        var eventDesc = event.target.value;
+        setCurrentEventDesc(eventDesc);
+    }
+
+    // Event Date
+    const [currentEventDate, setCurrentEventDate] = React.useState('');
+    const handleCurrentEventDateTextField = event => {
+        console.log(event.target.value);
+        setCurrentEventDate(event.target.value);
+    }
+
+    // Event Time
+    const [currentEventTime, setCurrentEventTime] = React.useState('');
+    const handleCurrentEventTimeTextField = event => {
+        setCurrentEventTime(event.target.value);
+    }
+
+    // Templates to use 
+    const [openTemplateSelector, setOpenTemplateSelector] = React.useState(false);
+    const handleSelectTemplates = () => {
+        setOpenTemplateSelector(true);
+    }
+
+    // Handle Button to Create New Meeting && To close the Dialogue 
     const [open, setOpen] = React.useState(false);
     const handleClickOpen = () => {
         setOpen(true);
@@ -58,23 +100,6 @@ const HostEventComponent = () => {
         setOpenTemplateSelector(false);
     }
 
-    const [currentEventName, setCurrentEventName] = React.useState('');
-    const handleCurrentEventNameTextField = event => {
-        var eventName = event.target.value;
-        setCurrentEventName(eventName);
-    }
-
-    const [currentEventDesc, setCurrentEventDesc] = React.useState('');
-    const handleCurrentEventDescTextField = event => {
-        var eventDesc = event.target.value;
-        setCurrentEventDesc(eventDesc);
-    }
-
-    const [openTemplateSelector, setOpenTemplateSelector] = React.useState(false);
-    const handleSelectTemplates = () => {
-        setOpenTemplateSelector(true);
-    }
-
     return (
       <>
         <h1>Host Event</h1>
@@ -82,14 +107,14 @@ const HostEventComponent = () => {
 
         <div className="list">
             <List>
-                {current_meetings.map( meeting => (
+                {current_events.map( event => (
                     <>
                     <Divider />
                     <ListItem>
 
                         <ListItemText
-                            primary={meeting.meeting_name}
-                            secondary={`${meeting.meeting_time} | ${meeting.meeting_date}`}
+                            primary={event.event_name}
+                            secondary={`${event.event_time} | ${event.event_date} | Event Access Code: ${event.event_access_code}`}
                         />
 
                         <ListItemSecondaryAction>
@@ -97,7 +122,7 @@ const HostEventComponent = () => {
                                 <PlayCircleOutlineIcon color="primary"/>
                             </IconButton>
                             <IconButton>
-                                <DeleteIcon color="error"/>
+                                <DeleteIcon color="error" onClick={() => handleDeleteEvent(event)} />
                             </IconButton>
                         </ListItemSecondaryAction>
 
@@ -163,6 +188,7 @@ const HostEventComponent = () => {
                         type="date"
                         size="medium"
                         required
+                        onChange={handleCurrentEventDateTextField}
                         defaultValue="2017-05-24"
                         InputLabelProps={{
                         shrink: true,
@@ -175,6 +201,7 @@ const HostEventComponent = () => {
                         type="time"
                         size="medium"
                         required
+                        onChange={handleCurrentEventTimeTextField}
                         defaultValue="07:30"
                         InputLabelProps={{
                         shrink: true,
