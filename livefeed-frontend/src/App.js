@@ -19,8 +19,10 @@ import CloseIcon from '@material-ui/icons/Close';
 import InputIcon from '@material-ui/icons/Input';
 import CheckIcon from '@material-ui/icons/Check';
 import PostAddIcon from '@material-ui/icons/PostAdd';
+
 import TemplateComponent from './Screens/TemplateComponnet';
 import HostEventComponent from './Screens/HostEventComponent';
+import JoinEventComponent from './Screens/JoinEventComponent';
 
 export default function Main() {
 
@@ -40,7 +42,7 @@ export default function Main() {
             <div className="page">
               {tabValue === 0 && <HostEventComponent />}
               {tabValue === 1 && <TemplateComponent/>}
-              {tabValue === 2 && "Enter Event ID"}
+              {tabValue === 2 && <JoinEventComponent />}
               {tabValue === 3 && "Event History"}
               {tabValue === 4 && "Account Settings"}
             </div>

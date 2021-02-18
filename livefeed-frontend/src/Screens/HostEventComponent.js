@@ -103,11 +103,13 @@ const HostEventComponent = () => {
     return (
       <>
         <h1>Host Event</h1>
-        <h3>Scheduled Meetings</h3>
+        <h3>Scheduled Events</h3>
 
         <div className="list">
             <List>
-                {current_events.map( event => (
+                {
+                current_events.length === 0 ? <p className="centering light">No events scheduled, use the Create New Event button to create some.</p> :  
+                current_events.map( event => (
                     <>
                     <Divider />
                     <ListItem>
