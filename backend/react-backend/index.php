@@ -98,6 +98,34 @@ class DatabaseInteraction {
 		  return false;
   }
 
+	function check_meeting_templates(&$reqResult, $userId, $templates) {
+		$this->connect();
+		if (count($templates) >= 1) {
+			$placeholders = str_repeat("?, ", count($templates)-1);
+			$placeholders .= "?";
+			$placeholders = "(".$placeholders.")";
+		}
+		$varTypes = "i".str_repeat("i", count($templates));
+		if (!($stmt = $this->prepared_stmt($reqResult,
+						"SELECT COUNT(*) FROM templates WHERE templatecreator=? AND templateid IN ".$placeholders, true,
+						$varTypes, $userId, ...$templates))) {
+			$this->conn->close();
+			return false;
+		}
+		if (!($res = $stmt->get_result())) {
+			$this->conn->close();
+			return false;
+		}
+		$row = $res->fetch_assoc();
+		$stmt->close();
+		$this->conn->close();
+		if ($row["COUNT(*)"] === count($templates)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
   function add_template(&$reqResult, $templateName, $templateCreator, $questionsArray) {
 	  $this->connect();
 	  $this->conn->autocommit(false);
@@ -123,9 +151,10 @@ class DatabaseInteraction {
 		  }
 
 		  if (count($simpleQArray) >= 1) {
-			  $inserts = str_repeat("(NULL, ?, ?, ?), ", count($simpleQArray)-1);
+		  	$arraySize = count($simpleQArray) / 3;
+			  $inserts = str_repeat("(NULL, ?, ?, ?), ", $arraySize-1);
 			  $inserts .= "(NULL, ?, ?, ?)";
-			  $insertsTypes = str_repeat("iss", count($simpleQArray));
+			  $insertsTypes = str_repeat("iss", $arraySize);
 			  $this->prepared_stmt($reqResult, "INSERT INTO template_questions VALUES ".$inserts, false, $insertsTypes, ...$simpleQArray);
 		  }
 
@@ -210,18 +239,34 @@ class DatabaseInteraction {
 		return true;
   }
 
+  function generate_meeting_code($length) {
+		$keyspace = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+		$codestr = "";
+		for ($i=0; $i<$length; $i++) {
+			$codeint = random_int(0, 61);
+			$codestr .= $keyspace[$codeint];
+		}
+		return $codestr;
+  }
+
   /*
    * @param meetingName
    * @param meetingStart A string of format "yyyy-mm-dd hh:mm:ss"
    * @param meetingEnd A string of format "yyyy-mm-dd hh:mm:ss"
    * @param templates A list of templateIds that are assigned to the meeting
    */
-  function create_meeting(&$reqResult, $meetingName, $meetingStart, $meetingEnd, $userId, $templates) {
-	  $this->connect();
+  function add_meeting(&$reqResult, $meetingName, $meetingStart, $userId, $templates) {
+	  if (!$this->check_meeting_templates($reqResult, $userId, $templates)) {
+		  return false;
+	  }
+  	$this->connect();
 	  $this->conn->autocommit(false);
+	  $code = $this->generate_meeting_code(7);
 	  try {
-			$this->prepared_stmt($reqResult, "INSERT INTO meetings VALUES (NULL, ?, ?, ?, ?)", false,
-					"sssi", $meetingName, $meetingStart, $meetingEnd, $userId);
+		  $this->prepared_stmt($reqResult, "INSERT INTO meetings VALUES (NULL, ?, ?, ?, NULL, ?)", false,
+				  "sssi", $meetingName, $code, $meetingStart, $userId);
+
 			$id = $this->conn->insert_id;
 			if (count($templates) >= 1) {
 				$placeholders = str_repeat("(?,?), ", count($templates)-1);
@@ -234,7 +279,12 @@ class DatabaseInteraction {
 				$vars[] = $id;
 		  }
 
-			$this->prepared_stmt($reqResult, "INSERT INTO meeting_templates VALUES ".$placeholders, false, $varTypes, $vars);
+			$code = $id.$code;
+
+		  $this->prepared_stmt($reqResult, "UPDATE meetings SET meetingcode=? WHERE meetingid=?", false,
+				  "si", $code, $id);
+
+			$this->prepared_stmt($reqResult, "INSERT INTO meeting_templates VALUES ".$placeholders, false, $varTypes, ...$vars);
 
 		  $this->conn->autocommit(true);
 		  return true;
@@ -269,7 +319,7 @@ class DatabaseInteraction {
 	  $this->connect();
 	  $this->conn->autocommit(false);
 	  try {
-		  $this->prepared_stmt($reqResult, "INSERT INTO feedback VALUES (NULL, ?, ?, CURRENT_TIMESTAMP)", false,
+		  $this->prepared_stmt($reqResult, "INSERT INTO feedback VALUES (NULL, ?, ?, now())", false,
 				  "ii", $userId, $meetingId);
 		  $id = $this->conn->insert_id;
 
@@ -336,11 +386,13 @@ header('Content-Type: application/json, multipart/form-data');
 
 
 $database = new DatabaseInteraction();
+
 /*
 ob_start();
 var_dump($_POST);
 error_log(ob_get_clean(), 4);
 */
+
 $reqResult = array();
 if (!isset($_POST['function'])) { $reqResult['error'] = "No function name."; }
 if (!isset($_POST['arguments'])) { $reqResult['error'] = "No function arguments."; }
@@ -375,11 +427,11 @@ if (!isset($_POST['error'])) {
 				$database->get_user_templates($reqResult, ...$_POST['arguments']);
 			}
 			break;
-		case 'createmeeting':
+		case 'addmeeting':
 			if (!is_array($_POST['arguments']) || count($_POST['arguments']) < 5) {
 				$reqResult['error'] = "Invalid arguments used.";
-			} else { # argument format: meetingName, meetingStart, meetingEnd, userId, [templateId1, Id2, ...]
-				$database->create_meeting($reqResult, ...$_POST['arguments']);
+			} else { # argument format: meetingName, meetingStart, userId, [templateId1, Id2, ...]
+				$database->add_meeting($reqResult, ...$_POST['arguments']);
 			}
 			break;
 		case 'addgeneralfeedback':
@@ -416,32 +468,89 @@ if (!isset($_POST['error'])) {
 	}
 }
 
+
 echo json_encode($reqResult);
+
 
 // Basic tests
 // Need to replace with PHPUnit unit tests
 /*
-echo "Create User: \n";
-echo "Login: \n";
-echo 'adrian, ABCDE, '.$database->login("adrian", "ABCDE") . "\n";
-echo 'adriann, ABCDE, '.$database->login("adriann", "ABCDE") . "\n";
-echo 'adrian, IDWEDRP(*&89, '.$database->login("adrian", "IDWEDRP(*&89") . "\n";
-echo 'adriann, IDWEDRP(*&89, '.$database->login("adriann", "IDWEDRP(*&89") . "\n";
-
+ * TEST DATA
 $reqResult = array();
-$questions = array(
-		array("Q1", "multiple", "A", "B", "C", "D"),
-		array("Q2", "open"),
-		array("Q3", "open"),
-		array("Q4", "rating", 1, 9),
+$users = array(
+		array('test', 'testpwd', 'test1', 'test', 'test@test.com', 'user'), //1
+		array('testadmin', 'testpwd', 'test2', 'test', 'test@test.com', 'host'), //2
+		array('test2', 'testpwd', 'test3', 'test', 'test@test.com', 'user'), //3
+		array('test3', 'testpwd', 'test4', 'test', 'test@test.com', 'user'), //4
+		array('testadmin2', 'testpwd', 'test5', 'test', 'test@test.com', 'host'), //5
 );
-echo ''.$database->add_user($reqResult, "adrian2", "ABCDE", "a", "b", "c", "user") . "\n";
+foreach ($users as $user) {
+	$database->add_user($reqResult, ...$user);
+}
+echo "Add users: \n";
+var_dump($reqResult);
 
-$database->add_template($reqResult, "ABC", 1, $questions);
+$templates = array(
+		array('Template 1', 2,
+				array(
+						array("Q1", "multiple", "A", "B", "C", "D"),
+						array("Q2", "open"),
+						array("Q3", "open"),
+						array("Q4", "rating", 1, 9),
+						array("Q5", "mood")
+				)
+		),
+		array('Template 2', 2,
+				array(
+						array("i", "multiple", "A", "B", "C", "D"),
+						array("ii", "open"),
+						array("iii", "open"),
+						array("iv", "rating", 1, 9),
+						array("v", "mood")
+				)
+		),
+		array('Template Uno', 5,
+				array(
+						array("alpha", "multiple", "A", "B", "C", "D"),
+						array("bravo", "open"),
+						array("charlie", "open"),
+						array("delta", "rating", 1, 9),
+						array("echo", "mood")
+				)
+		)
+);
+foreach ($templates as $template) {
+	$database->add_template($reqResult, ...$template);
+}
+echo "\nAdd templates: \n";
+var_dump($reqResult);
 
+$meetings = array(
+		array("Test Meeting 1", "2021-02-19 10:10:10", "2", array(1,2)),
+		array("Test Meeting 2", "2021-02-19 10:10:10", "2", array(3))
+);
+foreach ($meetings as $meeting) {
+	$database->add_meeting($reqResult, ...$meeting);
+}
+echo "\nAdd meetings: \n";
+var_dump($reqResult);
 
-$database->get_user_templates($reqResult, 1);
-var_dump($reqResult)
+$general_feedback = array(
+		array(1, 1, "This workshop is terrible."),
+		array(3, 1, "This talk is interesting."),
+		array(4, 1, "This guy is killing it!"),
+		array(1, 1, "This company is bad ass."),
+		array(3, 1, "Please speed up. "),
+		array(4, 1, "Zzzzz."),
+		array(1, 1, "What are you doing!"),
+		array(3, 1, "Cool cool."),
+		array(4, 1, "Can you skip the safety briefing."),
+);
+foreach ($general_feedback as $feedback) {
+	$database->add_general_feedback($reqResult, ...$feedback);
+}
+echo "\nAdd general feedback: \n";
+var_dump($reqResult);
 */
 ?>
 
