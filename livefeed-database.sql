@@ -28,7 +28,7 @@ CREATE TABLE `feedback` (
   `FeedbackID` int(11) NOT NULL AUTO_INCREMENT,
   `UserID` int(11) DEFAULT NULL,
   `MeetingID` int(11) NOT NULL,
-  `TimeSent` int(11) NOT NULL,
+  `TimeSent` datetime NOT NULL,
   PRIMARY KEY (`FeedbackID`),
   KEY `feedback-userid_idx` (`UserID`),
   KEY `feedback-meetingid_idx` (`MeetingID`),
@@ -130,7 +130,7 @@ DROP TABLE IF EXISTS `meetings`;
 CREATE TABLE `meetings` (
   `MeetingID` int(11) NOT NULL AUTO_INCREMENT,
   `MeetingName` varchar(45) NOT NULL,
-  `MeetingCode` varchar(8) NOT NULL,
+  `MeetingCode` varchar(11) NOT NULL,
   `StartTime` datetime NOT NULL,
   `EndTime` datetime DEFAULT NULL,
   `HostID` int(11) NOT NULL,
@@ -240,7 +240,7 @@ CREATE TABLE `template_questions` (
   PRIMARY KEY (`QuestionID`),
   KEY `template_questions-templateid_idx` (`TemplateID`),
   CONSTRAINT `template_questions-templateid` FOREIGN KEY (`TemplateID`) REFERENCES `templates` (`TemplateID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -257,7 +257,7 @@ CREATE TABLE `templates` (
   PRIMARY KEY (`TemplateID`),
   KEY `templates-templatecreator_idx` (`TemplateCreator`),
   CONSTRAINT `templates-templatecreator` FOREIGN KEY (`TemplateCreator`) REFERENCES `users` (`UserID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -274,7 +274,7 @@ CREATE TABLE `users` (
   `Email` varchar(100) NOT NULL,
   `Role` enum('host','user') NOT NULL,
   PRIMARY KEY (`UserID`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -286,4 +286,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-02-16 18:13:22
+-- Dump completed on 2021-02-19 23:42:03
