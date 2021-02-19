@@ -17,12 +17,8 @@ Asynchronous:
 
 class FeedbackReceivedNotif(Resource):
     def get(self):
-        """
-        The increment counter keeps track of how many new feedback has been stored
-        :return:
-        """
-        sentimentAnalysis.increment_counter()
-        if sentimentAnalysis.counter == 1:
+        if not sentimentAnalysis.new_feedback:
+            sentimentAnalysis.new_feedback = True
             sentimentAnalysis.analyse()
 
 class FeedbackProcessedNotif(Resource):

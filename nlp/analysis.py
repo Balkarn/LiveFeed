@@ -10,12 +10,8 @@ def parse_config():
 class SentimentAnalysis():
     def __init__(self):
         self.flair_sentiment = flair.models.TextClassifier.load('sentiment')
-        self.counter = 0
-        self.lastFeedbackId = 0
+        self.new_feedback = False
         self.dbconfig = parse_config()
-
-    def increment_counter(self):
-        self.counter += 1
 
     def fetch_feedback(self):
         conn = sql.connect(**dict(self.dbconfig.items('DatabaseCredentials')))
