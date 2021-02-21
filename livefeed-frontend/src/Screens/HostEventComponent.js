@@ -57,13 +57,19 @@ const HostEventComponent = () => {
         var data = {
             function: 'addmeeting',
             arguments: [currentEventName,
-            currentEventStartTime,
-            currentEventEndTime,
+            "2019-12-09 12:01:03",
+            "2019-12-09 09:01:03",
             1,
             selectedTemplates]
         }
         
-        axios.post(php_url, qs.stringify(data));
+        axios.post(php_url, qs.stringify(data))
+        .then(res => {
+            console.log(res);
+            if (res.data.error) {
+                console.log(res.data.error);
+            }
+        }).catch(err => console.log(err));
 
         setEvent( current_events => [...current_events, _event]);
 
