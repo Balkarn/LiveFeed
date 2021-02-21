@@ -23,6 +23,8 @@ import PostAddIcon from '@material-ui/icons/PostAdd';
 import TemplateComponent from './Screens/TemplateComponnet';
 import HostEventComponent from './Screens/HostEventComponent';
 import JoinEventComponent from './Screens/JoinEventComponent';
+import EventHistoryComponent from './Screens/EventHistoryComponent';
+
 
 export default function Main() {
 
@@ -43,7 +45,7 @@ export default function Main() {
               {tabValue === 0 && <HostEventComponent />}
               {tabValue === 1 && <TemplateComponent/>}
               {tabValue === 2 && <JoinEventComponent />}
-              {tabValue === 3 && "Event History"}
+              {tabValue === 3 && <EventHistoryComponent/>}
               {tabValue === 4 && "Account Settings"}
             </div>
           </Paper>
