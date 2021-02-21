@@ -392,7 +392,7 @@ ob_start();
 var_dump($_POST);
 error_log(ob_get_clean(), 4);
 */
-
+/*
 $reqResult = array();
 if (!isset($_POST['function'])) { $reqResult['error'] = "No function name."; }
 if (!isset($_POST['arguments'])) { $reqResult['error'] = "No function arguments."; }
@@ -470,12 +470,10 @@ if (!isset($_POST['error'])) {
 
 
 echo json_encode($reqResult);
-
+*/
 
 // Basic tests
 // Need to replace with PHPUnit unit tests
-/*
- * TEST DATA
 $reqResult = array();
 $users = array(
 		array('test', 'testpwd', 'test1', 'test', 'test@test.com', 'user'), //1
@@ -494,8 +492,8 @@ $templates = array(
 		array('Template 1', 2,
 				array(
 						array("Q1", "multiple", "A", "B", "C", "D"),
-						array("Q2", "open"),
-						array("Q3", "open"),
+						array("What do you think about the company?", "open"),
+						array("What do you think about this workshop? ", "open"),
 						array("Q4", "rating", 1, 9),
 						array("Q5", "mood")
 				)
@@ -551,7 +549,31 @@ foreach ($general_feedback as $feedback) {
 }
 echo "\nAdd general feedback: \n";
 var_dump($reqResult);
-*/
+
+$template_feedback = array(
+		array(1, 1, 1, 1, "This doesn't seem like a good organisation. "),
+		array(1, 2, 1, 1, "This was a very challenging workshop. "),
+		array(1, 3, 1, 1, "happy"),
+		array(1, 4, 1, 1, "A"),
+		array(1, 5, 1, 1, "1"),
+
+		array(1, 1, 3, 1, "I think I would like to work here someday. "),
+		array(1, 2, 3, 1, "I enjoyed the challenge. "),
+		array(1, 3, 3, 1, "neutral"),
+		array(1, 4, 3, 1, "A"),
+		array(1, 5, 3, 1, "3"),
+
+		array(1, 1, 4, 1, "It's decent. "),
+		array(1, 2, 4, 1, "It was too difficult. "),
+		array(1, 4, 4, 1, "C"),
+		array(1, 5, 4, 1, "7")
+);
+foreach ($template_feedback as $feedback) {
+	$database->add_template_feedback($reqResult, ...$feedback);
+}
+echo "\nAdd template feedback: \n";
+var_dump($reqResult);
+
 ?>
 
 
