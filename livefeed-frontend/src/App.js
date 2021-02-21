@@ -43,9 +43,9 @@ export default function Main() {
           <Paper elevation={10}>
             <div className="page">
               {tabValue === 0 && <HostEventComponent />}
-              {tabValue === 1 && <TemplateComponent/>}
+              {tabValue === 1 && <TemplateComponent />}
               {tabValue === 2 && <JoinEventComponent />}
-              {tabValue === 3 && <EventHistoryComponent/>}
+              {tabValue === 3 && <EventHistoryComponent />}
               {tabValue === 4 && "Account Settings"}
             </div>
           </Paper>

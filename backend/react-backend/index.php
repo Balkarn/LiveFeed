@@ -427,7 +427,7 @@ if (!isset($_POST['error'])) {
 				$database->get_user_templates($reqResult, ...$_POST['arguments']);
 			}
 			break;
-		case 'addmeeting':
+		case 'addmeeting': 
 			if (!is_array($_POST['arguments']) || count($_POST['arguments']) < 5) {
 				$reqResult['error'] = "Invalid arguments used.";
 			} else { # argument format: meetingName, meetingStart, userId, [templateId1, Id2, ...]

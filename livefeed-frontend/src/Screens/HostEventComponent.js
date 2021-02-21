@@ -1,4 +1,5 @@
 import React, { useEffect/*, useState*/    } from "react";
+import axios from 'axios';
 import { TextField, Button, Checkbox } from '@material-ui/core';
 import 'fontsource-roboto';
 
@@ -25,7 +26,11 @@ import templates from '../test-data/templates';
 
 import makeid from '../Functions/generateString';
 
+
 const HostEventComponent = () => {
+
+    const php_url = "http://localhost:80/react-backend/";
+    var qs = require('qs');
 
     const [current_events, setEvent] = React.useState([...events]);
 
@@ -41,17 +46,33 @@ const HostEventComponent = () => {
 
         const _event = {
             event_name: currentEventName,
-            event_time: currentEventTime,
+            event_starttime: currentEventStartTime,
+            event_endtime: currentEventEndTime,
             event_date: currentEventDate,
+            templates: selectedTemplates, 
             event_access_code: makeid(8),
         };
+
+        // Send data of new event to backend 
+        var data = {
+            function: 'addmeeting',
+            arguments: [currentEventName,
+            currentEventStartTime,
+            currentEventEndTime,
+            1,
+            selectedTemplates]
+        }
         
+        axios.post(php_url, qs.stringify(data));
+
         setEvent( current_events => [...current_events, _event]);
 
         setCurrentEventName('');
         setCurrentEventDesc('');
         setCurrentEventDate('');
-        setCurrentEventTime('');
+        setCurrentEventStartTime('');
+        setCurrentEventEndTime('');
+        setSelectedTemplates([]);
         setOpen(false);
         setOpenTemplateSelector(false);
 
@@ -78,10 +99,16 @@ const HostEventComponent = () => {
         setCurrentEventDate(event.target.value);
     }
 
-    // Event Time
-    const [currentEventTime, setCurrentEventTime] = React.useState('');
-    const handleCurrentEventTimeTextField = event => {
-        setCurrentEventTime(event.target.value);
+    // Event Start Time
+    const [currentEventStartTime, setCurrentEventStartTime] = React.useState('');
+    const handleCurrentEventStartTimeTextField = event => {
+        setCurrentEventStartTime(event.target.value);
+    }
+
+    // Event End Time
+    const [currentEventEndTime, setCurrentEventEndTime] = React.useState('');
+    const handleCurrentEventEndTimeTextField = event => {
+        setCurrentEventEndTime(event.target.value);
     }
 
     // Templates to use 
@@ -90,14 +117,36 @@ const HostEventComponent = () => {
         setOpenTemplateSelector(true);
     }
 
+    // Select Templates 
+    const [selectedTemplates, setSelectedTemplates] = React.useState([]);
+    const handleSelectedTemplate = (event) => {
+
+        if (selectedTemplates.indexOf(event.target.value)==-1) {
+            setSelectedTemplates([...selectedTemplates, event.target.value]); 
+        } else {
+            let filteredTemplates = selectedTemplates.filter( template => template !== event.target.value);
+            setSelectedTemplates(filteredTemplates);
+        }
+
+    }
+
     // Handle Button to Create New Meeting && To close the Dialogue 
     const [open, setOpen] = React.useState(false);
     const handleClickOpen = () => {
         setOpen(true);
     }
     const handleClose = () => {
-        setOpen(false);
+
+        setCurrentEventName('');
+        setCurrentEventDesc('');
+        setCurrentEventDate('');
+        setCurrentEventStartTime('');
+        setCurrentEventEndTime('');
+        setSelectedTemplates([]);
         setOpenTemplateSelector(false);
+
+        setOpen(false);
+
     }
 
     return (
@@ -116,7 +165,7 @@ const HostEventComponent = () => {
 
                         <ListItemText
                             primary={event.event_name}
-                            secondary={`${event.event_time} | ${event.event_date} | Event Access Code: ${event.event_access_code}`}
+                            secondary={`${event.event_starttime} - ${event.event_endtime} | Event Access Code: ${event.event_access_code}`}
                         />
 
                         <ListItemSecondaryAction>
@@ -199,11 +248,11 @@ const HostEventComponent = () => {
 
                     <TextField
                         id="time"
-                        label="Time"
+                        label="Start"
                         type="time"
                         size="medium"
                         required
-                        onChange={handleCurrentEventTimeTextField}
+                        onChange={handleCurrentEventStartTimeTextField}
                         defaultValue="07:30"
                         InputLabelProps={{
                         shrink: true,
@@ -211,7 +260,22 @@ const HostEventComponent = () => {
                         inputProps={{
                         step: 300, // 5 min
                         }}
+                    />
 
+                    <TextField
+                        id="time"
+                        label="End"
+                        type="time"
+                        size="medium"
+                        required
+                        onChange={handleCurrentEventEndTimeTextField}
+                        defaultValue="07:30"
+                        InputLabelProps={{
+                        shrink: true,
+                        }}
+                        inputProps={{
+                        step: 300, // 5 min
+                        }}
                     />
 
                     <div>
@@ -221,7 +285,11 @@ const HostEventComponent = () => {
                                 
                                 <div className="vertical-align">
                                     <FormControlLabel
-                                    control={<Checkbox name="antoine" />}
+                                    control={<Checkbox 
+                                        name="template_id"
+                                        value={template.template_id} 
+                                        onChange={handleSelectedTemplate}
+                                        />}
                                     label={template.template_name}
                                     />
                                 </div>
@@ -236,8 +304,6 @@ const HostEventComponent = () => {
                     </div>
 
                 </form>
-
-                    
 
             </DialogContent>
 
