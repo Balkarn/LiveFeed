@@ -8,5 +8,5 @@
 **/.env.development.local
 **/.env.test.local
 **/.env.production.local
-/backend/react-backend/config.ini
+/server/php/config.ini
 

@@ -86,10 +86,6 @@ class RepeatFeedbackAnalysis():
     def __init__(self):
         pass
 
-    def dosomething(self):
-        # do something
-        pass
-
 class GenerateMeetingSummary():
     def __init__(self):
         pass

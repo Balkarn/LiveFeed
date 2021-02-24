@@ -33,6 +33,8 @@ class DatabaseInteraction {
 	 * @param query A string of the sql query to be executed
 	 * @param result A boolean value to describe whether the query is expected to return a result: false means no result
 	 * is expected and the function should execute stmt->close; true means the function should not close the stmt, so the
+	 * @param throw_error A boolean value to dictate whether the function should re-throw the error to be handled in the
+	 * calling method or not
 	 * user should close it manually after calling the function and manipulating the results
 	 * @param var_types A string with letters for the variable types of each value in bind_vars e.g. "iss". (i:integer,
 	 * d:double, s:string, b:blob)
@@ -40,7 +42,7 @@ class DatabaseInteraction {
 	 *
 	 * @return Returns the created mysqli_stmt object
 	 * */
-	function prepared_stmt($query, $result, $var_types, ...$bind_vars) {
+	function prepared_stmt($query, $result, $throw_error, $var_types, ...$bind_vars) {
 		try {
 			$stmt = $this->conn->prepare($query);
 			$stmt->bind_param($var_types, ...$bind_vars);
@@ -51,7 +53,38 @@ class DatabaseInteraction {
 			return $stmt;
 		} catch (mysqli_sql_exception $e) {
 			$this->reqResult['error'] = "-[SQLError] Query failed: (" . $this->conn->errno . ") " . $this->conn->error . "\n";
-			throw $e;
+			if ($throw_error) {
+				throw $e;
+			} else {
+				return null;
+			}
+		}
+	}
+
+	/*
+	 * Function to abstract the execution of a standard query with no user input.
+	 * @param query A string of the sql query to be executed
+	 * @param result A boolean value to describe whether the query is expected to return a result: false means no result
+	 * is expected and the function should execute stmt->close; true means the function should not close the stmt, so the
+	 * @param throw_error A boolean value to dictate whether the function should re-throw the error to be handled in the
+	 * calling method or not
+	 *
+	 * @return Returns the created mysqli_stmt object
+	 */
+	function non_prepared_stmt($query, $result, $throw_error) {
+		try {
+			$stmt = $this->conn->query($query);
+			if (!$result) {
+				$stmt->close();
+			}
+			return $stmt;
+		} catch (mysqli_sql_exception $e) {
+			$this->reqResult['error'] = "-[SQLError] Query failed: (" . $this->conn->errno . ") " . $this->conn->error . "\n";
+			if ($throw_error) {
+				throw $e;
+			} else {
+				return null;
+			}
 		}
 	}
 
@@ -59,7 +92,7 @@ class DatabaseInteraction {
 		$this->connect();
 		$this->conn->autocommit(false);
 		try {
-			$this->prepared_stmt("INSERT INTO users VALUES (NULL, ?, ?, ?, ?)", false, "ssss", $fname, $lname, $email, $role);
+			$this->prepared_stmt("INSERT INTO users VALUES (NULL, ?, ?, ?, ?)", false, true, "ssss", $fname, $lname, $email, $role);
 
 			$id = $this->conn->insert_id;
 			if (!($hash = password_hash($password, PASSWORD_DEFAULT))) {
@@ -69,7 +102,7 @@ class DatabaseInteraction {
 				return false;
 			}
 
-			$this->prepared_stmt("INSERT INTO login VALUES (?, ?, ?)", false, "iss", $id, $username, $hash);
+			$this->prepared_stmt("INSERT INTO login VALUES (?, ?, ?)", false, true, "iss", $id, $username, $hash);
 			$this->conn->autocommit(true);
 			return true;
 		} catch (mysqli_sql_exception $e) {
@@ -133,7 +166,7 @@ class DatabaseInteraction {
 		$this->conn->autocommit(false);
 		try {
 			// $questionsArray = [[question, questionType, options1..4, ratingmin..max], [...]]
-			$this->prepared_stmt("INSERT INTO templates VALUES (NULL, ?, ?)", false, "si", $templateName, $templateCreator);
+			$this->prepared_stmt("INSERT INTO templates VALUES (NULL, ?, ?)", false, true, "si", $templateName, $templateCreator);
 
 			$templateId = $this->conn->insert_id;
 
@@ -157,21 +190,21 @@ class DatabaseInteraction {
 				$inserts = str_repeat("(NULL, ?, ?, ?), ", $arraySize-1);
 				$inserts .= "(NULL, ?, ?, ?)";
 				$insertsTypes = str_repeat("iss", $arraySize);
-				$this->prepared_stmt("INSERT INTO template_questions VALUES ".$inserts, false, $insertsTypes, ...$simpleQArray);
+				$this->prepared_stmt("INSERT INTO template_questions VALUES ".$inserts, false, true, $insertsTypes, ...$simpleQArray);
 			}
 
 			foreach($multipleArray as $itemIdx) {
 				$item = $questionsArray[$itemIdx];
-				$this->prepared_stmt("INSERT INTO template_questions VALUES (NULL, ?, ?, ?)", false, "iss", $templateId, $item[0], $item[1]);
+				$this->prepared_stmt("INSERT INTO template_questions VALUES (NULL, ?, ?, ?)", false, true, "iss", $templateId, $item[0], $item[1]);
 				$questionId = $this->conn->insert_id;
-				$this->prepared_stmt("INSERT INTO question_options VALUES (?, ?, ?, ?, ?)", false, "issss", $questionId, ...array_slice($item, 2, 4));
+				$this->prepared_stmt("INSERT INTO question_options VALUES (?, ?, ?, ?, ?)", false, true, "issss", $questionId, ...array_slice($item, 2, 4));
 			}
 
 			foreach($ratingArray as $itemIdx) {
 				$item = $questionsArray[$itemIdx];
-				$this->prepared_stmt("INSERT INTO template_questions VALUES (NULL, ?, ?, ?)", false, "iss", $templateId, $item[0], $item[1]);
+				$this->prepared_stmt("INSERT INTO template_questions VALUES (NULL, ?, ?, ?)", false, true, "iss", $templateId, $item[0], $item[1]);
 				$questionId = $this->conn->insert_id;
-				$this->prepared_stmt("INSERT INTO question_ratings VALUES (?, ?, ?)", false, "iii", $questionId, ...array_slice($item, 2, 2));
+				$this->prepared_stmt("INSERT INTO question_ratings VALUES (?, ?, ?)", false, true, "iii", $questionId, ...array_slice($item, 2, 2));
 			}
 
 			$this->conn->autocommit(true);
@@ -188,12 +221,12 @@ class DatabaseInteraction {
 	function get_user_templates($userId) {
 		$this->connect();
 		$query = "SELECT TemplateID, TemplateName, QuestionID, Question, QuestionType, OptionA, OptionB, OptionC, OptionD, MinRating, MaxRating
-	FROM `db-data`.templates
-	INNER JOIN `db-data`.template_questions USING (TemplateID)
-	LEFT JOIN `db-data`.question_options USING (QuestionID)
-	LEFT JOIN `db-data`.question_ratings USING (QuestionID)
-	WHERE TemplateCreator=?";
-		if (($stmt = $this->prepared_stmt($query, true, "s", $userId)) == null) {
+			FROM `db-data`.templates
+			INNER JOIN `db-data`.template_questions USING (TemplateID)
+			LEFT JOIN `db-data`.question_options USING (QuestionID)
+			LEFT JOIN `db-data`.question_ratings USING (QuestionID)
+			WHERE TemplateCreator=?";
+		if (!($stmt = $this->prepared_stmt($query, true, "s", $userId))) {
 			$this->conn->close();
 			return false;
 		}
@@ -266,7 +299,7 @@ class DatabaseInteraction {
 		$this->conn->autocommit(false);
 		$code = $this->generate_meeting_code(7);
 		try {
-			$this->prepared_stmt("INSERT INTO meetings VALUES (NULL, ?, ?, ?, NULL, ?)", false,
+			$this->prepared_stmt("INSERT INTO meetings VALUES (NULL, ?, ?, ?, NULL, ?)", false, true,
 					"sssi", $meetingName, $code, $meetingStart, $userId);
 
 			$id = $this->conn->insert_id;
@@ -283,10 +316,10 @@ class DatabaseInteraction {
 
 			$code = $id.$code;
 
-			$this->prepared_stmt("UPDATE meetings SET meetingcode=? WHERE meetingid=?", false,
+			$this->prepared_stmt("UPDATE meetings SET meetingcode=? WHERE meetingid=?", false, true,
 					"si", $code, $id);
 
-			$this->prepared_stmt("INSERT INTO meeting_templates VALUES ".$placeholders, false, $varTypes, ...$vars);
+			$this->prepared_stmt("INSERT INTO meeting_templates VALUES ".$placeholders, false, true, $varTypes, ...$vars);
 
 			$this->conn->autocommit(true);
 			return true;
@@ -298,8 +331,29 @@ class DatabaseInteraction {
 		}
 	}
 
-	function get_meetings() {
+	/*
+	 * Fetches an array of users in the form: { {UserID:x, Role:y, Username:z}, {...} }
+	 */
+	function get_users() {
+		$this->connect();
+		$query = "SELECT UserID, Role, Username FROM users INNER JOIN login USING (UserID);";
+		if (!($stmt = $this->non_prepared_stmt($query, true, false))) {
+			$this->conn->close();
+			return false;
+		}
+		$this->reqResult['result'] = array();
+		while ($user = $stmt->fetch_assoc()) {
+			$this->reqResult['result'][] = $user;
+		}
+		$stmt->close();
+		$this->conn->close();
 
+		return true;
+	}
+
+	function get_meetings($userId) {
+		$this->connect();
+		$query = "";
 	}
 
 	function validate_meeting_code($meetingCode) {
@@ -325,11 +379,11 @@ class DatabaseInteraction {
 		$this->connect();
 		$this->conn->autocommit(false);
 		try {
-			$this->prepared_stmt("INSERT INTO feedback VALUES (NULL, ?, ?, now())", false,
+			$this->prepared_stmt("INSERT INTO feedback VALUES (NULL, ?, ?, now())", false, true,
 					"ii", $userId, $meetingId);
 			$id = $this->conn->insert_id;
 
-			$this->prepared_stmt("INSERT INTO general_feedback VALUES (?,?)", false, "is",
+			$this->prepared_stmt("INSERT INTO general_feedback VALUES (?,?)", false, true,"is",
 					$id, $feedback);
 
 			$this->conn->autocommit(true);
@@ -346,11 +400,11 @@ class DatabaseInteraction {
 		$this->connect();
 		$this->conn->autocommit(false);
 		try {
-			$this->prepared_stmt("INSERT INTO feedback VALUES (NULL, ?, ?, CURRENT_TIMESTAMP)", false,
+			$this->prepared_stmt("INSERT INTO feedback VALUES (NULL, ?, ?, CURRENT_TIMESTAMP)", false, true,
 					"ii", $userId, $meetingId);
 			$id = $this->conn->insert_id;
 
-			$this->prepared_stmt("INSERT INTO mood_feedback VALUES (?,?)", false, "is",
+			$this->prepared_stmt("INSERT INTO mood_feedback VALUES (?,?)", false, true, "is",
 					$id, $feedback);
 
 			$this->conn->autocommit(true);
@@ -367,11 +421,11 @@ class DatabaseInteraction {
 		$this->connect();
 		$this->conn->autocommit(false);
 		try {
-			$this->prepared_stmt("INSERT INTO feedback VALUES (NULL, ?, ?, CURRENT_TIMESTAMP)", false,
+			$this->prepared_stmt("INSERT INTO feedback VALUES (NULL, ?, ?, CURRENT_TIMESTAMP)", false, true,
 					"ii", $userId, $meetingId);
 			$id = $this->conn->insert_id;
 
-			$this->prepared_stmt("INSERT INTO template_feedback VALUES (?,?,?,?)", false,
+			$this->prepared_stmt("INSERT INTO template_feedback VALUES (?,?,?,?)", false, true,
 					"iiis", $id, $templateId, $questionId, $feedback);
 
 			$this->conn->autocommit(true);
