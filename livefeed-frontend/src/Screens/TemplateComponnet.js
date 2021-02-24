@@ -18,6 +18,9 @@ import DeleteIcon from '@material-ui/icons/Delete';
 const TemplateComponent = () => {
 
     const [open, setOpen] = React.useState(false);
+    const [update,setUpdate] = React.useState(false);
+    const [remove,setRemove] = React.useState(false);
+
     const [templateNames, setTemplateNames] = React.useState([]);
     const [templateQuestions, setTemplateQuestions] = React.useState([]);
   
@@ -45,6 +48,26 @@ const TemplateComponent = () => {
       setOpen(false);
     };
   
+    const handleUpdate = () =>{
+      //show template information
+      return 
+      setUpdate(true);
+    }
+
+    const handleCloseU = () => {
+      setUpdate(false);
+    }
+
+    const handleRemove = () =>{
+      //remove corresponding template from database
+      setRemove(true);
+    }
+
+    const handleCloseR = () => {
+      setUpdate(false);
+    }
+
+
     const addQuestion = () => {
       setCurrentTemplateQuestions([...currentTemplateQuestions, ""])
     };
