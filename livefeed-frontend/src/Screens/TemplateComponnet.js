@@ -79,6 +79,7 @@ const TemplateComponent = () => {
           <div className="centering">
             <h1>Your Templates:</h1>
           </div>
+
           <div className="list">
             <List>
               <Divider /> 

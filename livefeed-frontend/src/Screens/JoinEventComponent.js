@@ -6,6 +6,8 @@ const JoinEventComponent = () => {
 
     // Event Access Code
     const [currentEventCode, setCurrentEventCode] = React.useState('');
+    const [join,setJoin] = React.useState(false);
+
     const handleCurrentEventCodeTextField = event => {
         setCurrentEventCode(event.target.value);
     }

@@ -24,7 +24,7 @@ import TemplateComponent from './Screens/TemplateComponnet';
 import HostEventComponent from './Screens/HostEventComponent';
 import JoinEventComponent from './Screens/JoinEventComponent';
 import EventHistoryComponent from './Screens/EventHistoryComponent';
-
+import MeetingComponent from './Screens/MeetingComponent'
 
 export default function Main() {
 
@@ -46,7 +46,7 @@ export default function Main() {
               {tabValue === 1 && <TemplateComponent />}
               {tabValue === 2 && <JoinEventComponent />}
               {tabValue === 3 && <EventHistoryComponent />}
-              {tabValue === 4 && "Account Settings"}
+              {tabValue === 4 && <MeetingComponent/>}
             </div>
           </Paper>
         </div>
