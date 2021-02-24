@@ -5,7 +5,7 @@ include 'modules.php';
 // Basic tests
 // Need to replace with PHPUnit unit tests
 $database = new DatabaseInteraction();
-$reqResult = array();
+$reqResult = &$database->reqResult;
 
 
 $users = array(
@@ -16,7 +16,7 @@ $users = array(
 		array('testadmin2', 'testpwd', 'test5', 'test', 'test@test.com', 'host'), //5
 );
 foreach ($users as $user) {
-	$database->add_user($reqResult, ...$user);
+	$database->add_user(...$user);
 }
 echo "Add users: \n";
 var_dump($reqResult);
@@ -51,7 +51,7 @@ $templates = array(
 		)
 );
 foreach ($templates as $template) {
-	$database->add_template($reqResult, ...$template);
+	$database->add_template(...$template);
 }
 echo "\nAdd templates: \n";
 var_dump($reqResult);
@@ -61,7 +61,7 @@ $meetings = array(
 		array("Test Meeting 2", "2021-02-19 10:10:10", "2", array(3))
 );
 foreach ($meetings as $meeting) {
-	$database->add_meeting($reqResult, ...$meeting);
+	$database->add_meeting(...$meeting);
 }
 echo "\nAdd meetings: \n";
 var_dump($reqResult);
@@ -78,7 +78,7 @@ $general_feedback = array(
 		array(4, 1, "Can you skip the safety briefing."),
 );
 foreach ($general_feedback as $feedback) {
-	$database->add_general_feedback($reqResult, ...$feedback);
+	$database->add_general_feedback(...$feedback);
 }
 echo "\nAdd general feedback: \n";
 var_dump($reqResult);
@@ -102,9 +102,13 @@ $template_feedback = array(
 		array(1, 5, 4, 1, "7")
 );
 foreach ($template_feedback as $feedback) {
-	$database->add_template_feedback($reqResult, ...$feedback);
+	$database->add_template_feedback(...$feedback);
 }
 echo "\nAdd template feedback: \n";
+var_dump($reqResult);
+
+echo "\nGet User Templates: \n";
+$database->get_user_templates(2);
 var_dump($reqResult);
 
 ?>
