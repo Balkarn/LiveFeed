@@ -26,7 +26,9 @@ class SentimentAnalysis():
                 UNION 
                 (SELECT FeedbackID, Feedback FROM feedback 
                 INNER JOIN template_feedback USING (FeedbackID)
-                WHERE FeedbackID > %s);
+                INNER JOIN template_questions USING (QuestionID)
+                WHERE FeedbackID > %s
+                AND QuestionType = 'open');
             """
             c.execute(query, (self.last_id, self.last_id))
             result = c.fetchall()
@@ -58,10 +60,6 @@ class SentimentAnalysis():
                 sentiment = "negative"
             print(sentiment + ", " + str(score) + ", " + feedback)
 
-    def dosomething(self):
-        # do something
-        for i in range(100000, 9999999):
-            hash(i)
 
 class RepeatFeedbackAnalysis():
     def __init__(self):
@@ -78,6 +76,7 @@ class GenerateMeetingSummary():
     def dosomething(self):
         # do something
         pass
+
 
 if __name__ == "__main__":
     sa = SentimentAnalysis()
