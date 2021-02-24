@@ -42,8 +42,28 @@ class SentimentAnalysis():
             if conn:
                 conn.close()
 
+    def insert_mood(self, moods: list):
+        if len(moods) == 0:
+            return False
+        query = "INSERT INTO mood_feedback VALUES (%s, %s)"
+        conn = None
+        try:
+            conn = sql.connect(**dict(self.dbconfig.items('DatabaseCredentials')))
+            c = conn.cursor()
+            c.executemany(query, moods)
+            conn.commit()
+            return True
+        except sql.Error as err:
+            print(f"-[MySQL Error] {err}")
+            return False
+        finally:
+            if conn:
+                conn.close()
+
+
     def analyse(self):
         feedback_list = self.fetch_feedback()
+        mood_feedback = []
         if len(feedback_list) == 0:
             return False
         for feedbackid, feedback in feedback_list:
@@ -53,20 +73,17 @@ class SentimentAnalysis():
             score = total_sentiment.score
             score *= -1 if total_sentiment.value == "NEGATIVE" else 1
             if score >= 0.6:
-                sentiment = "positive"
+                mood_feedback.append((feedbackid, 'happy'))
             elif score >= -0.5:
-                sentiment = "neutral"
+                mood_feedback.append((feedbackid, 'neutral'))
             else:
-                sentiment = "negative"
-            print(sentiment + ", " + str(score) + ", " + feedback)
+                mood_feedback.append((feedbackid, 'sad'))
+        self.insert_mood(mood_feedback)
+
 
 
 class RepeatFeedbackAnalysis():
     def __init__(self):
-        pass
-
-    def dosomething(self):
-        # do something
         pass
 
 class GenerateMeetingSummary():

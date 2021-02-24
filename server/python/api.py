@@ -20,8 +20,9 @@ class FeedbackReceivedNotif(Resource):
         if not sentimentAnalysis.new_feedback:
             sentimentAnalysis.new_feedback = True
             sentimentAnalysis.analyse()
+        return True
 
-class FeedbackProcessedNotif(Resource):
+class RequestFeedback(Resource):
     def post(self):
         pass
 
@@ -34,7 +35,7 @@ app = Flask(__name__)
 api = Api(app)
 sentimentAnalysis = SentimentAnalysis()
 api.add_resource(FeedbackReceivedNotif, '/feedbackreceived')
-api.add_resource(FeedbackReceivedNotif, '/feedbackprocessed')
+api.add_resource(RequestFeedback, '/feedbackprocessed')
 api.add_resource(MeetingEnded, '/meetingended')
 
 if __name__ == "__main__":
