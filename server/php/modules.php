@@ -115,7 +115,7 @@ class DatabaseInteraction {
 
 	function login($username, $password) {
 		$this->connect();
-		if (($stmt = $this->prepared_stmt("SELECT * FROM login WHERE Username=? LIMIT 1", true, "s", $username)) == null) {
+		if (($stmt = $this->prepared_stmt("SELECT * FROM login WHERE Username=? LIMIT 1", true, false, "s", $username)) == null) {
 			$this->conn->close();
 			return false;
 		}
@@ -142,7 +142,7 @@ class DatabaseInteraction {
 		}
 		$varTypes = "i".str_repeat("i", count($templates));
 		if (!($stmt = $this->prepared_stmt(
-				"SELECT COUNT(*) FROM templates WHERE templatecreator=? AND templateid IN ".$placeholders, true,
+				"SELECT COUNT(*) FROM templates WHERE templatecreator=? AND templateid IN ".$placeholders, true, false,
 				$varTypes, $userId, ...$templates))) {
 			$this->conn->close();
 			return false;
@@ -226,7 +226,7 @@ class DatabaseInteraction {
 			LEFT JOIN `db-data`.question_options USING (QuestionID)
 			LEFT JOIN `db-data`.question_ratings USING (QuestionID)
 			WHERE TemplateCreator=?";
-		if (!($stmt = $this->prepared_stmt($query, true, "s", $userId))) {
+		if (!($stmt = $this->prepared_stmt($query, true, false,"i", $userId))) {
 			$this->conn->close();
 			return false;
 		}
@@ -353,13 +353,28 @@ class DatabaseInteraction {
 
 	function get_meetings($userId) {
 		$this->connect();
-		$query = "";
+		$query = "SELECT * FROM meetings WHERE HostID=?";
+		if (!($stmt = $this->prepared_stmt($query, true, false,"i", $userId))) {
+			$this->conn->close();
+			return false;
+		}
+		if (!($res = $stmt->get_result())) {
+			$this->conn->close();
+			return false;
+		}
+		return true;
+
+
+	}
+
+	function get_meeting_templates($meetingId) {
+
 	}
 
 	function validate_meeting_code($meetingCode) {
 		$this->connect();
 		if (($stmt = $this->prepared_stmt("SELECT * FROM meetings WHERE MeetingCode=? AND EndTime IS NULL 
-                         AND StartTime<=(now() + INTERVAL 10 MINUTE) LIMIT 1", true, "s", $meetingCode)) == null) {
+                         AND StartTime<=(now() + INTERVAL 10 MINUTE) LIMIT 1", true, false, "s", $meetingCode)) == null) {
 			$this->conn->close();
 			return false;
 		}
