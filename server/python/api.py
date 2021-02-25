@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 from flask_restful import Resource, Api, reqparse
 from multiprocessing import Process
 from analysis import *
@@ -24,7 +24,13 @@ class FeedbackReceivedNotif(Resource):
 
 class RequestFeedback(Resource):
     def post(self):
-        pass
+        """
+			- Repeat DB queries to check whether the all the sent feedback has been processed
+				- Check whether last_id in sentimentanalysis and repeatfeedbackanalysis is >= the greatest feedbackid with a corresponding entry in the templatefeedback table.
+			- Start with just polling and slowly layer on efficiency
+
+		"""
+		pass
 
 class MeetingEnded(Resource):
     def post(self):
@@ -34,6 +40,7 @@ class MeetingEnded(Resource):
 app = Flask(__name__)
 api = Api(app)
 sentimentAnalysis = SentimentAnalysis()
+popularFeedback = RepeatFeedbackAnalysis()
 api.add_resource(FeedbackReceivedNotif, '/feedbackreceived')
 api.add_resource(RequestFeedback, '/feedbackprocessed')
 api.add_resource(MeetingEnded, '/meetingended')
