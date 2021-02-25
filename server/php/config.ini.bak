@@ -1,5 +1,0 @@
-[DatabaseCredentials]
-serverName = localhost
-username = root
-password =
-databaseName = db-data

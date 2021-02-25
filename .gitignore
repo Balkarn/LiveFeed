@@ -8,5 +8,8 @@
 **/.env.development.local
 **/.env.test.local
 **/.env.production.local
-/server/php/config.ini
+/server/config.ini
 
+# legacy
+/backend
+/server/php/config.ini
