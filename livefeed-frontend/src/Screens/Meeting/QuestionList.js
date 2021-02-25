@@ -8,7 +8,6 @@ const QuestionList = () => {
     return (
         <div>
             hello
-            hello
         </div>
     )
 }
