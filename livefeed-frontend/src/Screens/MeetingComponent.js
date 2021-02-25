@@ -1,6 +1,7 @@
 import React from 'react'
 
 import Header from './Meeting/Header'
+import QuestionList from './Meeting/QuestionList';
 
 const MeetingComponent = () => {
     
@@ -14,8 +15,13 @@ const MeetingComponent = () => {
 
     return (
         <>
-        <Header username = {username}/>
-
+        <Header username = {username} 
+                sessionname = {sessionname}
+                sessiondate = {sessiondate}
+                hostname = {hostname}
+                template = {template}
+                />
+        <QuestionList />
         </>
     )
 }
