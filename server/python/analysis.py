@@ -12,25 +12,26 @@ class SentimentAnalysis():
         self.flair_sentiment = flair.models.TextClassifier.load('sentiment')
         self.new_feedback = False
         self.last_id = 0
-		self.config = parse_config()
-        self.dbconfig = dict(self.dbconfig.items('DatabaseCredentials'))
+        self.config = parse_config()
+        self.dbconfig = dict(self.config.items('DatabaseCredentials'))
 
 
     def fetch_feedback(self):
         conn = None
         try:
             conn = sql.connect(**self.dbconfig)
-			c = conn.cursor()
+            c = conn.cursor()
             query = """
                 (SELECT FeedbackID, Feedback FROM feedback 
-				INNER JOIN general_feedback USING (FeedbackID) 
-				WHERE FeedbackID > %s) 
-				UNION 
-				(SELECT FeedbackID, Feedback FROM feedback 
-				INNER JOIN template_feedback USING (FeedbackID) 
-				INNER JOIN template_questions USING (QuestionID) 
-				WHERE FeedbackID > %s AND QuestionType = 'open'); 
-			"""
+                INNER JOIN general_feedback USING (FeedbackID) 
+                WHERE FeedbackID > %s) 
+                UNION 
+                (SELECT FeedbackID, Feedback FROM feedback 
+                INNER JOIN template_feedback USING (FeedbackID) 
+                INNER JOIN template_questions USING (QuestionID) 
+                WHERE FeedbackID > %s AND QuestionType = 'open')
+                ORDER BY FeedbackID; 
+            """
             c.execute(query, (self.last_id, self.last_id))
             result = c.fetchall()
             if len(result) > 0:
@@ -49,7 +50,7 @@ class SentimentAnalysis():
         query = "INSERT INTO mood_feedback VALUES (%s, %s)"
         conn = None
         try:
-            conn = sql.connect(**dict(self.dbconfig.items('DatabaseCredentials')))
+            conn = sql.connect(**self.dbconfig)
             c = conn.cursor()
             c.executemany(query, moods)
             conn.commit()
@@ -85,50 +86,53 @@ class SentimentAnalysis():
 
 class RepeatFeedbackAnalysis():
     def __init__(self):
-        pass
-	
+        self.last_id = 0
+
 
 
 class GenerateMeetingSummary():
     def __init__(self):
-        pass
+       pass
 
     def dosomething(self):
         # do something
         pass
 
 class Polling():
-	def __init__(self, ):
-		self.config = parse_config()
-        self.dbconfig = dict(self.dbconfig.items('DatabaseCredentials'))
-	
-	def checktemplatefeedback(templateId, sentiment_lastid, popular_lastid):
-		conn = None
-		try:
-            conn = sql.connect(**self.dbconfig)
-			c = conn.cursor()
-			query = """
-				SELECT FeedbackID FROM feedback
-				INNER JOIN template_feedback USING (FeedbackID)
-				WHERE TemplateID = ?
-				ORDER BY FeedbackID DESC
-				LIMIT 1
-			"""
-			c.execute(query, (templateId, ))
-			result = c.fetchall()
-			if (result):
-				if sentiment_lastid >= result[0][0] and popular_lastid >= result[0][0]:
-					return True
-			return False
+    def __init__(self):
+        self.config = parse_config()
+        self.dbconfig = dict(self.config.items('DatabaseCredentials'))
 
-		except sql.Error as err:
-			print(f"-[MySQL Error] {err}")
-			return False
-		finally: 
-			if conn:
-				conn.close();
+    def checktemplatefeedback(self, templateId, sentiment_lastid, popular_lastid):
+        conn = None
+        try:
+            conn = sql.connect(**self.dbconfig)
+            c = conn.cursor()
+            query = """
+                SELECT FeedbackID FROM feedback 
+                INNER JOIN template_feedback USING (FeedbackID) 
+                INNER JOIN template_questions USING (QuestionID) 
+                WHERE template_feedback.TemplateID = %s AND QuestionType = 'open'
+                ORDER BY FeedbackID DESC
+                LIMIT 1;            
+            """
+            c.execute(query, (templateId, ))
+            result = c.fetchall()
+            if result and (sentiment_lastid >= result[0][0] or popular_lastid >= result[0][0]):
+                return True
+            return False
+        except sql.Error as err:
+            print(f"-[MySQL Error] {err}")
+            return False
+        finally:
+            if conn:
+                conn.close()
 
 
 if __name__ == "__main__":
     sa = SentimentAnalysis()
+    popular = RepeatFeedbackAnalysis()
+    poll = Polling()
+    print(poll.checktemplatefeedback(1, sa.last_id, popular.last_id))
     sa.analyse()
+    print(poll.checktemplatefeedback(1, sa.last_id, popular.last_id))
