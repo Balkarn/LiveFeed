@@ -69,9 +69,17 @@ const TemplateComponent = () => {
 
 
     const addQuestion = () => {
-      setCurrentTemplateQuestions([...currentTemplateQuestions, ""])
+      setCurrentTemplateQuestions([...currentTemplateQuestions, ""]);
     };
-  
+
+    const removeQuestion = () => {
+      var tempArray = currentTemplateQuestions
+      if (tempArray.length > 0) {
+        tempArray.splice(tempArray.length-1,1);
+      }
+      setCurrentTemplateQuestions([...tempArray]);
+    };
+    
     if (false) {
     } else {
       return (
@@ -147,12 +155,14 @@ const TemplateComponent = () => {
                   helperText={false ? 'Must be at least 4 Characters' : ' '}
                 />
               ))}
-  
+              <Button onClick={addQuestion} variant="contained" color="primary">
+                Add Question
+              </Button>
+              <Button onClick={removeQuestion} variant="contained" color="secondary">
+                Remove Question
+              </Button>
             </DialogContent>
             
-            <Button onClick={addQuestion} variant="contained" color="primary">
-              Add Question
-              </Button>
             <DialogActions>
               <Button onClick={handleClose} color="primary">
                 Done
