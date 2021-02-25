@@ -4,7 +4,7 @@ from configparser import ConfigParser
 
 def parse_config():
     config = ConfigParser()
-    config.read('config.ini')
+    config.read('../config.ini')
     return config
 
 class SentimentAnalysis():

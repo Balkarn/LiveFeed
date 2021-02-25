@@ -10,7 +10,7 @@ class DatabaseInteraction {
 	private $conn;
 
 	function __construct() {
-		$this->db_cred = parse_ini_file('config.ini', true);
+		$this->db_cred = parse_ini_file('../config.ini', true);
 		$this->reqResult = array();
 	}
 
