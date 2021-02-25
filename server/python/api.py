@@ -17,9 +17,9 @@ Asynchronous:
 
 class FeedbackReceivedNotif(Resource):
     def get(self):
-        if not sentimentAnalysis.new_feedback:
-            sentimentAnalysis.new_feedback = True
-            sentimentAnalysis.analyse()
+        if not sa.new_feedback:
+            sa.new_feedback = True
+            sa.analyse()
         return True
 
 class RequestFeedback(Resource):
