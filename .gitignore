@@ -10,3 +10,5 @@
 **/.env.production.local
 /server/php/config.ini
 
+# legacy
+/backend
