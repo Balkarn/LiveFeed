@@ -135,4 +135,3 @@ if __name__ == "__main__":
     poll = Polling()
     print(poll.checktemplatefeedback(1, sa.last_id, popular.last_id))
     sa.analyse()
-    print(poll.checktemplatefeedback(1, sa.last_id, popular.last_id))
