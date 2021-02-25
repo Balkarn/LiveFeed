@@ -18,6 +18,9 @@ import DeleteIcon from '@material-ui/icons/Delete';
 const TemplateComponent = () => {
 
     const [open, setOpen] = React.useState(false);
+
+    const [creatingQ, setCreatingQ] = React.useState(false);
+
     const [update,setUpdate] = React.useState(false);
     const [remove,setRemove] = React.useState(false);
 
@@ -26,8 +29,11 @@ const TemplateComponent = () => {
   
     const [currentTemplateName, setCurrentTemplateName] = React.useState('')
     const [currentTemplateQuestions, setCurrentTemplateQuestions] = React.useState([]);
+
+    const [currentQuestion, setCurrentQuestion] = React.useState('')
   
     useEffect(() => {
+      setCreatingQ(false)
       setTemplateNames(["Sample Meeting Template", "Sample Lecture Template", "Sample Social Event Template"/*, 3,4,5,6,7,8,9,10,11,12,13,14,15,16*/]);
       setTemplateQuestions([[],[],[]]);
     }, []); // Only run once on mount
@@ -36,6 +42,11 @@ const TemplateComponent = () => {
     const handleTemplateNameTextfield = event => {
       var eventVal = event.target.value; //setting a state isn't synchronous so store value in a temp variable
       setCurrentTemplateName(eventVal);
+    }
+
+    const handleQuestionTestfield = event => {
+      var eventVal = event.target.value; //setting a state isn't synchronous so store value in a temp variable
+      setCurrentQuestion(eventVal);
     }
   
     const handleClickOpen = () => {
@@ -69,8 +80,18 @@ const TemplateComponent = () => {
 
 
     const addQuestion = () => {
-      setCurrentTemplateQuestions([...currentTemplateQuestions, ""]);
+      setCreatingQ(true);
     };
+
+    const createQuestion = () => {
+      setCurrentQuestion('');
+      setCurrentTemplateQuestions([...currentTemplateQuestions, currentQuestion]);
+      setCreatingQ(false);
+    };
+
+    const dontCreateQuestion = () => {
+      setCreatingQ(false);
+    }
 
     const removeQuestion = () => {
       var tempArray = currentTemplateQuestions
@@ -121,56 +142,85 @@ const TemplateComponent = () => {
             fullWidth={true}
             maxWidth={'lg'}
           >
-            <DialogTitle id="alert-dialog-title">{"Create A Template"}</DialogTitle>
-            <DialogContent>
-  
-              <TextField
-                font-size='16px'
-                id='outlined-textarea'
-                label='Template Title'
-                value={currentTemplateName}
-                placeholder='Name your template'
-                variant='filled'
-                required
-                fullWidth="true"
-                onChange={handleTemplateNameTextfield}
-                error={false}
-                className="input"
-                helperText={false ? 'Must be at least 4 Characters' : ' '}
-              />
-  
-              {currentTemplateQuestions.map((item) => (
+            {!creatingQ ? 
+              <div>
+              <DialogTitle id="alert-dialog-title">{"Create A Template"}</DialogTitle>
+              <DialogContent>
+    
                 <TextField
                   font-size='16px'
                   id='outlined-textarea'
-                  label='Question'
-                  value={null}
+                  label='Template Title'
+                  value={currentTemplateName}
                   placeholder='Name your template'
-                  variant='outlined'
+                  variant='filled'
                   required
                   fullWidth="true"
-                  onChange={null}
+                  onChange={handleTemplateNameTextfield}
                   error={false}
                   className="input"
                   helperText={false ? 'Must be at least 4 Characters' : ' '}
                 />
-              ))}
-              <Button onClick={addQuestion} variant="contained" color="primary">
-                Add Question
-              </Button>
-              <Button onClick={removeQuestion} variant="contained" color="secondary">
-                Remove Question
-              </Button>
-            </DialogContent>
+                <List>
+                  <Divider />
+                  {currentTemplateQuestions.map((item) => (
+                    <div>
+                    <ListItemText
+                      primary={`${item}`}
+                    />
+                    <Divider />
+                    </div>
+                  ))}
+                </List>
+                
+                 
+                <Button onClick={addQuestion} variant="contained" color="primary">
+                  Add Question
+                </Button>
+                <Button onClick={removeQuestion} variant="contained" color="secondary">
+                  Remove Question
+                </Button>
+              </DialogContent>    
+              <DialogActions>
+                <Button onClick={handleClose} color="primary">
+                  Done
+                </Button>
+                <Button onClick={handleClose} color="secondary">
+                  Cancel
+                </Button>
+              </DialogActions>
+              </div>
+            :
+              <div>
+                <DialogTitle id="alert-dialog-title">{"Create a Question"}</DialogTitle>
+                <DialogContent>
+
+                  <TextField
+                    font-size='16px'
+                    id='outlined-textarea'
+                    label='Question'
+                    value={currentQuestion}
+                    placeholder='Enter Question Here'
+                    variant='outlined'
+                    required
+                    fullWidth="true"
+                    onChange={handleQuestionTestfield}
+                    error={false}
+                    className="input"
+                    helperText={false ? 'Must be at least 4 Characters' : ' '}
+                  />
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={createQuestion} color="primary">
+                    Create Question
+                </Button>
+                  <Button onClick={dontCreateQuestion} color="secondary">
+                    Cancel
+                </Button>
+                </DialogActions>
+              </div>
+            }
             
-            <DialogActions>
-              <Button onClick={handleClose} color="primary">
-                Done
-              </Button>
-              <Button onClick={handleClose} color="secondary">
-                Cancel
-              </Button>
-            </DialogActions>
           </Dialog>
         </div>
       );
