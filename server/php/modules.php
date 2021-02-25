@@ -17,10 +17,10 @@ class DatabaseInteraction {
 	function connect() {
 		// To connect to your local DB, rename /react-backend/config.ini.bak to /react-backend/config.ini and edit
 		// it with your details.
-		$this->conn = new mysqli($this->db_cred['DatabaseCredentials']['serverName'],
+		$this->conn = new mysqli($this->db_cred['DatabaseCredentials']['host'],
 				$this->db_cred['DatabaseCredentials']['username'],
 				$this->db_cred['DatabaseCredentials']['password'],
-				$this->db_cred['DatabaseCredentials']['databaseName']);
+				$this->db_cred['DatabaseCredentials']['database']);
 		if ($this->conn->connect_errno) {
 			die("-[ConnectionError] Failed to connect to MySQL: ".$this->conn->connect_error);
 		}
