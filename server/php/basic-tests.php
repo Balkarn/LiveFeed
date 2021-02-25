@@ -118,4 +118,15 @@ echo "\nGet Users: \n";
 $database->get_users();
 var_dump($reqResult);
 
+echo "\nGet Meetings: \n";
+$database->get_meetings(2);
+var_dump($reqResult);
+
+echo "\nGet Templates: \n";
+$database->get_meeting_templates(1);
+var_dump($reqResult);
+
+echo "\nGet Template Questions: \n";
+$database->get_template_questions(1);
+var_dump($reqResult);
 ?>

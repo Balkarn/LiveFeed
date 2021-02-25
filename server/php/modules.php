@@ -351,6 +351,10 @@ class DatabaseInteraction {
 		return true;
 	}
 
+	/*
+	 * Fetches an array of meetings created by the user in the form:
+	 * { {MeetingID:a, MeetingName:b, MeetingCode:c, StartTime: "YYYY-MM-DD HH-MM-SS", EndTime: "...", HostID:f}, {...} }
+	 */
 	function get_meetings($userId) {
 		$this->connect();
 		$query = "SELECT * FROM meetings WHERE HostID=?";
@@ -362,13 +366,79 @@ class DatabaseInteraction {
 			$this->conn->close();
 			return false;
 		}
-		return true;
+		$this->reqResult['result'] = array();
+		while ($meeting = $res->fetch_assoc()) {
+			$this->reqResult['result'][] = $meeting;
+		}
 
+		return true;
 
 	}
 
+	/*
+	 * Fetches an array of templates for a given meeting in the form:
+	 * { {TemplateID:x, TemplateName:y}, {...} }
+	 */
 	function get_meeting_templates($meetingId) {
+		$this->connect();
+		$query = "
+				SELECT TemplateID, TemplateName FROM meeting_templates
+				INNER JOIN templates USING (TemplateID)
+				WHERE MeetingID=?
+		";
+		if (!($stmt = $this->prepared_stmt($query, true, false,"i", $meetingId))) {
+			$this->conn->close();
+			return false;
+		}
+		if (!($res = $stmt->get_result())) {
+			$this->conn->close();
+			return false;
+		}
+		$this->reqResult['result'] = array();
+		while ($row=$res->fetch_assoc()) {
+			$this->reqResult['result'][] = $row;
+		}
+		return true;
+	}
 
+	/*
+	 * Fetches an array of questions for a given template in the form:
+	 * { QuestionID: { Question, QuestionType, {OptionA..D}, {Min..MaxRating} }, ... }
+	 */
+	function get_template_questions($templateId) {
+		$this->connect();
+		$query = "
+				SELECT QuestionID, Question, QuestionType, OptionA, OptionB, OptionC, OptionD, MinRating, MaxRating 
+				FROM template_questions
+				LEFT JOIN question_options USING (QuestionID)
+				LEFT JOIN question_ratings USING (QuestionID)
+				WHERE TemplateID=?
+		";
+		if (!($stmt = $this->prepared_stmt($query, true, false,"i", $templateId))) {
+			$this->conn->close();
+			return false;
+		}
+		if (!($res = $stmt->get_result())) {
+			$this->conn->close();
+			return false;
+		}
+		$this->reqResult['result'] = array();
+		while ($row=$res->fetch_assoc()) {
+			$this->reqResult['result'][$row['QuestionID']] = array();
+			$this->reqResult['result'][$row['QuestionID']][] = $row['Question'];
+			$this->reqResult['result'][$row['QuestionID']][] = $row['QuestionType'];
+			switch ($row['QuestionType']) {
+				case 'multiple':
+					$this->reqResult['result'][$row['QuestionID']][] = array_slice($row, 3, 4);
+					break;
+				case 'rating':
+					$this->reqResult['result'][$row['QuestionID']][] = array_slice($row, 7, 2);
+					break;
+				default:
+					break;
+			}
+		}
+		return true;
 	}
 
 	function validate_meeting_code($meetingCode) {
