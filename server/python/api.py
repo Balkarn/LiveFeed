@@ -39,11 +39,17 @@ class MeetingEnded(Resource):
         pass
 
 
+# Flask Initialisation
 app = Flask(__name__)
 api = Api(app)
-sa = SentimentAnalysis()
-rfa = RepeatFeedbackAnalysis()
-polling = Polling()
+
+# Initialise NLP objects
+dbi = DatabaseInteraction()
+sa = SentimentAnalysis(dbi)
+rfa = RepeatFeedbackAnalysis(dbi)
+polling = Polling(dbi)
+
+# Flask endpoints
 api.add_resource(FeedbackReceivedNotif, '/feedbackreceived')
 api.add_resource(RequestFeedback, '/feedbackprocessed')
 api.add_resource(MeetingEnded, '/meetingended')

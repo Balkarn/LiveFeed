@@ -7,14 +7,10 @@ def parse_config():
     config.read('../config.ini')
     return config
 
-class SentimentAnalysis():
+class DatabaseInteraction():
     def __init__(self):
-        self.flair_sentiment = flair.models.TextClassifier.load('sentiment')
-        self.new_feedback = False
-        self.last_id = 0
         self.config = parse_config()
         self.dbconfig = dict(self.config.items('DatabaseCredentials'))
-
 
     def fetch_feedback(self):
         conn = None
@@ -22,16 +18,17 @@ class SentimentAnalysis():
             conn = sql.connect(**self.dbconfig)
             c = conn.cursor()
             query = """
-                (SELECT FeedbackID, Feedback FROM feedback 
-                INNER JOIN general_feedback USING (FeedbackID) 
-                WHERE FeedbackID > %s) 
-                UNION 
-                (SELECT FeedbackID, Feedback FROM feedback 
-                INNER JOIN template_feedback USING (FeedbackID) 
-                INNER JOIN template_questions USING (QuestionID) 
-                WHERE FeedbackID > %s AND QuestionType = 'open')
-                ORDER BY FeedbackID; 
-            """
+                   (SELECT FeedbackID, Feedback FROM feedback 
+                   INNER JOIN general_feedback USING (FeedbackID) 
+                   WHERE FeedbackID > %s) 
+                   UNION 
+                   (SELECT FeedbackID, Feedback FROM feedback 
+                   INNER JOIN template_feedback USING (FeedbackID) 
+                   INNER JOIN template_questions USING (QuestionID) 
+                   WHERE FeedbackID > %s AND 
+                   (QuestionType = 'open' OR QuestionType = 'multiple')
+                   ORDER BY FeedbackID; 
+               """
             c.execute(query, (self.last_id, self.last_id))
             result = c.fetchall()
             if len(result) > 0:
@@ -62,9 +59,15 @@ class SentimentAnalysis():
             if conn:
                 conn.close()
 
+class SentimentAnalysis():
+    def __init__(self, database):
+        self.flair_sentiment = flair.models.TextClassifier.load('sentiment')
+        self.new_feedback = False
+        self.last_id = 0
+        self.db_obj = database
 
     def analyse(self):
-        feedback_list = self.fetch_feedback()
+        feedback_list = self.db_obj.fetch_feedback()
         mood_feedback = []
         if len(feedback_list) == 0:
             return False
@@ -80,13 +83,13 @@ class SentimentAnalysis():
                 mood_feedback.append((feedbackid, 'neutral'))
             else:
                 mood_feedback.append((feedbackid, 'sad'))
-        self.insert_mood(mood_feedback)
-
-
+        self.db_obj.insert_mood(mood_feedback)
 
 class RepeatFeedbackAnalysis():
-    def __init__(self):
+    def __init__(self, database):
         self.last_id = 0
+        self.db_obj = database
+
 
 
 
@@ -99,20 +102,21 @@ class GenerateMeetingSummary():
         pass
 
 class Polling():
-    def __init__(self):
-        self.config = parse_config()
-        self.dbconfig = dict(self.config.items('DatabaseCredentials'))
+    def __init__(self, database):
+        self.db_obj = database
 
     def checktemplatefeedback(self, templateId, sentiment_lastid, popular_lastid):
         conn = None
         try:
-            conn = sql.connect(**self.dbconfig)
+            conn = sql.connect(**self.db_obj.dbconfig)
             c = conn.cursor()
             query = """
                 SELECT FeedbackID FROM feedback 
                 INNER JOIN template_feedback USING (FeedbackID) 
                 INNER JOIN template_questions USING (QuestionID) 
-                WHERE template_feedback.TemplateID = %s AND QuestionType = 'open'
+                WHERE template_feedback.TemplateID = %s 
+                AND (QuestionType = 'open'
+                OR QuestionType = 'multiple')
                 ORDER BY FeedbackID DESC
                 LIMIT 1;            
             """
@@ -130,8 +134,9 @@ class Polling():
 
 
 if __name__ == "__main__":
-    sa = SentimentAnalysis()
-    popular = RepeatFeedbackAnalysis()
-    poll = Polling()
+    dbi = DatabaseInteraction()
+    sa = SentimentAnalysis(dbi)
+    popular = RepeatFeedbackAnalysis(dbi)
+    poll = Polling(dbi)
     print(poll.checktemplatefeedback(1, sa.last_id, popular.last_id))
     sa.analyse()
