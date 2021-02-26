@@ -502,7 +502,7 @@ class DatabaseInteraction {
 		}
 	}
 
-	function add_template_feedback($templateId, $questionId, $userId, $meetingId, $feedback) {
+	function add_template_feedback($questionId, $userId, $meetingId, $feedback) {
 		$this->connect();
 		$this->conn->autocommit(false);
 		try {
@@ -510,8 +510,8 @@ class DatabaseInteraction {
 					"ii", $userId, $meetingId);
 			$id = $this->conn->insert_id;
 
-			$this->prepared_stmt("INSERT INTO template_feedback VALUES (?,?,?,?)", false, true,
-					"iiis", $id, $templateId, $questionId, $feedback);
+			$this->prepared_stmt("INSERT INTO template_feedback VALUES (?,?,?)", false, true,
+					"iis", $id, $questionId, $feedback);
 
 			$this->conn->autocommit(true);
 			return true;

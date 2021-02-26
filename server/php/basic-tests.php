@@ -86,22 +86,22 @@ function insert_data() {
 	var_dump($reqResult);
 
 	$template_feedback = array(
-			array(1, 1, 1, 1, "This doesn't seem like a good organisation. "),
-			array(1, 2, 1, 1, "This was a very challenging workshop. "),
-			array(1, 3, 1, 1, "happy"),
-			array(1, 4, 1, 1, "A"),
-			array(1, 5, 1, 1, "1"),
+			array(1, 1, 1, "This doesn't seem like a good organisation. "),
+			array(2, 1, 1, "This was a very challenging workshop. "),
+			array(3, 1, 1, "happy"),
+			array(4, 1, 1, "A"),
+			array(5, 1, 1, "1"),
 
-			array(1, 1, 3, 1, "I think I would like to work here someday. "),
-			array(1, 2, 3, 1, "I enjoyed the challenge. "),
-			array(1, 3, 3, 1, "neutral"),
-			array(1, 4, 3, 1, "A"),
-			array(1, 5, 3, 1, "3"),
+			array(1, 3, 1, "I think I would like to work here someday. "),
+			array(2, 3, 1, "I enjoyed the challenge. "),
+			array(3, 3, 1, "neutral"),
+			array(4, 3, 1, "A"),
+			array(5, 3, 1, "3"),
 
-			array(1, 1, 4, 1, "It's decent. "),
-			array(1, 2, 4, 1, "It was too difficult. "),
-			array(1, 4, 4, 1, "C"),
-			array(1, 5, 4, 1, "7")
+			array(1, 4, 1, "It's decent. "),
+			array(2, 4, 1, "It was too difficult. "),
+			array(4, 4, 1, "C"),
+			array(5, 4, 1, "7")
 	);
 	foreach ($template_feedback as $feedback) {
 		$database->add_template_feedback(...$feedback);
@@ -109,7 +109,7 @@ function insert_data() {
 	echo "\nAdd template feedback: \n";
 	var_dump($reqResult);
 }
-
+insert_data();
 echo "\nGet User Templates: \n";
 $database->get_user_templates(2);
 var_dump($reqResult);
