@@ -38,40 +38,6 @@ CREATE TABLE `feedback` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `feedback_clauses`
---
-
-DROP TABLE IF EXISTS `feedback_clauses`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `feedback_clauses` (
-  `ClauseID` int(11) NOT NULL AUTO_INCREMENT,
-  `FeedbackID` int(11) NOT NULL,
-  `Clause` varchar(144) NOT NULL,
-  PRIMARY KEY (`ClauseID`),
-  KEY `feedback_clauses-feedbackid_idx` (`FeedbackID`),
-  CONSTRAINT `feedback_clauses-feedbackid` FOREIGN KEY (`FeedbackID`) REFERENCES `feedback` (`FeedbackID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `frequent_feedback`
---
-
-DROP TABLE IF EXISTS `frequent_feedback`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `frequent_feedback` (
-  `MatchID` int(11) NOT NULL AUTO_INCREMENT,
-  `ClauseID` int(11) NOT NULL,
-  `Closeness` decimal(6,5) NOT NULL,
-  PRIMARY KEY (`MatchID`,`ClauseID`),
-  KEY `frequent_feedback-clauseid_idx` (`ClauseID`),
-  CONSTRAINT `frequent_feedback-clauseid` FOREIGN KEY (`ClauseID`) REFERENCES `feedback_clauses` (`ClauseID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `general_feedback`
 --
 
@@ -213,17 +179,35 @@ DROP TABLE IF EXISTS `template_feedback`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `template_feedback` (
   `FeedbackID` int(11) NOT NULL,
-  `TemplateID` int(11) NOT NULL,
   `QuestionID` int(11) NOT NULL,
   `Feedback` varchar(144) NOT NULL,
   PRIMARY KEY (`FeedbackID`),
-  KEY `template_feedback-templateid_idx` (`TemplateID`),
   KEY `template_feedback-questionid_idx` (`QuestionID`),
   CONSTRAINT `template_feedback-feedbackid` FOREIGN KEY (`FeedbackID`) REFERENCES `feedback` (`FeedbackID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `template_feedback-questionid` FOREIGN KEY (`QuestionID`) REFERENCES `template_questions` (`QuestionID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `template_feedback-templateid` FOREIGN KEY (`TemplateID`) REFERENCES `templates` (`TemplateID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `template_feedback-questionid` FOREIGN KEY (`QuestionID`) REFERENCES `template_questions` (`QuestionID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `db-data`.`template_feedback_BEFORE_INSERT` BEFORE INSERT ON `template_feedback` FOR EACH ROW
+BEGIN
+	IF ((SELECT COUNT(*) FROM template_questions
+        WHERE QuestionID = NEW.QuestionID AND QuestionType = 'mood') = 1) THEN
+        INSERT INTO mood_feedback VALUES (NEW.FeedbackID, NEW.Feedback);
+	END IF;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `template_questions`
@@ -276,6 +260,14 @@ CREATE TABLE `users` (
   PRIMARY KEY (`UserID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping events for database 'db-data'
+--
+
+--
+-- Dumping routines for database 'db-data'
+--
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -286,4 +278,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-02-19 23:42:03
+-- Dump completed on 2021-02-26 21:56:49
