@@ -227,7 +227,6 @@ const LoginComponent = ({setIsLoggedIn}) => {
           {tabValue === 1 ?
             <div>
               <div className="textfield">
-
                 <TextField
                   font-size='16px'
                   id='outlined-textarea'
@@ -242,10 +241,9 @@ const LoginComponent = ({setIsLoggedIn}) => {
                   className="input"
                   helperText={SIGNUPnameError ? 'Must be at least 4 Characters' : ' '}
                 />
-
               </div>
-              <div className="textfield">
 
+              <div className="textfield">
                 <TextField
                   font-size='16px'
                   id='outlined-textarea'
@@ -261,8 +259,8 @@ const LoginComponent = ({setIsLoggedIn}) => {
                   className="input"
                   helperText={SIGNUPpError ? 'Must be at least 4 Characters' : ' '}
                 />
-
               </div>
+
               <div className="textfield">
                 <TextField
                   font-size='16px'
@@ -280,8 +278,8 @@ const LoginComponent = ({setIsLoggedIn}) => {
                   helperText={SIGNUPp2Error ? 'Passwords must match' : ' '}
                 />
               </div>
-              <div className="button">
 
+              <div className="button">
                 <Button
                   variant='contained'
                   color='primary'
