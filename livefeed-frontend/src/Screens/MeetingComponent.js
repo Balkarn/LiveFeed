@@ -21,7 +21,9 @@ const MeetingComponent = () => {
                 hostname = {hostname}
                 template = {template}
                 />
-        <QuestionList />
+        <QuestionList role = {username === hostname ? 'host' : 'attendee'}
+                      template1 = {template}
+                      />
         </>
     )
 }
