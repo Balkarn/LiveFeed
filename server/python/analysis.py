@@ -89,8 +89,42 @@ class RepeatFeedbackAnalysis():
     def __init__(self, database):
         self.last_id = 0
         self.db_obj = database
+		self.feedback = {}
+	
+	"""
+	Import statements:
+	from nltk.tokenize import word_tokenize
+	from nltk.stem import WordNetLemmatizer
+	from nltk.util import ngrams
+	"""
+	
+	def replace_contractions(self, tokens):
+		abbrev_subs = {"n't": ["not"], "'cause": ["because"], "'ve": ["have"], "e'er": ["ever"], "g'day": ["good", "day"], "'d": ["would"], "'ll": ["will"], "'re": ["are"], "'m": ["am"], "ma'am": ["madam"], "ne'er": ["never"], "o'clock": ["of", "the", "clock"], "o'er": ["over"], "'t": ["it"], "y'all": ["you", "all"],"'n'": ["not"]}
+		# "'s": ["is"]
+		new_tokens = []
+		for word in tokens:
+			if '\'' not in word:
+				new_tokens.append(word)
+			else:
+				if word == "'s" and re.match(r"NN.*", pos_tag([new_tokens[-1])[0][1] ) != None:
+					return
 
+	def tokenize_data(self, text):
+		return word_tokenize(text)
 
+	def lemmatize_data(self, tokens):
+		pass
+	
+	def stopword_removal(self, tokens):
+		pass
+	
+	def 
+
+	def clean_data(self):
+		clean_text = re.sub
+
+	def analyse(self):
+		pass
 
 
 class GenerateMeetingSummary():
