@@ -44,9 +44,6 @@ const QuestionList = ({role,template1}) => {
                 The host will send in a template soon. Thank you for your patience.
             </p>
             <button style={{color : 'red'}}>leave</button>
-            <br/>--------------------<br/>
-            <Hostpart template = {template}/>
-            <button style={{color : 'red'}}>End Session</button>
         </div>
     )
 
