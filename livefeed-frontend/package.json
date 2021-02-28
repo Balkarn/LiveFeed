@@ -19,6 +19,7 @@
     "mysql": "^2.18.1",
     "react": "^17.0.1",
     "react-code-input": "^3.10.0",
+    "react-codes-input": "^1.2.1",
     "react-dom": "^17.0.1",
     "react-modal": "^3.12.1",
     "react-scripts": "4.0.1",
