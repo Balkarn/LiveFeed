@@ -1,7 +1,18 @@
 import React, { useEffect/*, useState*/    } from "react";
 import { TextField, Button } from '@material-ui/core';
 import 'fontsource-roboto';
+import Stepper from '@material-ui/core/Stepper';
+import Step from '@material-ui/core/Step';
+import StepLabel from '@material-ui/core/StepLabel';
+import StepContent from '@material-ui/core/StepContent';
+import Typography from '@material-ui/core/Typography';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormControl from '@material-ui/core/FormControl';
+import FormLabel from '@material-ui/core/FormLabel';
 import List from '@material-ui/core/List';
+import Paper from '@material-ui/core/Paper';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -24,13 +35,19 @@ const TemplateComponent = () => {
     const [update,setUpdate] = React.useState(false);
     const [remove,setRemove] = React.useState(false);
 
-    const [templateNames, setTemplateNames] = React.useState([]);
-    const [templateQuestions, setTemplateQuestions] = React.useState([]);
+    const [templateNames, setTemplateNames] = React.useState([]); //This stores the names of all the templates
+    const [templateQuestions, setTemplateQuestions] = React.useState([]); //This stores the question names of all the templates in an array of arrays
   
     const [currentTemplateName, setCurrentTemplateName] = React.useState('')
     const [currentTemplateQuestions, setCurrentTemplateQuestions] = React.useState([]);
 
     const [currentQuestion, setCurrentQuestion] = React.useState('')
+
+    const [questionTypeValue, setQuestionTypeValue] = React.useState('written');
+
+    const handleRadioChange = (event) => {
+      setQuestionTypeValue(event.target.value);
+    };
   
     useEffect(() => {
       setCreatingQ(false)
@@ -44,7 +61,7 @@ const TemplateComponent = () => {
       setCurrentTemplateName(eventVal);
     }
 
-    const handleQuestionTestfield = event => {
+    const handleQuestionTextfield = event => {
       var eventVal = event.target.value; //setting a state isn't synchronous so store value in a temp variable
       setCurrentQuestion(eventVal);
     }
@@ -80,6 +97,7 @@ const TemplateComponent = () => {
 
 
     const addQuestion = () => {
+      setActiveStep(0);
       setCreatingQ(true);
     };
 
@@ -100,6 +118,69 @@ const TemplateComponent = () => {
       }
       setCurrentTemplateQuestions([...tempArray]);
     };
+
+    const addTemplate = () => {
+      setOpen(false);
+      setTemplateNames([...templateNames, currentTemplateName]);
+      setTemplateQuestions([...templateQuestions,currentTemplateQuestions]);
+    };
+
+    //temp
+  function getSteps() {
+    return ['Select Question Type (Only written for now)', 'Question Title', 'Question Details'];
+  }
+
+  function getStepContent(step) {
+    switch (step) {
+      case 0:
+        return (
+          <FormControl component="fieldset">
+            <RadioGroup name="Question Type" value={questionTypeValue} onChange={handleRadioChange}>
+              <FormControlLabel value="written" control={<Radio />} label="Written Answer" />
+              <FormControlLabel value="score" control={<Radio />} label="Score 1-5" />
+              <FormControlLabel value="multichoice" control={<Radio />} label="Multiple Choice" />
+            </RadioGroup>
+          </FormControl> 
+        );
+      case 1:
+        return (
+          <TextField
+            font-size='16px'
+            id='outlined-textarea'
+            label='Question'
+            value={currentQuestion}
+            placeholder='Enter Question Here'
+            variant='outlined'
+            required
+            fullWidth="true"
+            onChange={handleQuestionTextfield}
+            error={false}
+            className="input"
+            helperText={false ? 'Must be at least 4 Characters' : ' '}
+          />
+        );
+      case 2:
+        return `Not applicable for written questions.`;
+      default:
+        return 'Unknown step';
+    }
+  }
+
+    const [activeStep, setActiveStep] = React.useState(0);
+    const steps = getSteps();
+
+    const handleNext = () => {
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    };
+
+    const handleBack = () => {
+      setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    };
+
+    const handleReset = () => {
+      setActiveStep(0);
+    };
+    ///temp
     
     if (false) {
     } else {
@@ -165,10 +246,20 @@ const TemplateComponent = () => {
                   <Divider />
                   {currentTemplateQuestions.map((item) => (
                     <div>
-                    <ListItemText
-                      primary={`${item}`}
-                    />
-                    <Divider />
+                      <ListItem>
+                        <ListItemText
+                          primary={`${item}`}
+                        />
+                        <ListItemSecondaryAction>
+                          <IconButton>
+                            <BuildIcon color="primary" />
+                          </IconButton>
+                          <IconButton>
+                            <DeleteIcon color="secondary" />
+                          </IconButton>
+                        </ListItemSecondaryAction>
+                      </ListItem>
+                      <Divider />
                     </div>
                   ))}
                 </List>
@@ -182,7 +273,7 @@ const TemplateComponent = () => {
                 </Button>
               </DialogContent>    
               <DialogActions>
-                <Button onClick={handleClose} color="primary">
+                <Button onClick={addTemplate} color="primary">
                   Done
                 </Button>
                 <Button onClick={handleClose} color="secondary">
@@ -195,28 +286,51 @@ const TemplateComponent = () => {
                 <DialogTitle id="alert-dialog-title">{"Create a Question"}</DialogTitle>
                 <DialogContent>
 
-                  <TextField
-                    font-size='16px'
-                    id='outlined-textarea'
-                    label='Question'
-                    value={currentQuestion}
-                    placeholder='Enter Question Here'
-                    variant='outlined'
-                    required
-                    fullWidth="true"
-                    onChange={handleQuestionTestfield}
-                    error={false}
-                    className="input"
-                    helperText={false ? 'Must be at least 4 Characters' : ' '}
-                  />
+                  <div>
+                    <Stepper activeStep={activeStep} orientation="vertical">
+                      {steps.map((label, index) => (
+                        <Step key={label}>
+                          <StepLabel>{label}</StepLabel>
+                          <StepContent>
+                            <Typography>{getStepContent(index)}</Typography>
+                            <div >
+                              <div>
+                                <Button
+                                  disabled={activeStep === 0}
+                                  onClick={handleBack}
+                                >
+                                  Back
+                                </Button>
+                                <Button
+                                  variant="contained"
+                                  color="primary"
+                                  onClick={handleNext}
+                                >
+                                  {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+                                </Button>
+                              </div>
+                            </div>
+                          </StepContent>
+                        </Step>
+                      ))}
+                    </Stepper>
+                  </div>
                 </DialogContent>
                 <DialogActions>
-                  <Button onClick={createQuestion} color="primary">
-                    Create Question
-                </Button>
+                  {activeStep === steps.length && (
+                    <div>
+                      <Button onClick={handleReset} >
+                        Reset
+                      </Button>
+                      <Button onClick={createQuestion} color="primary">
+                        Create Question
+                      </Button>
+                    </div>
+                  )}
+
                   <Button onClick={dontCreateQuestion} color="secondary">
                     Cancel
-                </Button>
+                  </Button>
                 </DialogActions>
               </div>
             }
@@ -225,6 +339,8 @@ const TemplateComponent = () => {
         </div>
       );
     }
-  }
+}
+
+
 
   export default TemplateComponent;
