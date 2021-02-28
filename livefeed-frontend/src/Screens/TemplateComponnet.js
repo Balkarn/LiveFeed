@@ -29,21 +29,17 @@ import DeleteIcon from '@material-ui/icons/Delete';
 const TemplateComponent = () => {
 
     const [open, setOpen] = React.useState(false);
-
     const [creatingQ, setCreatingQ] = React.useState(false);
-
     const [update,setUpdate] = React.useState(false);
     const [remove,setRemove] = React.useState(false);
-
     const [templateNames, setTemplateNames] = React.useState([]); //This stores the names of all the templates
     const [templateQuestions, setTemplateQuestions] = React.useState([]); //This stores the question names of all the templates in an array of arrays
-  
     const [currentTemplateName, setCurrentTemplateName] = React.useState('')
     const [currentTemplateQuestions, setCurrentTemplateQuestions] = React.useState([]);
-
     const [currentQuestion, setCurrentQuestion] = React.useState('')
-
     const [questionTypeValue, setQuestionTypeValue] = React.useState('written');
+    const [activeStep, setActiveStep] = React.useState(0);
+    const steps = getSteps();
 
     const handleRadioChange = (event) => {
       setQuestionTypeValue(event.target.value);
@@ -125,62 +121,57 @@ const TemplateComponent = () => {
       setTemplateQuestions([...templateQuestions,currentTemplateQuestions]);
     };
 
-    //temp
-  function getSteps() {
-    return ['Select Question Type (Only written for now)', 'Question Title', 'Question Details'];
-  }
-
-  function getStepContent(step) {
-    switch (step) {
-      case 0:
-        return (
-          <FormControl component="fieldset">
-            <RadioGroup name="Question Type" value={questionTypeValue} onChange={handleRadioChange}>
-              <FormControlLabel value="written" control={<Radio />} label="Written Answer" />
-              <FormControlLabel value="score" control={<Radio />} label="Score 1-5" />
-              <FormControlLabel value="multichoice" control={<Radio />} label="Multiple Choice" />
-            </RadioGroup>
-          </FormControl> 
-        );
-      case 1:
-        return (
-          <TextField
-            font-size='16px'
-            id='outlined-textarea'
-            label='Question'
-            value={currentQuestion}
-            placeholder='Enter Question Here'
-            variant='outlined'
-            required
-            fullWidth="true"
-            onChange={handleQuestionTextfield}
-            error={false}
-            className="input"
-            helperText={false ? 'Must be at least 4 Characters' : ' '}
-          />
-        );
-      case 2:
-        return `Not applicable for written questions.`;
-      default:
-        return 'Unknown step';
+    function getSteps() {
+      return ['Select Question Type (Only written for now)', 'Question Title', 'Question Details'];
     }
-  }
 
-    const [activeStep, setActiveStep] = React.useState(0);
-    const steps = getSteps();
+    function getStepContent(step) {
+      switch (step) {
+        case 0:
+          return (
+            <FormControl component="fieldset">
+              <RadioGroup name="Question Type" value={questionTypeValue} onChange={handleRadioChange}>
+                <FormControlLabel value="written" control={<Radio />} label="Written Answer" />
+                <FormControlLabel value="score" control={<Radio />} label="Score 1-5" />
+                <FormControlLabel value="multichoice" control={<Radio />} label="Multiple Choice" />
+              </RadioGroup>
+            </FormControl> 
+          );
+        case 1:
+          return (
+            <TextField
+              font-size='16px'
+              id='outlined-textarea'
+              label='Question'
+              value={currentQuestion}
+              placeholder='Enter Question Here'
+              variant='outlined'
+              required
+              fullWidth="true"
+              onChange={handleQuestionTextfield}
+              error={false}
+              className="input"
+              helperText={false ? 'Must be at least 4 Characters' : ' '}
+            />
+          );
+        case 2:
+          return `Not applicable for written questions.`;
+        default:
+          return 'Unknown step';
+      }
+    }
 
-    const handleNext = () => {
+    const Next = () => {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     };
 
-    const handleBack = () => {
+    const Prev = () => {
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
     };
 
-    const handleReset = () => {
+    const Reset = () => {
       setActiveStep(0);
     };
-    ///temp
     
     if (false) {
     } else {
@@ -297,14 +288,14 @@ const TemplateComponent = () => {
                               <div>
                                 <Button
                                   disabled={activeStep === 0}
-                                  onClick={handleBack}
+                                  onClick={Prev}
                                 >
                                   Back
                                 </Button>
                                 <Button
                                   variant="contained"
                                   color="primary"
-                                  onClick={handleNext}
+                                  onClick={Next}
                                 >
                                   {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
                                 </Button>
@@ -319,7 +310,7 @@ const TemplateComponent = () => {
                 <DialogActions>
                   {activeStep === steps.length && (
                     <div>
-                      <Button onClick={handleReset} >
+                      <Button onClick={Reset} >
                         Reset
                       </Button>
                       <Button onClick={createQuestion} color="primary">
@@ -341,6 +332,4 @@ const TemplateComponent = () => {
     }
 }
 
-
-
-  export default TemplateComponent;
+export default TemplateComponent;
