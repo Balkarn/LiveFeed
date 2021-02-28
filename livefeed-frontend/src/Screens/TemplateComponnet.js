@@ -234,7 +234,7 @@ const TemplateComponent = () => {
                   label='Template Title'
                   value={currentTemplateName}
                   placeholder='Name your template'
-                  variant='filled'
+                  variant='outlined'
                   required
                   fullWidth="true"
                   onChange={handleTemplateNameTextfield}
