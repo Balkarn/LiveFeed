@@ -1,5 +1,6 @@
 import './App.css';
-import React, { useEffect/*, useState*/    } from "react";
+import React, { useEffect/*, useState*/, Component } from "react";
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { TextField, Button } from '@material-ui/core';
 import axios from 'axios';
 import 'fontsource-roboto';
@@ -206,6 +207,13 @@ const LoginComponent = ({setIsLoggedIn}) => {
 
 
   return (
+
+    <>
+
+    <Switch>
+      <Route component={MeetingComponent} path='/meeting'></Route>
+    </Switch>
+
     <div className="whole">
       <div className="header">
         <h><span className="logo-header">LiveFeed</span></h>
@@ -374,6 +382,7 @@ const LoginComponent = ({setIsLoggedIn}) => {
       </Snackbar>
 
     </div>
+    </>
   );
 
 }
