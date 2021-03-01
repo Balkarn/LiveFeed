@@ -35,10 +35,10 @@ const TemplateComponent = () => {
     const [update,setUpdate] = React.useState(false);
     const [remove,setRemove] = React.useState(false);
     const [templateNames, setTemplateNames] = React.useState([]); //This stores the names of all the templates
-    const [templateQuestions, setTemplateQuestions] = React.useState([]); //This stores the question names of all the templates in an array of arrays
+    const [templateQuestions, setTemplateQuestions] = React.useState([]); //This stores the question details of all the questions of all the templates in an array of arrays of arrays
     const [currentTemplateName, setCurrentTemplateName] = React.useState('')
     const [currentTemplateQuestions, setCurrentTemplateQuestions] = React.useState([]);
-    const [currentQuestion, setCurrentQuestion] = React.useState('')
+    const [currentQuestion, setCurrentQuestion] = React.useState('');
     const [questionTypeValue, setQuestionTypeValue] = React.useState('written');
     const [activeStep, setActiveStep] = React.useState(0);
     const steps = getSteps();
@@ -133,8 +133,23 @@ const TemplateComponent = () => {
     };
 
     const createQuestion = () => {
-      setCurrentQuestion('');
-      setCurrentTemplateQuestions([...currentTemplateQuestions, currentQuestion]);
+      //  [[question, questionType, options1..4, ratingmin..max], [...]]
+      var tempArray = [];
+      tempArray.push(currentQuestion);
+      tempArray.push(questionTypeValue);
+      switch (questionTypeValue) {
+        case "score":
+          tempArray.push(sliderValue[0]);
+          tempArray.push(sliderValue[1]);
+          break;
+        case "multichoice":
+          tempArray.push(option1);
+          tempArray.push(option2);
+          tempArray.push(option3);
+          tempArray.push(option4);
+          break;
+      }
+      setCurrentTemplateQuestions([...currentTemplateQuestions, tempArray]);
       setCreatingQ(false);
     };
 
@@ -154,6 +169,10 @@ const TemplateComponent = () => {
       setOpen(false);
       setTemplateNames([...templateNames, currentTemplateName]);
       setTemplateQuestions([...templateQuestions,currentTemplateQuestions]);
+
+      //templateNames is [name1, name2, name3 ...]
+      //templateQuestions is [[[question1 name, question 1 type, (if applicable options..)],[question2 details],...], template2's questions]
+      //here connect to the backend
     };
 
     function getSteps() {
@@ -357,7 +376,7 @@ const TemplateComponent = () => {
                     <div>
                       <ListItem>
                         <ListItemText
-                          primary={`${item}`}
+                          primary={`${item[0]}`}
                         />
                         <ListItemSecondaryAction>
                           <IconButton>
