@@ -108,8 +108,24 @@ function insert_data() {
 	}
 	echo "\nAdd template feedback: \n";
 	var_dump($reqResult);
+
+	$mood_feedback = array(
+			array(2, 1, "sad"),
+			array(3, 1, "happy"),
+			array(4, 1, "neutral"),
+			array(5, 1, "sad"),
+			array(1, 1, "happy"),
+			array(3, 1, "happy"),
+			array(4, 1, "sad"),
+			array(5, 1, "sad"),
+	);
+	foreach ($mood_feedback as $mood) {
+		$database->add_mood_feedback(...$mood);
+	}
+	echo "\nAdd mood feedback: \n";
+	var_dump($reqResult);
 }
-insert_data();
+#insert_data();
 echo "\nGet User Templates: \n";
 $database->get_user_templates(2);
 var_dump($reqResult);
@@ -129,4 +145,5 @@ var_dump($reqResult);
 echo "\nGet Template Questions: \n";
 $database->get_template_questions(1);
 var_dump($reqResult);
+
 ?>
