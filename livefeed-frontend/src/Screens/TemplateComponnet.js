@@ -157,7 +157,7 @@ const TemplateComponent = () => {
     };
 
     function getSteps() {
-      return ['Select Question Type (Only written for now)', 'Question Title', 'Question Details'];
+      return ['Select Question Type', 'Question Title', 'Question Details'];
     }
 
     const handleSliderChange = (event, newValue) => {
