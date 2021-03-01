@@ -30,28 +30,19 @@ import MeetingComponent from './Screens/MeetingComponent'
 export default function Main() {
 
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
-  const [tabValue, setTabValue] = React.useState(2);
+  
 	  
 
   if (!isLoggedIn) {
     return <LoginComponent setIsLoggedIn={setIsLoggedIn}/>
   } else { //Otherwise render the main screen
     return (
-      <div className="whole">
-        <TabBar setTabValue={setTabValue} />
-
-        <div className="main2">
-          <Paper elevation={10}>
-            <div className="page">
-              {tabValue === 0 && <HostEventComponent />}
-              {tabValue === 1 && <TemplateComponent />}
-              {tabValue === 2 && <JoinEventComponent />}
-              {tabValue === 3 && <EventHistoryComponent />}
-              {tabValue === 4 && <MeetingComponent/>}
-            </div>
-          </Paper>
-        </div>
-      </div>
+      <>
+      <Switch>
+        <Route component={MeetingComponent} path='/meeting' exact></Route>
+        <Route component={MenuScreen} path='/' ></Route>
+      </Switch>
+      </>
     );
   }
 }
@@ -209,10 +200,6 @@ const LoginComponent = ({setIsLoggedIn}) => {
   return (
 
     <>
-
-    <Switch>
-      <Route component={MeetingComponent} path='/meeting'></Route>
-    </Switch>
 
     <div className="whole">
       <div className="header">
@@ -385,6 +372,29 @@ const LoginComponent = ({setIsLoggedIn}) => {
     </>
   );
 
+}
+
+const MenuScreen = () => {
+
+  const [tabValue, setTabValue] = React.useState(2);
+
+  return (
+    <div className="whole">
+        <TabBar setTabValue={setTabValue} />
+
+        <div className="main2">
+          <Paper elevation={10}>
+            <div className="page">
+              {tabValue === 0 && <HostEventComponent />}
+              {tabValue === 1 && <TemplateComponent />}
+              {tabValue === 2 && <JoinEventComponent />}
+              {tabValue === 3 && <EventHistoryComponent />}
+              {tabValue === 4 && <MeetingComponent/>}
+            </div>
+          </Paper>
+        </div>
+      </div>
+  )
 }
 
 const TabBar = ({setTabValue}) => {

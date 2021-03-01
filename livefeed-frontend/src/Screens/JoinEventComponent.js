@@ -1,4 +1,5 @@
 import React, { useEffect/*, useState*/    } from "react";
+import { Link } from 'react-router-dom';
 import { TextField, Button, Checkbox } from '@material-ui/core';
 import 'fontsource-roboto';
 
@@ -36,8 +37,7 @@ const JoinEventComponent = () => {
                         className="input"
                         helperText={error ? 'Must be 8 Characters' : ' '}
                     />
-                    <Button variant="contained" color="primary" fullWidth> Search </Button>
-
+                    <Link to="/meeting"><Button variant="contained" color="primary" fullWidth> Search </Button></Link>
 
                 </div>
                 

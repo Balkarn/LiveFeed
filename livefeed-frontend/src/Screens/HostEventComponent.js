@@ -1,4 +1,5 @@
 import React, { useEffect/*, useState*/    } from "react";
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { TextField, Button, Checkbox } from '@material-ui/core';
 import 'fontsource-roboto';
@@ -39,7 +40,6 @@ const HostEventComponent = () => {
         let filtered_events = current_events.filter( event => event !== _event);
         setEvent(filtered_events); 
     }
-
 
     // Add new event -- SAVE BUTTON 
     const handleNewMeeting = () => {
@@ -176,7 +176,7 @@ const HostEventComponent = () => {
 
                         <ListItemSecondaryAction>
                             <IconButton>
-                                <PlayCircleOutlineIcon color="primary"/>
+                                <Link to="/meeting"><PlayCircleOutlineIcon color="primary"/></Link>
                             </IconButton>
                             <IconButton>
                                 <DeleteIcon color="error" onClick={() => handleDeleteEvent(event)} />
