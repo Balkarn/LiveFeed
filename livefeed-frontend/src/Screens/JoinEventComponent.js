@@ -7,7 +7,6 @@ const JoinEventComponent = () => {
     // Event Access Code
     const [currentEventCode, setCurrentEventCode] = React.useState('');
     const [join,setJoin] = React.useState(false);
-
     const handleCurrentEventCodeTextField = event => {
         setCurrentEventCode(event.target.value);
     }
@@ -34,6 +33,8 @@ const JoinEventComponent = () => {
                         helperText={false ? 'Must be 8 Characters' : ' '}
                     />
                     <Button variant="contained" color="primary" fullWidth> Search </Button>
+
+
                 </div>
                 
             </form>

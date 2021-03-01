@@ -5,6 +5,7 @@ import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import StepContent from '@material-ui/core/StepContent';
+import Slider from '@material-ui/core/Slider';
 import Typography from '@material-ui/core/Typography';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
@@ -25,6 +26,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import CreateIcon from '@material-ui/icons/Create';
 import BuildIcon from '@material-ui/icons/Build';
 import DeleteIcon from '@material-ui/icons/Delete';
+import '../App.css';
 
 const TemplateComponent = () => {
 
@@ -40,6 +42,32 @@ const TemplateComponent = () => {
     const [questionTypeValue, setQuestionTypeValue] = React.useState('written');
     const [activeStep, setActiveStep] = React.useState(0);
     const steps = getSteps();
+
+    const [sliderValue, setSliderValue] = React.useState([1, 5]);
+    const [option1, setOption1Value] = React.useState("");
+    const [option2, setOption2Value] = React.useState("");
+    const [option3, setOption3Value] = React.useState("");
+    const [option4, setOption4Value] = React.useState("");
+
+    const handleOption1 = event => {
+      var eventVal = event.target.value; //setting a state isn't synchronous so store value in a temp variable
+      setOption1Value(eventVal);
+    }
+
+    const handleOption2 = event => {
+      var eventVal = event.target.value; //setting a state isn't synchronous so store value in a temp variable
+      setOption2Value(eventVal);
+    }
+
+    const handleOption3 = event => {
+      var eventVal = event.target.value; //setting a state isn't synchronous so store value in a temp variable
+      setOption3Value(eventVal);
+    }
+
+    const handleOption4 = event => {
+      var eventVal = event.target.value; //setting a state isn't synchronous so store value in a temp variable
+      setOption4Value(eventVal);
+    }
 
     const handleRadioChange = (event) => {
       setQuestionTypeValue(event.target.value);
@@ -95,6 +123,13 @@ const TemplateComponent = () => {
     const addQuestion = () => {
       setActiveStep(0);
       setCreatingQ(true);
+      setCurrentQuestion('');
+      setQuestionTypeValue("written");
+      setOption1Value('');
+      setOption2Value('');
+      setOption3Value('');
+      setOption4Value('');
+      setSliderValue([1,5]);
     };
 
     const createQuestion = () => {
@@ -125,6 +160,10 @@ const TemplateComponent = () => {
       return ['Select Question Type (Only written for now)', 'Question Title', 'Question Details'];
     }
 
+    const handleSliderChange = (event, newValue) => {
+      setSliderValue(newValue);
+    };
+
     function getStepContent(step) {
       switch (step) {
         case 0:
@@ -132,7 +171,7 @@ const TemplateComponent = () => {
             <FormControl component="fieldset">
               <RadioGroup name="Question Type" value={questionTypeValue} onChange={handleRadioChange}>
                 <FormControlLabel value="written" control={<Radio />} label="Written Answer" />
-                <FormControlLabel value="score" control={<Radio />} label="Score 1-5" />
+                <FormControlLabel value="score" control={<Radio />} label="Numerical Score Slider" />
                 <FormControlLabel value="multichoice" control={<Radio />} label="Multiple Choice" />
               </RadioGroup>
             </FormControl> 
@@ -155,7 +194,79 @@ const TemplateComponent = () => {
             />
           );
         case 2:
-          return `Not applicable for written questions.`;
+          switch (questionTypeValue) {
+            case "written":
+              return <Typography>Not applicable for written questions.</Typography>;
+            case "score":
+              return (
+                <div>
+                  {"Select the minimum and maximum values for this question"}
+                  <Slider
+                    value={sliderValue}
+                    onChange={handleSliderChange}
+                    valueLabelDisplay="auto"
+                    max={10}
+                    min={-10}
+                    marks={[{value: -10, label:-10},{value:10,label:10},{value:0,label:0}]}
+                    valueLabelDisplay="on"
+                  />
+                </div>
+              );
+            case "multichoice":
+              return (
+                <div className="options">
+                  {"Enter the option descriptions for the multiple choice question"}
+                  <div className="textfield">
+                  <TextField
+                    font-size='16px'
+                    label='Option 1'
+                    value={option1}
+                    placeholder='Enter Option 1 Here'
+                    variant='outlined'
+                    required
+                    fullWidth="true"
+                    onChange={handleOption1}
+                  />
+                  </div>
+                  <div className="textfield">
+                  <TextField
+                    font-size='16px'
+                    label='Option 2'
+                    value={option2}
+                    placeholder='Enter Option 2 Here'
+                    variant='outlined'
+                    required
+                    fullWidth="true"
+                    onChange={handleOption2}
+                  />
+                  </div>
+                  <div className="textfield">
+                  <TextField
+                    font-size='16px'
+                    label='Option 3'
+                    value={option3}
+                    placeholder='Enter Option 3 Here'
+                    variant='outlined'
+                    required
+                    fullWidth="true"
+                    onChange={handleOption3}
+                  />
+                  </div>
+                  <div className="textfield">
+                  <TextField
+                    font-size='16px'
+                    label='Option 4'
+                    value={option4}
+                    placeholder='Enter Option 4 Here'
+                    variant='outlined'
+                    required
+                    fullWidth="true"
+                    onChange={handleOption4}
+                  />
+                  </div>
+                </div>
+              );
+          }
         default:
           return 'Unknown step';
       }
@@ -171,6 +282,13 @@ const TemplateComponent = () => {
 
     const Reset = () => {
       setActiveStep(0);
+      setCurrentQuestion('');
+      setQuestionTypeValue("written");
+      setOption1Value('');
+      setOption2Value('');
+      setOption3Value('');
+      setOption4Value('');
+      setSliderValue([1, 5]);
     };
     
     if (false) {
@@ -255,11 +373,10 @@ const TemplateComponent = () => {
                   ))}
                 </List>
                 
-                 
-                <Button onClick={addQuestion} variant="contained" color="primary">
+                <Button onClick={addQuestion} variant="text" color="primary">
                   Add Question
                 </Button>
-                <Button onClick={removeQuestion} variant="contained" color="secondary">
+                <Button onClick={removeQuestion} variant="text" color="secondary">
                   Remove Question
                 </Button>
               </DialogContent>    
