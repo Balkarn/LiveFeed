@@ -9,8 +9,9 @@ const QuestionList = ({role,template1}) => {
     const [allQuestion,setAllQuestion] = React.useState([]);
 
     const template = [
-        { id : 1 , name : 'Q1'},
-        { id : 2 , name : 'Q2'},
+        { id : 1 , name : 'Q1',content : 'content of Q1',type : 'Written Answer'},
+        { id : 2 , name : 'Q2',content : 'content of Q2',type : 'Score 1-5'},
+        { id : 4 , name : 'Q3',content : 'content of Q3',type : 'Multiple Choice'},
     ]// question published
 
     const PublishNewQuestion = () => {
@@ -39,11 +40,7 @@ const QuestionList = ({role,template1}) => {
 
     return (
         <div>
-            <Attendeepart template = {template}/>
-            <p>
-                The host will send in a template soon. Thank you for your patience.
-            </p>
-            <button style={{color : 'red'}}>leave</button>
+            <Hostpart template = {template}/>
         </div>
     )
 

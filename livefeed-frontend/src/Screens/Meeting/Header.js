@@ -10,8 +10,12 @@ const Header = ({username,sessionname,sessiondate,hostname,template}) => {
             <h3 >{sessiondate}</h3>
             <h3>Host:{hostname}</h3>
         <h3>{template}</h3> */}
-        {sessionname}
-        {sessiondate}        
+        <h1 textAlign='left'>
+            {sessionname}
+        </h1>     
+        <h2 textAlign='right'>
+            {sessiondate}
+        </h2>
         </div>
     )
 }
