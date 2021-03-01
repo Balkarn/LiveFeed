@@ -1,6 +1,7 @@
 # development
 **/__pycache__
 **/.idea
+*.swp
 
 # misc
 **/.DS_Store
