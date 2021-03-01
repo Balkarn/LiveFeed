@@ -32,3 +32,34 @@ code {
 .vertical-align {
   display: flex;
 }
+
+.meeting-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 75%;
+}
+
+.meeting-header h1{
+  margin-right: 2vh;
+}
+
+.meeting-content{
+  display: flex;
+  width: 80%;
+  justify-content: center;
+}
+
+.meeting-content p {
+  margin-left: 5vh;
+}
+
+.meeting-screen {
+  width: 100%;
+  height: 100vh;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}

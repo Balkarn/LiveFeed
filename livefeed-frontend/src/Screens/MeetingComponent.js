@@ -1,3 +1,4 @@
+import { Button } from '@material-ui/core';
 import React from 'react'
 
 import Header from './Meeting/Header'
@@ -15,16 +16,31 @@ const MeetingComponent = () => {
 
     return (
         <>
-        <Header username = {username} 
-                sessionname = {sessionname}
-                sessiondate = {sessiondate}
-                hostname = {hostname}
-                template = {template}
-                />
-        <QuestionList role = {username === hostname ? 'host' : 'attendee'}
-                      template1 = {template}
-                      />
+
+        <div className="meeting-screen">
+
+            <Header username = {username} 
+                    sessionname = {sessionname}
+                    sessiondate = {sessiondate}
+                    hostname = {hostname}
+                    template = {template}
+            />
+
+            <div className="meeting-content">
+            
+                <QuestionList role = {username === hostname ? 'host' : 'attendee'}
+                            template1 = {template}
+                            />
+
+                <p>Attendees List</p>   
+
+            </div>
+
+            <Button>End Session</Button>
+        </div>
+
         </>
+
     )
 }
 
