@@ -85,7 +85,7 @@ class SentimentAnalysis():
                 mood_feedback.append((feedbackid, 'neutral'))
             else:
                 mood_feedback.append((feedbackid, 'sad'))
-        self.db_obj.insert_mood(mood_feedback)
+        self.insert_mood(mood_feedback)
 
 class RepeatFeedbackAnalysis():
     def __init__(self, database):
