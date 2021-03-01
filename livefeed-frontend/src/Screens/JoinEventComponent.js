@@ -7,8 +7,12 @@ const JoinEventComponent = () => {
     // Event Access Code
     const [currentEventCode, setCurrentEventCode] = React.useState('');
     const [join,setJoin] = React.useState(false);
+
+    const [error, setError] = React.useState(false);
+
     const handleCurrentEventCodeTextField = event => {
         setCurrentEventCode(event.target.value);
+        setError(event.target.value.length != 8);
     }
 
     return (
@@ -23,14 +27,14 @@ const JoinEventComponent = () => {
                         label='Event Access Code'
                         value={currentEventCode}
                         placeholder='Enter the Event Access Code'
-                        variant='filled'
+                        variant='outlined'
                         required
-                        size="small"
+                        size="medium"
                         fullWidth="true"
                         onChange={handleCurrentEventCodeTextField}
-                        error={false}
+                        error={error}
                         className="input"
-                        helperText={false ? 'Must be 8 Characters' : ' '}
+                        helperText={error ? 'Must be 8 Characters' : ' '}
                     />
                     <Button variant="contained" color="primary" fullWidth> Search </Button>
 

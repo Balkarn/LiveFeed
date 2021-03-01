@@ -215,7 +215,7 @@ const HostEventComponent = () => {
                         label='Event Name'
                         value={currentEventName}
                         placeholder='Enter the name of your event'
-                        variant='filled'
+                        variant='outlined'
                         required
                         fullWidth="true"
                         onChange={handleCurrentEventNameTextField}
@@ -230,7 +230,7 @@ const HostEventComponent = () => {
                         label='Event Description'
                         value={currentEventDesc}
                         placeholder='Enter a description of your event'
-                        variant='filled'
+                        variant='outlined'
                         required
                         fullWidth="true"
                         onChange={handleCurrentEventDescTextField}
