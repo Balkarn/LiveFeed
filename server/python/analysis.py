@@ -2,20 +2,27 @@ import flair
 import mysql.connector as sql
 from configparser import ConfigParser
 
-def parse_config():
-    config = ConfigParser()
-    config.read('../config.ini')
-    return config
-
 class DatabaseInteraction():
     def __init__(self):
-        self.config = parse_config()
+        self.config = self.parse_config()
         self.dbconfig = dict(self.config.items('DatabaseCredentials'))
+	
+	def parse_config(self):
+		config = ConfigParser()
+		config.read('../config.ini')
+		return config
 
+class SentimentAnalysis():
+    def __init__(self, database):
+        self.flair_sentiment = flair.models.TextClassifier.load('sentiment')
+        self.new_feedback = False
+        self.last_id = 0
+        self.db_obj = database
+	
     def fetch_feedback(self):
         conn = None
         try:
-            conn = sql.connect(**self.dbconfig)
+            conn = sql.connect(**self.db_obj.dbconfig)
             c = conn.cursor()
             query = """
                    (SELECT FeedbackID, Feedback FROM feedback 
@@ -40,44 +47,15 @@ class DatabaseInteraction():
         finally:
             if conn:
                 conn.close()
+
 	
-	def fetch_meeting_feedback(self, meetingid):
-        conn = None
-        try:
-            conn = sql.connect(**self.dbconfig)
-            c = conn.cursor()
-            query = """
-                   (SELECT FeedbackID, Feedback FROM feedback 
-                   INNER JOIN general_feedback USING (FeedbackID) 
-                   WHERE FeedbackID > %s) 
-                   UNION 
-                   (SELECT FeedbackID, Feedback FROM feedback 
-                   INNER JOIN template_feedback USING (FeedbackID) 
-                   INNER JOIN template_questions USING (QuestionID) 
-                   WHERE MeetingID = %s AND 
-                   (QuestionType = 'open' OR QuestionType = 'multiple')
-                   ORDER BY FeedbackID; 
-               """
-            c.execute(query, (self.last_id, self.last_id))
-            result = c.fetchall()
-            if len(result) > 0:
-                self.last_id = result[-1][0]
-            return result
-        except sql.Error as err:
-            print(f"-[MySQL Error] {err}")
-            return []
-        finally:
-            if conn:
-                conn.close()
-
-
     def insert_mood(self, moods: list):
         if len(moods) == 0:
             return False
         query = "INSERT INTO mood_feedback VALUES (%s, %s)"
         conn = None
         try:
-            conn = sql.connect(**self.dbconfig)
+            conn = sql.connect(**self.db_obj.dbconfig)
             c = conn.cursor()
             c.executemany(query, moods)
             conn.commit()
@@ -88,16 +66,10 @@ class DatabaseInteraction():
         finally:
             if conn:
                 conn.close()
-
-class SentimentAnalysis():
-    def __init__(self, database):
-        self.flair_sentiment = flair.models.TextClassifier.load('sentiment')
-        self.new_feedback = False
-        self.last_id = 0
-        self.db_obj = database
+	
 
     def analyse(self):
-        feedback_list = self.db_obj.fetch_feedback()
+        feedback_list = self.fetch_feedback()
         mood_feedback = []
         if len(feedback_list) == 0:
             return False
@@ -177,28 +149,108 @@ class RepeatFeedbackAnalysis():
 		return chunk_data(pos_tokens, grammar)
 
 	def analyse(self, meetingid):
-        feedback_list = self.db_obj.fetch_meeting_feedback(meetingid)
+        feedback_list = self.fetch_meeting_feedback(meetingid)
 		processed_feedback = []
 		for feedback in feedback_list:
 			processed = clean_data[feedback]
 			processed = pos_tag(processed)
 			processed = chunk_noun_phrases(processed)
 			processed_feedback.append(processed)
+			print(processed)
+			print("")
 		"""
 		1) Either could 
 		- chunk based on pos 
 		- ngram then pos
 		2) 
 		3) 
-		"""
+		"""	
+
+	
+	def fetch_meeting_feedback(self, meetingid):
+        conn = None
+        try:
+            conn = sql.connect(**self.db_obj.dbconfig)
+            c = conn.cursor()
+            query = """
+                   (SELECT FeedbackID, Feedback FROM feedback 
+                   INNER JOIN general_feedback USING (FeedbackID) 
+                   WHERE FeedbackID > %s) 
+                   UNION 
+                   (SELECT FeedbackID, Feedback FROM feedback 
+                   INNER JOIN template_feedback USING (FeedbackID) 
+                   INNER JOIN template_questions USING (QuestionID) 
+                   WHERE MeetingID = %s AND 
+                   (QuestionType = 'open' OR QuestionType = 'multiple')
+                   ORDER BY FeedbackID; 
+               """
+            c.execute(query, (self.last_id, self.last_id))
+            result = c.fetchall()
+            if len(result) > 0:
+                self.last_id = result[-1][0]
+            return result
+        except sql.Error as err:
+            print(f"-[MySQL Error] {err}")
+            return []
+        finally:
+            if conn:
+                conn.close()
 
 class GenerateMeetingSummary():
     def __init__(self):
        pass
+	
+	
+	def get_moodaverage(self, meetingid):
+		conn = None
+        try:
+            conn = sql.connect(**self.db_obj.dbconfig)
+            c = conn.cursor()
+			query = """
+				SELECT avgs.UserID, moods.Mood
+				FROM moods
+				INNER JOIN 
+				(
+					SELECT UserID, ROUND(AVG(MoodVal)) AS moodavg FROM mood_feedback
+					INNER JOIN feedback USING (FeedbackID)
+					INNER JOIN moods USING (Mood)
+					WHERE MeetingID = %s
+					GROUP BY UserID
+				) avgs ON moods.MoodVal = avgs.moodavg
+				ORDER BY avgs.UserID;
+			"""
+            c.execute(query, (meetingid))
+			result = c.fetchall()
+			moodavgs = {}
+			avgmood = 0
+			if len(result) > 0:
+				for row in result:
+					moodavgs[row[0]] = row[1]
+					avgmood += row[2]
+				avgmood /= len(result)
 
-    def dosomething(self):
-        # do something
-        pass
+				query2 = """
+					SELECT Mood FROM moods
+					WHERE MoodVal = %s
+				"""
+				c.execute(query, ( int(round(avgmood)) ))
+				result2 = c.fetchall()
+				if len(result2) == 1:
+					moodavgs['totalavg'] = c.fetchall()[0][0]
+				
+            return moodavgs
+        except sql.Error as err:
+            print(f"-[MySQL Error] {err}")
+            return False
+        finally:
+            if conn:
+                conn.close()
+
+	def get_moodsummary(self)
+		pass
+		"Get a summary of the moods"
+	
+	def get_repeatfeedback(self)
 
 class Polling():
     def __init__(self, database):
