@@ -40,6 +40,36 @@ class DatabaseInteraction():
         finally:
             if conn:
                 conn.close()
+	
+	def fetch_meeting_feedback(self, meetingid):
+        conn = None
+        try:
+            conn = sql.connect(**self.dbconfig)
+            c = conn.cursor()
+            query = """
+                   (SELECT FeedbackID, Feedback FROM feedback 
+                   INNER JOIN general_feedback USING (FeedbackID) 
+                   WHERE FeedbackID > %s) 
+                   UNION 
+                   (SELECT FeedbackID, Feedback FROM feedback 
+                   INNER JOIN template_feedback USING (FeedbackID) 
+                   INNER JOIN template_questions USING (QuestionID) 
+                   WHERE MeetingID = %s AND 
+                   (QuestionType = 'open' OR QuestionType = 'multiple')
+                   ORDER BY FeedbackID; 
+               """
+            c.execute(query, (self.last_id, self.last_id))
+            result = c.fetchall()
+            if len(result) > 0:
+                self.last_id = result[-1][0]
+            return result
+        except sql.Error as err:
+            print(f"-[MySQL Error] {err}")
+            return []
+        finally:
+            if conn:
+                conn.close()
+
 
     def insert_mood(self, moods: list):
         if len(moods) == 0:
@@ -91,41 +121,76 @@ class RepeatFeedbackAnalysis():
         self.db_obj = database
 		self.feedback = {}
 	
-	"""
-	Import statements:
-	from nltk.tokenize import word_tokenize
-	from nltk.stem import WordNetLemmatizer
-	from nltk.util import ngrams
-	"""
-	
 	def replace_contractions(self, tokens):
 		abbrev_subs = {"n't": ["not"], "'cause": ["because"], "'ve": ["have"], "e'er": ["ever"], "g'day": ["good", "day"], "'d": ["would"], "'ll": ["will"], "'re": ["are"], "'m": ["am"], "ma'am": ["madam"], "ne'er": ["never"], "o'clock": ["of", "the", "clock"], "o'er": ["over"], "'t": ["it"], "y'all": ["you", "all"],"'n'": ["not"]}
 		# "'s": ["is"]
 		new_tokens = []
-		for word in tokens:
+		while len(tokens) > 0:
+			word = tokens.pop(0)
 			if '\'' not in word:
 				new_tokens.append(word)
 			else:
-				if word == "'s" and re.match(r"NN.*", pos_tag([new_tokens[-1])[0][1] ) != None:
-					return
+				if word in abbrev_subs:
+					tokens = abbrev_subs[word] + tokens #prepending to tokens allows recursion
+				else:
+					tokens = word_tokenize(word) + tokens
+		return new_tokens
 
 	def tokenize_data(self, text):
 		return word_tokenize(text)
 
 	def lemmatize_data(self, tokens):
-		pass
+		lemmatizer = WordNetLemmatizer()
+		return [lemmatizer.lemmatize(w) for w in tokens]
 	
-	def stopword_removal(self, tokens):
-		pass
+	def stopword_removal(self, tokens, stopwords):
+		filtered_text = list(filter(lambda word: word not in stopwords, tokens))
+		return filtered_text
+
+	def clean_data(self, text, stopwords):
+		clean_text = re.sub(r'[^\w\s-.]', '', text)
+		clean_text = clean_text.lower()
+		#
+		tokens = self.tokenize_data(clean_text)
+		tokens = self.replace_contractions(tokens)
+		tokens = lemmatize_data(tokens)
+		tokens = stopword_removal(tokens, ())
+		return tokens
 	
-	def 
+	def chunk_data(pos_tokens, parse_grammar):
+		parser = RegexpParser(parse_grammar)
+		filtered_data = parser.parse(pos_tokens)
+		#
+		print(list(filtered_data))
+		Tree.fromstring(str(filtered_data)).pretty_print()
+		return filtered_data
+	
+	def chunk_noun_phrases(pos_tokens):
+		grammar = """
+		NP: {(<PDT>?<DT>|<PRP.>) <RB>? (<JJ.*>|<RB.*>)* (<CC>?(<JJ.*>|<RB.*>))* (<NN><POS>?)+ (<CC>?(<NN><POS>?))*}
+		    {<.*> (<NN><POS>?)+ (<CC>?(<NN><POS>?))*}
+			{<PDT>?<DT>}
+			{<TO><PRP>} 
+		NOTNP: {<.*>*}
+		       }<NP>|<NP><CC><NP>{
+		"""
+		return chunk_data(pos_tokens, grammar)
 
-	def clean_data(self):
-		clean_text = re.sub
-
-	def analyse(self):
-		pass
-
+	def analyse(self, meetingid):
+        feedback_list = self.db_obj.fetch_meeting_feedback(meetingid)
+		processed_feedback = []
+		for feedback in feedback_list:
+			processed = clean_data[feedback]
+			processed = pos_tag(processed)
+			processed = chunk_noun_phrases(processed)
+			processed_feedback.append(processed)
+		"""
+		1) Either could 
+		- chunk based on pos 
+		- ngram then pos
+		2) 
+		3) 
+		"""
 
 class GenerateMeetingSummary():
     def __init__(self):
