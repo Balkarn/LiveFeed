@@ -98,10 +98,11 @@ class SentimentAnalysis():
 
 class RepeatFeedbackAnalysis():
 	def __init__(self, database):
-		self.last_id = 0
+		self.last_id = {}
 		self.db_obj = database
 		self.feedback = {}
 		self.model = gensim_dl.load('glove-twitter-200')
+		self.feedback_data = {}
 	
 	def replace_contractions(self, tokens):
 		abbrev_subs = {"n't": ["not"], "'cause": ["because"], "'ve": ["have"], "e'er": ["ever"], "g'day": ["good", "day"], "'d": ["would"], "'ll": ["will"], "'re": ["are"], "'m": ["am"], "ma'am": ["madam"], "ne'er": ["never"], "o'clock": ["of", "the", "clock"], "o'er": ["over"], "'t": ["it"], "y'all": ["you", "all"],"'n'": ["not"]}
@@ -178,12 +179,16 @@ class RepeatFeedbackAnalysis():
 			processed_feedback.append(processed)
 			phrases.append("".join([word[0] for word in processed]))
 			vectors.append(self.str_to_vec(processed))
-			print(processed)
-			print(phrases[-1])
-			print("")
-		similar_phrases = self.find_similar_phrases(vectors, phrases)
+		if meetingid in self.feedback_data:
+			self.feedback[data][0] += phrases
+			self.feedback[data][1] += processed_feedback
+			self.feedback[data][2] += vectors
+		else:
+			self.feedback_data[meetingid] = [phrases, processed_feedback, vectors]
 	
-	def find_similar_phrases(self, vectors, phrases):
+	def find_similar_phrases(self, meetingid):
+		vectors = self.feedback_data[meetingid][2]
+		phrases =  self.feedback_data[meetingid][0]
 		similar_phrases = []
 		for i in range(0, range(len(vectors))):
 			similar_phrases.append((phrases[i]))
@@ -194,8 +199,8 @@ class RepeatFeedbackAnalysis():
 
 			if len(similar_phrases[-1]) == 1:
 				similar_phrases.pop(-1)
+		self.feedback_data[meetingid].append(similar_phrases)
 		return similar_phrases
-
 	
 	def fetch_meeting_feedback(self, meetingid):
 		conn = None
@@ -205,19 +210,21 @@ class RepeatFeedbackAnalysis():
 			query = """
 				   (SELECT FeedbackID, Feedback FROM feedback 
 				   INNER JOIN general_feedback USING (FeedbackID) 
-				   WHERE FeedbackID > %s) 
+				   WHERE MeetingID = %s
+				   AND FeedbackID > %s) 
 				   UNION 
 				   (SELECT FeedbackID, Feedback FROM feedback 
 				   INNER JOIN template_feedback USING (FeedbackID) 
 				   INNER JOIN template_questions USING (QuestionID) 
-				   WHERE MeetingID = %s AND 
-				   (QuestionType = 'open' OR QuestionType = 'multiple')
+				   WHERE MeetingID = %s
+				   AND FeedbackID > %s
+				   AND (QuestionType = 'open' OR QuestionType = 'multiple')
 				   ORDER BY FeedbackID; 
 			   """
-			c.execute(query, (self.last_id, self.last_id))
+			c.execute(query, (meetingid, self.last_id[meetingid], meetingid, self.last_id[meetingid]))
 			result = c.fetchall()
 			if len(result) > 0:
-				self.last_id = result[-1][0]
+				self.last_id[meetingid] = result[-1][0]
 			return result
 		except sql.Error as err:
 			print(f"-[MySQL Error] {err}")
