@@ -24,28 +24,28 @@ Python --response--> reactjs
 """
 
 class FeedbackReceivedNotif(Resource):
-    def get(self):
-        if not sa.new_feedback:
-            sa.new_feedback = True
-            sa.analyse()
-        return True
+	def get(self):
+		if not sa.new_feedback:
+			sa.new_feedback = True
+			sa.analyse()
+		return True
 
 class RequestFeedback(Resource):
-    def post(self):
-        """
-            - Repeat DB queries to check whether the all the sent feedback has been processed
-                - Check whether last_id in sentimentanalysis and repeatfeedbackanalysis is >= the greatest feedbackid
-                with a corresponding entry in the templatefeedback table.
-            - Start with just polling and slowly layer on efficiency
-        """
-        templateid = request.form.get('templateid')
+	def post(self):
+		"""
+			- Repeat DB queries to check whether the all the sent feedback has been processed
+				- Check whether last_id in sentimentanalysis and repeatfeedbackanalysis is >= the greatest feedbackid
+				with a corresponding entry in the templatefeedback table.
+			- Start with just polling and slowly layer on efficiency
+		"""
+		templateid = request.form.get('templateid')
 		rfa_lastid = max(rfa.last_id.values())
-        return poll.checktemplatefeedback(templateid, sa.last_id, rfa_lastid)
+		return poll.checktemplatefeedback(templateid, sa.last_id, rfa_lastid)
 
 
 class MeetingEnded(Resource):
-    def post(self):
-        pass
+	def post(self):
+		pass
 
 
 # Flask Initialisation
@@ -64,4 +64,4 @@ api.add_resource(RequestFeedback, '/feedbackprocessed')
 api.add_resource(MeetingEnded, '/meetingended')
 
 if __name__ == "__main__":
-    app.run(port=5000)
+	app.run(port=5000)

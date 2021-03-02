@@ -9,7 +9,7 @@ import re
 
 import gensim.downloader as gensim_dl
 from gensim.models import Word2Vec
-from scipy.spacial.distance import cosine
+from scipy.spatial.distance import cosine
 
 class DatabaseInteraction():
 	def __init__(self):
@@ -180,9 +180,9 @@ class RepeatFeedbackAnalysis():
 			phrases.append("".join([word[0] for word in processed]))
 			vectors.append(self.str_to_vec(processed))
 		if meetingid in self.feedback_data:
-			self.feedback[data][0] += phrases
-			self.feedback[data][1] += processed_feedback
-			self.feedback[data][2] += vectors
+			self.feedback[meetingid][0] += phrases
+			self.feedback[meetingid][1] += processed_feedback
+			self.feedback[meetingid][2] += vectors
 		else:
 			self.feedback_data[meetingid] = [phrases, processed_feedback, vectors]
 	
