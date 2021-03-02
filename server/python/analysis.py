@@ -1,9 +1,15 @@
 import flair
 import mysql.connector as sql
 from configparser import ConfigParser
-from nltk import word_tokenize
-from nltk import WordNetLemmatizer, Tree, RegexpParser, pos_tag, re
 
+from nltk.tokenize import word_tokenize
+from nltk.stem import WordNetLemmatizer
+from nltk import Tree, RegexpParser, pos_tag
+import re
+
+import gensim.downloader as gensim_dl
+from gensim.models import Word2Vec
+from scipy.spacial.distance import cosine
 
 class DatabaseInteraction():
 	def __init__(self):
@@ -95,6 +101,7 @@ class RepeatFeedbackAnalysis():
 		self.last_id = 0
 		self.db_obj = database
 		self.feedback = {}
+		self.model = gensim_dl.load('glove-twitter-200')
 	
 	def replace_contractions(self, tokens):
 		abbrev_subs = {"n't": ["not"], "'cause": ["because"], "'ve": ["have"], "e'er": ["ever"], "g'day": ["good", "day"], "'d": ["would"], "'ll": ["will"], "'re": ["are"], "'m": ["am"], "ma'am": ["madam"], "ne'er": ["never"], "o'clock": ["of", "the", "clock"], "o'er": ["over"], "'t": ["it"], "y'all": ["you", "all"],"'n'": ["not"]}
@@ -150,24 +157,44 @@ class RepeatFeedbackAnalysis():
 			   }<NP>|<NP><CC><NP>{
 		"""
 		return self.chunk_data(pos_tokens, grammar)
-
+	
+	def str_to_vec(self, tokens):
+		vector = 0
+		for (word, word_type) in tokens:
+			vector += self.model.wv.get_vector(word)
+		return vector
+		
 	def analyse(self, meetingid):
 		feedback_list = self.fetch_meeting_feedback(meetingid)
+
 		processed_feedback = []
+		phrases = []
+		vectors = []
+		
 		for feedback in feedback_list:
 			processed = self.clean_data(feedback, ())
 			processed = pos_tag(processed)
 			processed = self.chunk_noun_phrases(processed)
 			processed_feedback.append(processed)
+			phrases.append("".join([word[0] for word in processed]))
+			vectors.append(self.str_to_vec(processed))
 			print(processed)
+			print(phrases[-1])
 			print("")
-		"""
-		1) Either could 
-		- chunk based on pos 
-		- ngram then pos
-		2) 
-		3) 
-		"""	
+		similar_phrases = self.find_similar_phrases(vectors, phrases)
+	
+	def find_similar_phrases(self, vectors, phrases):
+		similar_phrases = []
+		for i in range(0, range(len(vectors))):
+			similar_phrases.append((phrases[i]))
+			for j in range(i+1, range(len(vectors))):
+				distance = cosine(vectors[i], vectors[j])
+				if distance >= 0.9:
+					similar_phrases[-1].append(phrases[j])
+
+			if len(similar_phrases[-1]) == 1:
+				similar_phrases.pop(-1)
+		return similar_phrases
 
 	
 	def fetch_meeting_feedback(self, meetingid):
@@ -249,10 +276,6 @@ class GenerateMeetingSummary():
 			if conn:
 				conn.close()
 
-	def get_moodsummary(self):
-		pass
-		"Get a summary of the moods"
-	
 	def get_repeatfeedback(self):
 		pass
 
