@@ -176,7 +176,8 @@ const HostEventComponent = () => {
 
                         <ListItemSecondaryAction>
                             <IconButton>
-                                <Link to="/meeting"><PlayCircleOutlineIcon color="primary"/></Link>
+
+                            <Link to="meeting/James" ><PlayCircleOutlineIcon color="primary"/></Link>
                             </IconButton>
                             <IconButton>
                                 <DeleteIcon color="error" onClick={() => handleDeleteEvent(event)} />

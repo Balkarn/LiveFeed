@@ -1,7 +1,7 @@
 import React from 'react'
 
 
-const Header = ({username,sessionname,sessiondate,hostname,template}) => {
+const Header = ({sessionname,sessiondate,hostname}) => {
     
 
     return (

@@ -12,10 +12,10 @@ import IconButton from '@material-ui/core/IconButton';
 import Divider from '@material-ui/core/Divider';
 import BuildIcon from '@material-ui/icons/Build';
 
-const Hostpart = ({template}) => {
+const Hostpart = ({templateset}) => {
     const [modalisOpen, setModalisOpen] = React.useState(false);
     const [send,setSend] = React.useState(false);
-    const meetingtemplate = template;
+    const meetingtemplatset = templateset;
 
     function handleRemove (id) {
 
@@ -27,13 +27,13 @@ const Hostpart = ({template}) => {
             <div className="list">
                 
                 <List>
-                    {meetingtemplate.map(question => (
+                    {meetingtemplatset.map(question => (
                         <div>
                     {/* <p key = {question.id}>{question.name}</p> */}
                             <Divider /> 
                                 <ListItem>
                                     <ListItemText
-                                    primary={question.name}
+                                    primary={question.templatename}
                                     />
                                     <ListItemSecondaryAction>
                                     <IconButton>

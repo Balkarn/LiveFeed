@@ -1,47 +1,86 @@
 import { Button } from '@material-ui/core';
-import React from 'react'
+import React from 'react';
+import { Link ,useParams} from 'react-router-dom';
 
 import Header from './Meeting/Header'
 import QuestionList from './Meeting/QuestionList';
+import Reminder from './Meeting/Reminder';
+import templates from '../test-data/templates';
 
-const MeetingComponent = () => {
+const MeetingComponent = (props) => {
     
     const [username,setUsername] = React.useState("Da");
     const [sessionname,setSessionname] = React.useState("test");
     const [sessiondate,setSessiondate] = React.useState("24-Feb-21");
     const [hostname,setHostname] = React.useState("James");
-    const [template,setTemplate] = React.useState("template1");
+    let {id} = useParams();
 
+    const [templateset,setTemplateset] = React.useState([
+        { templateid : 1 , templatename : 'Name of T1',questioncontent : 'content of Q1',questiontype : 'Written Answer'},
+        { templateid : 2 , templatename : 'Name of T2',questioncontent : 'content of Q2',questiontype : 'Score 1-5'},
+        { templateid : 3 , templatename : 'Name of T3',questioncontent : 'content of Q3',questiontype : 'Multiple Choice'},
+    ]);
+    const [joinedattendee,setJoinedattendee] = React.useState([
+        {id : 1, name : 'attendee 1'},
+        {id : 2, name : 'attendee 2'},
+        {id : 3, name : 'attendee 3'},
+    ]);
 
+    if(id === 'James'){
+        return (
+            <>
+    
+            <div className="meeting-screen">
+                <Header sessionname = {sessionname}
+                        sessiondate = {sessiondate}
+                        hostname = {hostname}
+                />
+    
+                <div className="meeting-content">
+                
+                    <QuestionList role = {'host'}
+                                templateset = {templateset}
+                                />
+                    <Reminder role = {'host'}/>
+                </div>
+                <Link to="/">
+                <Button>End Session</Button>
+                </Link>
+                
+            </div>
+    
+            </>
+    
+        )
+    }else{
 
     return (
         <>
 
         <div className="meeting-screen">
 
-            <Header username = {username} 
-                    sessionname = {sessionname}
+            <Header sessionname = {sessionname}
                     sessiondate = {sessiondate}
                     hostname = {hostname}
-                    template = {template}
             />
 
             <div className="meeting-content">
             
                 <QuestionList role = {username === hostname ? 'host' : 'attendee'}
-                            template1 = {template}
+                            templateset = {templateset}
                             />
-
-                <p>Attendees List</p>   
-
+                <Reminder role = {username === hostname ? 'host' : 'attendee'}/>
             </div>
-
+            <Link to="/">
             <Button>End Session</Button>
+            </Link>
+            
         </div>
 
         </>
 
     )
+    }
 }
 
 export default MeetingComponent;

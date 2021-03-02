@@ -39,7 +39,7 @@ export default function Main() {
     return (
       <>
       <Switch>
-        <Route component={MeetingComponent} path='/meeting' exact></Route>
+        <Route component={MeetingComponent} path='/meeting/:id' exact></Route>
         <Route component={MenuScreen} path='/' ></Route>
       </Switch>
       </>
@@ -389,7 +389,7 @@ const MenuScreen = () => {
               {tabValue === 1 && <TemplateComponent />}
               {tabValue === 2 && <JoinEventComponent />}
               {tabValue === 3 && <EventHistoryComponent />}
-              {tabValue === 4 && <MeetingComponent/>}
+              {tabValue === 4 && <MeetingComponent />}
             </div>
           </Paper>
         </div>

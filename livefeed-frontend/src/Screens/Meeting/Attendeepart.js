@@ -14,25 +14,25 @@ import IconButton from '@material-ui/core/IconButton';
 import Divider from '@material-ui/core/Divider';
 import BuildIcon from '@material-ui/icons/Build';
 
-const Attendeepart = ({template}) => {
+const Attendeepart = ({templateset}) => {
     const [modalisOpen, setModalisOpen] = React.useState(false);
     // const [meetingtemplate, setMeetingtemplate] = React.useState(template);
     const [publishedQuestion,setPublishedQuestion] = React.useState([]);
     const [answer,setAnswer] = React.useState('');
-    const meetingtemplate = template;
+    const meetingtemplateset = templateset;
 
     return (
         <div>
             <div className="list">
                 
                 <List>
-                    {meetingtemplate.map(question => (
+                    {meetingtemplateset.map(question => (
                         <div>
                     {/* <p key = {question.id}>{question.name}</p> */}
                             <Divider /> 
                                 <ListItem>
                                     <ListItemText
-                                    primary={question.name}
+                                    primary={question.templatename}
                                     />
                                     <ListItemSecondaryAction>
                                     <IconButton>
@@ -48,7 +48,7 @@ const Attendeepart = ({template}) => {
                                 <DialogTitle id="form-dialog-title">Answer</DialogTitle>
                                 <DialogContent>
                                     <DialogContentText>
-                                        {question.content}
+                                        {question.questioncontent}
                                     </DialogContentText>
                                     <TextField
                                         autoFocus
