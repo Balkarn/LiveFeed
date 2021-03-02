@@ -464,8 +464,13 @@ class DatabaseInteraction {
 		$this->connect();
 		$this->conn->autocommit(false);
 		try {
-			$this->prepared_stmt("INSERT INTO feedback VALUES (NULL, ?, ?, now())", false, true,
-					"ii", $userId, $meetingId);
+			if ($userID == 'null') {
+				$this->prepared_stmt("INSERT INTO feedback VALUES (NULL, NULL, ?, now())", false, true,
+						"i", $meetingId);
+			} else {
+				$this->prepared_stmt("INSERT INTO feedback VALUES (NULL, ?, ?, now())", false, true,
+						"ii", $userId, $meetingId);
+			}
 			$id = $this->conn->insert_id;
 
 			$this->prepared_stmt("INSERT INTO general_feedback VALUES (?,?)", false, true,"is",
@@ -485,8 +490,13 @@ class DatabaseInteraction {
 		$this->connect();
 		$this->conn->autocommit(false);
 		try {
-			$this->prepared_stmt("INSERT INTO feedback VALUES (NULL, ?, ?, CURRENT_TIMESTAMP)", false, true,
-					"ii", $userId, $meetingId);
+			if ($userID == 'null') {
+				$this->prepared_stmt("INSERT INTO feedback VALUES (NULL, NULL, ?, now())", false, true,
+						"i", $meetingId);
+			} else {
+				$this->prepared_stmt("INSERT INTO feedback VALUES (NULL, ?, ?, now())", false, true,
+						"ii", $userId, $meetingId);
+			}
 			$id = $this->conn->insert_id;
 
 			$this->prepared_stmt("INSERT INTO mood_feedback VALUES (?,?)", false, true, "is",
@@ -506,8 +516,13 @@ class DatabaseInteraction {
 		$this->connect();
 		$this->conn->autocommit(false);
 		try {
-			$this->prepared_stmt("INSERT INTO feedback VALUES (NULL, ?, ?, CURRENT_TIMESTAMP)", false, true,
-					"ii", $userId, $meetingId);
+			if ($userID == 'null') {
+				$this->prepared_stmt("INSERT INTO feedback VALUES (NULL, NULL, ?, now())", false, true,
+						"i", $meetingId);
+			} else {
+				$this->prepared_stmt("INSERT INTO feedback VALUES (NULL, ?, ?, now())", false, true,
+						"ii", $userId, $meetingId);
+			}
 			$id = $this->conn->insert_id;
 
 			$this->prepared_stmt("INSERT INTO template_feedback VALUES (?,?,?)", false, true,
