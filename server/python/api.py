@@ -15,6 +15,14 @@ Asynchronous:
 
 """
 
+"""
+PHP --send notifications--> python
+ReactJS --send request--> python
+	- for historic meetings, query the php
+	- for recent meetings, query 
+Python --response--> reactjs
+"""
+
 class FeedbackReceivedNotif(Resource):
     def get(self):
         if not sa.new_feedback:
@@ -31,7 +39,8 @@ class RequestFeedback(Resource):
             - Start with just polling and slowly layer on efficiency
         """
         templateid = request.form.get('templateid')
-        return poll.checktemplatefeedback(templateid, sa.last_id, rfa.last_id)
+		rfa_lastid = max(rfa.last_id.values())
+        return poll.checktemplatefeedback(templateid, sa.last_id, rfa_lastid)
 
 
 class MeetingEnded(Resource):
@@ -55,4 +64,4 @@ api.add_resource(RequestFeedback, '/feedbackprocessed')
 api.add_resource(MeetingEnded, '/meetingended')
 
 if __name__ == "__main__":
-    pass
+    app.run(port=5000)
