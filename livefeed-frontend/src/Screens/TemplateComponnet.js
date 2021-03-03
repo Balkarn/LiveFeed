@@ -136,13 +136,17 @@ const TemplateComponent = () => {
       //  [[question, questionType, options1..4, ratingmin..max], [...]]
       var tempArray = [];
       tempArray.push(currentQuestion);
-      tempArray.push(questionTypeValue);
       switch (questionTypeValue) {
+        case "written":
+          tempArray.push("open");
+          break;
         case "score":
+          tempArray.push("rating");
           tempArray.push(sliderValue[0]);
           tempArray.push(sliderValue[1]);
           break;
         case "multichoice":
+          tempArray.push("multiple");
           tempArray.push(option1);
           tempArray.push(option2);
           tempArray.push(option3);
