@@ -26,6 +26,7 @@ import HostEventComponent from './Screens/HostEventComponent';
 import JoinEventComponent from './Screens/JoinEventComponent';
 import EventHistoryComponent from './Screens/EventHistoryComponent';
 import MeetingComponent from './Screens/MeetingComponent'
+import AccountSettingComponent from './Screens/AccountSettingComponent';
 
 export default function Main() {
 
@@ -389,7 +390,7 @@ const MenuScreen = () => {
               {tabValue === 1 && <TemplateComponent />}
               {tabValue === 2 && <JoinEventComponent />}
               {tabValue === 3 && <EventHistoryComponent />}
-              {tabValue === 4 && <MeetingComponent />}
+              {tabValue === 4 && <AccountSettingComponent />}
             </div>
           </Paper>
         </div>
