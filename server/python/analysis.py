@@ -5,6 +5,7 @@ from configparser import ConfigParser
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from nltk import Tree, RegexpParser, pos_tag
+from nltk.corpus import webtext, twitter_samples, knbc
 import re
 
 import gensim.downloader as gensim_dl
@@ -42,7 +43,7 @@ class SentimentAnalysis():
 				   INNER JOIN template_feedback USING (FeedbackID) 
 				   INNER JOIN template_questions USING (QuestionID) 
 				   WHERE FeedbackID > %s AND 
-				   (QuestionType = 'open' OR QuestionType = 'multiple')
+				   (QuestionType = 'open' OR QuestionType = 'multiple'))
 				   ORDER BY FeedbackID; 
 			   """
 			c.execute(query, (self.last_id, self.last_id))
@@ -101,7 +102,9 @@ class RepeatFeedbackAnalysis():
 		self.last_id = {}
 		self.db_obj = database
 		self.feedback = {}
-		self.model = gensim_dl.load('glove-twitter-200')
+		#self.model = gensim_dl.load('word2vec-google-news-300')
+		self.corpus = knbc.sents()
+		self.model = Word2Vec(self.corpus)
 		self.feedback_data = {}
 	
 	def replace_contractions(self, tokens):
@@ -131,7 +134,7 @@ class RepeatFeedbackAnalysis():
 		return filtered_text
 
 	def clean_data(self, text, stopwords):
-		clean_text = re.sub(r'[^\w\s-.]', '', text)
+		clean_text = re.sub(r"[^.\-\w\s]", "", text)
 		clean_text = clean_text.lower()
 		#
 		tokens = self.tokenize_data(clean_text)
@@ -150,12 +153,11 @@ class RepeatFeedbackAnalysis():
 	
 	def chunk_noun_phrases(self, pos_tokens):
 		grammar = """
-		NP: {(<PDT>?<DT>|<PRP.>) <RB>? (<JJ.*>|<RB.*>)* (<CC>?(<JJ.*>|<RB.*>))* (<NN><POS>?)+ (<CC>?(<NN><POS>?))*}
-			{<.*> (<NN><POS>?)+ (<CC>?(<NN><POS>?))*}
-			{<PDT>?<DT>}
-			{<TO><PRP>} 
-		NOTNP: {<.*>*}
-			   }<NP>|<NP><CC><NP>{
+				AJJP:  {<RB>*(<JJ.*>|<RB.>|<CD>)*}
+                       {<PDT>} 
+                CCP:   {<CC>}
+                NO:    {<NN.*>+} 
+                       {<DT>$|<PRP>}
 		"""
 		return self.chunk_data(pos_tokens, grammar)
 	
@@ -172,13 +174,19 @@ class RepeatFeedbackAnalysis():
 		phrases = []
 		vectors = []
 		
-		for feedback in feedback_list:
+		for (feedbackid, feedback) in feedback_list:
 			processed = self.clean_data(feedback, ())
 			processed = pos_tag(processed)
 			processed = self.chunk_noun_phrases(processed)
-			processed_feedback.append(processed)
-			phrases.append("".join([word[0] for word in processed]))
-			vectors.append(self.str_to_vec(processed))
+			for chunk in processed:
+				if isinstance(chunk, Tree) and chunk.label() == "AJJP":
+					if len(chunk) == 1:
+						chunk = list(chunk)
+					processed_feedback.append(chunk)
+					phrases.append(" ".join(word[0] for word in chunk))
+					vectors.append(self.str_to_vec(chunk))
+		phrases.append('very hard')
+		vectors.append(self.str_to_vec(pos_tag(['very', 'hard'])))
 		if meetingid in self.feedback_data:
 			self.feedback[meetingid][0] += phrases
 			self.feedback[meetingid][1] += processed_feedback
@@ -188,14 +196,14 @@ class RepeatFeedbackAnalysis():
 	
 	def find_similar_phrases(self, meetingid):
 		vectors = self.feedback_data[meetingid][2]
-		phrases =  self.feedback_data[meetingid][0]
+		phrases = self.feedback_data[meetingid][0]
 		similar_phrases = []
-		for i in range(0, range(len(vectors))):
-			similar_phrases.append((phrases[i]))
-			for j in range(i+1, range(len(vectors))):
+		for i in range(0, len(vectors)):
+			similar_phrases.append([phrases[i]])
+			for j in range(i+1, len(vectors)):
 				distance = cosine(vectors[i], vectors[j])
-				if distance >= 0.9:
-					similar_phrases[-1].append(phrases[j])
+				if distance <= 0.5:
+					similar_phrases[-1].append((phrases[j], distance))
 
 			if len(similar_phrases[-1]) == 1:
 				similar_phrases.pop(-1)
@@ -203,24 +211,26 @@ class RepeatFeedbackAnalysis():
 		return similar_phrases
 	
 	def fetch_meeting_feedback(self, meetingid):
+		if meetingid not in self.last_id:
+			self.last_id[meetingid] = 0
 		conn = None
 		try:
 			conn = sql.connect(**self.db_obj.dbconfig)
 			c = conn.cursor()
 			query = """
-				   (SELECT FeedbackID, Feedback FROM feedback 
-				   INNER JOIN general_feedback USING (FeedbackID) 
-				   WHERE MeetingID = %s
-				   AND FeedbackID > %s) 
-				   UNION 
-				   (SELECT FeedbackID, Feedback FROM feedback 
-				   INNER JOIN template_feedback USING (FeedbackID) 
-				   INNER JOIN template_questions USING (QuestionID) 
-				   WHERE MeetingID = %s
-				   AND FeedbackID > %s
-				   AND (QuestionType = 'open' OR QuestionType = 'multiple')
-				   ORDER BY FeedbackID; 
-			   """
+				(SELECT FeedbackID, Feedback FROM feedback 
+				INNER JOIN general_feedback USING (FeedbackID) 
+				WHERE MeetingID = %s
+				AND FeedbackID > %s) 
+				UNION 
+				(SELECT FeedbackID, Feedback FROM feedback 
+				INNER JOIN template_feedback USING (FeedbackID) 
+				INNER JOIN template_questions USING (QuestionID) 
+				WHERE MeetingID = %s
+				AND FeedbackID > %s
+				AND (QuestionType = 'open' OR QuestionType = 'multiple'))
+				ORDER BY FeedbackID; 
+			"""
 			c.execute(query, (meetingid, self.last_id[meetingid], meetingid, self.last_id[meetingid]))
 			result = c.fetchall()
 			if len(result) > 0:
@@ -234,17 +244,16 @@ class RepeatFeedbackAnalysis():
 				conn.close()
 
 class GenerateMeetingSummary():
-	def __init__(self):
-	   pass
-	
-	
+	def __init__(self, database):
+		self.db_obj = database
+
 	def get_moodaverage(self, meetingid):
 		conn = None
 		try:
 			conn = sql.connect(**self.db_obj.dbconfig)
 			c = conn.cursor()
 			query = """
-				SELECT avgs.UserID, moods.Mood
+				SELECT avgs.UserID, moods.Mood, avgs.moodavg
 				FROM moods
 				INNER JOIN 
 				(
@@ -256,25 +265,32 @@ class GenerateMeetingSummary():
 				) avgs ON moods.MoodVal = avgs.moodavg
 				ORDER BY avgs.UserID;
 			"""
-			c.execute(query, (meetingid))
+			c.execute(query, (meetingid, ))
 			result = c.fetchall()
 			moodavgs = {}
 			avgmood = 0
-			if len(result) > 0:
-				for row in result:
-					moodavgs[row[0]] = row[1]
-					avgmood += row[2]
-				avgmood /= len(result)
+			if len(result) == 0:
+				return {}
+			for row in result:
+				moodavgs[row[0]] = row[1]
+				avgmood += row[2]
+			avgmood /= len(result)
 
-				query2 = """
-					SELECT Mood FROM moods
-					WHERE MoodVal = %s
-				"""
-				c.execute(query, ( int(round(avgmood)) ))
-				result2 = c.fetchall()
-				if len(result2) == 1:
-					moodavgs['totalavg'] = c.fetchall()[0][0]
-				
+			query2 = """
+				SELECT Mood FROM moods
+				WHERE MoodVal = %s
+				LIMIT 1
+			"""
+			c.execute(query2, ( int(round(avgmood)), ))
+			result2 = c.fetchall()
+			if len(result2) == 0:
+				return {}
+			moodavgs['totalavg'] = result2[0][0]
+			query3 = """
+				INSERT INTO mood_average VALUES (%s, %s)
+			"""
+			c.execute(query3, (meetingid, moodavgs['totalavg']))
+			conn.commit()
 			return moodavgs
 		except sql.Error as err:
 			print(f"-[MySQL Error] {err}")
@@ -317,11 +333,38 @@ class Polling():
 			if conn:
 				conn.close()
 
+class Testing():
+	def __init__(self):
+		print("Initialising...")
+		self.dbi = DatabaseInteraction()
+		print("DB Initialised")
+		self.sa = SentimentAnalysis(self.dbi)
+		print("Sentiment Analysis Initialised")
+		self.popular = RepeatFeedbackAnalysis(self.dbi)
+		print("Repeat Feedback Initialised")
+		self.summary = GenerateMeetingSummary(self.dbi)
+		print("Meeting Summary Initialised")
+		self.poll = Polling(self.dbi)
+		print("Polling Initialised")
+		print("Initalisation Complete")
+
+	def test_sa(self):
+		self.sa.analyse()
+
+	def test_sa_summary(self, meetingid):
+		self.summary.get_moodaverage(meetingid)
+
+	def test_popular(self, meetingid):
+		self.popular.analyse(meetingid)
+		print(self.popular.find_similar_phrases(meetingid))
+
+	def test_popular_summary(self):
+		pass
 
 if __name__ == "__main__":
-	dbi = DatabaseInteraction()
-	sa = SentimentAnalysis(dbi)
-	popular = RepeatFeedbackAnalysis(dbi)
-	poll = Polling(dbi)
-	print(poll.checktemplatefeedback(1, sa.last_id, popular.last_id))
-	sa.analyse()
+	test = Testing()
+	test.test_sa()
+	test.test_sa_summary(1)
+	test.test_popular(1)
+
+

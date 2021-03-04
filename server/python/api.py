@@ -40,7 +40,7 @@ class RequestFeedback(Resource):
 		"""
 		templateid = request.form.get('templateid')
 		rfa_lastid = max(rfa.last_id.values())
-		return poll.checktemplatefeedback(templateid, sa.last_id, rfa_lastid)
+		return polling.checktemplatefeedback(templateid, sa.last_id, rfa_lastid)
 
 
 class MeetingEnded(Resource):
