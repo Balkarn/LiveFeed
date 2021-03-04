@@ -134,12 +134,13 @@ class DatabaseInteraction {
 	}
 
 	function check_meeting_templates($userId, $templates) {
-		$this->connect();
-		if (count($templates) >= 1) {
-			$placeholders = str_repeat("?, ", count($templates)-1);
-			$placeholders .= "?";
-			$placeholders = "(".$placeholders.")";
+		if (count($templates) == 0) {
+			return true;
 		}
+		$this->connect();
+		$placeholders = str_repeat("?, ", count($templates)-1);
+		$placeholders .= "?";
+		$placeholders = "(".$placeholders.")";
 		$varTypes = "i".str_repeat("i", count($templates));
 		if (!($stmt = $this->prepared_stmt(
 				"SELECT COUNT(*) FROM templates WHERE templatecreator=? AND templateid IN ".$placeholders, true, false,
@@ -303,23 +304,23 @@ class DatabaseInteraction {
 					"sssi", $meetingName, $code, $meetingStart, $userId);
 
 			$id = $this->conn->insert_id;
-			if (count($templates) >= 1) {
-				$placeholders = str_repeat("(?,?), ", count($templates)-1);
-				$placeholders .= "(?,?)";
-			}
-			$varTypes = str_repeat("ii", count($templates));
-			$vars = array();
-			foreach ($templates as $t) {
-				$vars[] = $t;
-				$vars[] = $id;
-			}
 
-			$code = $id.$code;
+			$code = $id."-".$code;
 
 			$this->prepared_stmt("UPDATE meetings SET meetingcode=? WHERE meetingid=?", false, true,
 					"si", $code, $id);
 
-			$this->prepared_stmt("INSERT INTO meeting_templates VALUES ".$placeholders, false, true, $varTypes, ...$vars);
+			if (count($templates) >= 1) {
+				$varTypes = str_repeat("ii", count($templates));
+				$vars = array();
+				foreach ($templates as $t) {
+					$vars[] = $t;
+					$vars[] = $id;
+				}
+				$placeholders = str_repeat("(?,?), ", count($templates)-1);
+				$placeholders .= "(?,?)";
+				$this->prepared_stmt("INSERT INTO meeting_templates VALUES ".$placeholders, false, true, $varTypes, ...$vars);
+			}
 
 			$this->conn->autocommit(true);
 			return true;
@@ -464,7 +465,7 @@ class DatabaseInteraction {
 		$this->connect();
 		$this->conn->autocommit(false);
 		try {
-			if ($userID == 'null') {
+			if ($userId == 'null') {
 				$this->prepared_stmt("INSERT INTO feedback VALUES (NULL, NULL, ?, now())", false, true,
 						"i", $meetingId);
 			} else {
@@ -490,7 +491,7 @@ class DatabaseInteraction {
 		$this->connect();
 		$this->conn->autocommit(false);
 		try {
-			if ($userID == 'null') {
+			if ($userId == 'null') {
 				$this->prepared_stmt("INSERT INTO feedback VALUES (NULL, NULL, ?, now())", false, true,
 						"i", $meetingId);
 			} else {
@@ -516,7 +517,7 @@ class DatabaseInteraction {
 		$this->connect();
 		$this->conn->autocommit(false);
 		try {
-			if ($userID == 'null') {
+			if ($userId == 'null') {
 				$this->prepared_stmt("INSERT INTO feedback VALUES (NULL, NULL, ?, now())", false, true,
 						"i", $meetingId);
 			} else {

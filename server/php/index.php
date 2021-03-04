@@ -49,7 +49,7 @@ if (!isset($_POST['error'])) {
 	    }
 	    break;
 	  case 'addmeeting':
-	    if (!is_array($_POST['arguments']) || count($_POST['arguments']) < 5) {
+	    if (!is_array($_POST['arguments']) || count($_POST['arguments']) < 4) {
 	      $reqResult['error'] = "Invalid arguments used.";
 	    } else { # argument format: meetingName, meetingStart, userId, [templateId1, Id2, ...]
 	      $database->add_meeting(...$_POST['arguments']);

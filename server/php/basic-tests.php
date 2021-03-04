@@ -60,7 +60,7 @@ function insert_data() {
 
 	$meetings = array(
 			array("Test Meeting 1", "2021-02-19 10:10:10", "2", array(1,2)),
-			array("Test Meeting 2", "2021-02-19 10:10:10", "2", array(3))
+			array("Test Meeting 2", "2021-02-19 10:10:10", "2", array())
 	);
 	foreach ($meetings as $meeting) {
 		$database->add_meeting(...$meeting);
@@ -125,7 +125,7 @@ function insert_data() {
 	echo "\nAdd mood feedback: \n";
 	var_dump($reqResult);
 }
-#insert_data();
+insert_data();
 echo "\nGet User Templates: \n";
 $database->get_user_templates(2);
 var_dump($reqResult);
