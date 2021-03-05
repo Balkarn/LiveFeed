@@ -5,7 +5,6 @@ import { Link ,useParams} from 'react-router-dom';
 import Header from './Meeting/Header'
 import QuestionList from './Meeting/QuestionList';
 import Reminder from './Meeting/Reminder';
-import templates from '../test-data/templates';
 
 const MeetingComponent = (props) => {
     

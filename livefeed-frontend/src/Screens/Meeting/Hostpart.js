@@ -14,13 +14,13 @@ import BuildIcon from '@material-ui/icons/Build';
 
 const Hostpart = ({templateset}) => {
     const [modalisOpen, setModalisOpen] = React.useState(false);
+    const [graphisOpen,setGraphisOpen] = React.useState(false);
     const [send,setSend] = React.useState(false);
+    const [templatesend,setTemplatesend] = React.useState([]);
     const meetingtemplatset = templateset;
 
-    function handleRemove (id) {
-
-    }
-
+    const [senttemplates,setSenttemplates] = React.useState([]);
+    const [current,setCurrent] = React.useState([]);
 
     return (
         <div>
@@ -31,38 +31,62 @@ const Hostpart = ({templateset}) => {
                         <div>
                     {/* <p key = {question.id}>{question.name}</p> */}
                             <Divider /> 
-                                <ListItem>
+                                <ListItem key={question.templateid}>
                                     <ListItemText
                                     primary={question.templatename}
                                     />
                                     <ListItemSecondaryAction>
-                                    <IconButton>
-                                        <BuildIcon color="primary" onClick = {()=>setModalisOpen(true)}/>
-                                    </IconButton>
+                                    {senttemplates.includes(question) ? <IconButton>
+                                        <BuildIcon color="secondary" onClick = {()=>{setGraphisOpen(true);
+                                                                                  }}/>
+                                    </IconButton> : <IconButton>
+                                        <BuildIcon color="primary" onClick = {()=>{setModalisOpen(true);
+                                                                                    setCurrent(question)
+                                                                                  }}/>
+                                    </IconButton>}
+                                    
                                     </ListItemSecondaryAction>
                                 </ListItem>
                             <Divider/>
-                            <Dialog open={modalisOpen} 
-                                    onClose={()=>setModalisOpen(false)} 
-                                    aria-labelledby="form-dialog-title"
-                                    fullWidth = 'xs'>
-                                <DialogTitle id="form-dialog-title">Send?</DialogTitle>
-                                <DialogContent>
-                                </DialogContent>
-                                <DialogActions>
-                                    <Button onClick={()=>{setModalisOpen(false); setSend(true)}} color="primary">
-                                        Send
-                                    </Button>
-                                    <Button onClick={()=>setModalisOpen(false)} color="primary">
-                                        Cancel
-                                    </Button>
-                                </DialogActions>
-                            </Dialog>  
-                        
                         </div>
                     
                     ))}
                 </List> 
+                <Dialog open={modalisOpen} 
+                        onClose={()=>setModalisOpen(false)} 
+                        aria-labelledby="form-dialog-title"
+                        fullWidth = 'xs'>
+                    <DialogTitle id="form-dialog-title">Send?</DialogTitle>
+                    <DialogContent>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={()=>{setModalisOpen(false);
+                                                setSend(true);
+                                                setTemplatesend(current);
+                                                senttemplates.push(current);
+                                        }} 
+                                color="primary">
+                            Send
+                        </Button>
+                        <Button onClick={()=>setModalisOpen(false)} color="primary">
+                            Cancel
+                        </Button>
+                    </DialogActions>
+
+                </Dialog>  
+                <Dialog open={graphisOpen} 
+                        onClose={()=>setGraphisOpen(false)} 
+                        aria-labelledby="form-dialog-title"
+                        fullWidth = 'xs'>
+                    <DialogTitle id="form-dialog-title">Graph</DialogTitle>
+                    <DialogContent>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={()=>setGraphisOpen(false)} color="primary">
+                            Cancel
+                        </Button>
+                    </DialogActions>
+                </Dialog>  
             </div>
         </div>
 

@@ -21,6 +21,11 @@ const Attendeepart = ({templateset}) => {
     const [answer,setAnswer] = React.useState('');
     const meetingtemplateset = templateset;
 
+
+    const handleClose = () => {
+        setModalisOpen(false);
+    }
+
     return (
         <div>
             <div className="list">
@@ -60,7 +65,7 @@ const Attendeepart = ({templateset}) => {
                                         onChange = {(event)=>setAnswer(event.target.value)}/>
                                 </DialogContent>
                                 <DialogActions>
-                                    <Button onClick={()=>setModalisOpen(false)} color="primary">
+                                    <Button onClick={handleClose} color="primary">
                                         Send
                                     </Button>
                                     <Button onClick={()=>{
