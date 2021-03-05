@@ -13,17 +13,27 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import IconButton from '@material-ui/core/IconButton';
 import Divider from '@material-ui/core/Divider';
 import BuildIcon from '@material-ui/icons/Build';
+import EditIcon from '@material-ui/icons/Edit';
 
 const Attendeepart = ({templateset}) => {
     const [modalisOpen, setModalisOpen] = React.useState(false);
     // const [meetingtemplate, setMeetingtemplate] = React.useState(template);
     const [publishedQuestion,setPublishedQuestion] = React.useState([]);
     const [answer,setAnswer] = React.useState('');
-    const meetingtemplateset = templateset;
+    const [current,setCurrent] = React.useState([]);
+    const [meetingtemplateset,setMeetingtemplate] = React.useState(templateset);
 
 
-    const handleClose = () => {
+
+    const handleSend = () => {
+        let filtered_events = meetingtemplateset.filter( event => event !== current);
+        setMeetingtemplate(filtered_events); 
+        handleCancel();
+    }
+
+    const handleCancel = () => {
         setModalisOpen(false);
+        setAnswer('');
     }
 
     return (
@@ -41,50 +51,51 @@ const Attendeepart = ({templateset}) => {
                                     />
                                     <ListItemSecondaryAction>
                                     <IconButton>
-                                        <BuildIcon color="primary" onClick = {()=>setModalisOpen(true)}/>
+                                        <EditIcon color="primary" onClick = {()=>{setModalisOpen(true);setCurrent(question)}}/>
                                     </IconButton>
                                     </ListItemSecondaryAction>
                                 </ListItem>
-                            <Divider/>
-                            <Dialog open={modalisOpen} 
-                                    onClose={()=>setModalisOpen(false)} 
-                                    aria-labelledby="form-dialog-title"
-                                    fullWidth = 'xs'>
-                                <DialogTitle id="form-dialog-title">Answer</DialogTitle>
-                                <DialogContent>
-                                    <DialogContentText>
-                                        {question.questioncontent}
-                                    </DialogContentText>
-                                    <TextField
-                                        autoFocus
-                                        margin="dense"
-                                        id="name"
-                                        label="Post your answer here"
-                                        type="email"
-                                        fullWidth
-                                        onChange = {(event)=>setAnswer(event.target.value)}/>
-                                </DialogContent>
-                                <DialogActions>
-                                    <Button onClick={handleClose} color="primary">
-                                        Send
-                                    </Button>
-                                    <Button onClick={()=>{
-                                        setModalisOpen(false)
-                                        setAnswer('')}} color="primary">
-                                        Cancel
-                                    </Button>
-                                </DialogActions>
-                            </Dialog>  
-                        
                         </div>
-                    
                     ))}
                 </List> 
             </div>
+            <Dialog open={modalisOpen} 
+                    onClose={()=>setModalisOpen(false)} 
+                    aria-labelledby="form-dialog-title"
+                    fullWidth = 'xs'>
+                <DialogTitle id="form-dialog-title">Answer</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        {current.questioncontent}
+                    </DialogContentText>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        id="name"
+                        label="Post your answer here"
+                        type="email"
+                        fullWidth
+                        onChange = {(event)=>setAnswer(event.target.value)}/>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleSend} 
+                            color="primary">
+                        Send
+                    </Button>
+                    <Button onClick={handleCancel} 
+                            color="primary">
+                        Cancel
+                    </Button>
+                </DialogActions>
+            </Dialog>  
+            <p>{answer}</p>
         </div>
 
     )
 
 }
+
+
+
 
 export default Attendeepart;
