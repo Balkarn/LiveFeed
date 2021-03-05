@@ -34,6 +34,8 @@ const HostEventComponent = () => {
     var qs = require('qs');
 
     const [current_events, setEvent] = React.useState([...events]);
+    const [userid,setUserid] = React.useState(12);//current user id
+    const [linkto,setLinkto] = React.useState('meeting/' + userid);//move to meeting screen as host
 
     // Delete Event 
     const handleDeleteEvent = (_event) => {
@@ -50,6 +52,7 @@ const HostEventComponent = () => {
             event_endtime: currentEventEndTime,
             event_date: currentEventDate,
             templates: selectedTemplates, 
+            event_host: userid,
             event_access_code: makeid(8),
         };
 
@@ -59,7 +62,7 @@ const HostEventComponent = () => {
             arguments: [currentEventName,
             "2019-12-09 12:01:03",
             "2019-12-09 09:01:03",
-            1,
+            userid,
             selectedTemplates]
         }
         
@@ -177,7 +180,7 @@ const HostEventComponent = () => {
                         <ListItemSecondaryAction>
                             <IconButton>
 
-                            <Link to="meeting/James" ><PlayCircleOutlineIcon color="primary"/></Link>
+                            <Link to={linkto} ><PlayCircleOutlineIcon color="primary"/></Link>
                             </IconButton>
                             <IconButton>
                                 <DeleteIcon color="error" onClick={() => handleDeleteEvent(event)} />

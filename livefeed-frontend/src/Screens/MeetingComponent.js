@@ -9,7 +9,7 @@ import templates from '../test-data/templates';
 
 const MeetingComponent = (props) => {
     
-    const [username,setUsername] = React.useState("Da");
+    const [userid,setUsername] = React.useState('12');
     const [sessionname,setSessionname] = React.useState("test");
     const [sessiondate,setSessiondate] = React.useState("24-Feb-21");
     const [hostname,setHostname] = React.useState("James");
@@ -26,7 +26,7 @@ const MeetingComponent = (props) => {
         {id : 3, name : 'attendee 3'},
     ]);
 
-    if(id === 'James'){
+    if(id === userid){
         return (
             <>
     
@@ -66,10 +66,10 @@ const MeetingComponent = (props) => {
 
             <div className="meeting-content">
             
-                <QuestionList role = {username === hostname ? 'host' : 'attendee'}
+                <QuestionList role ='attendee'
                             templateset = {templateset}
                             />
-                <Reminder role = {username === hostname ? 'host' : 'attendee'}/>
+                <Reminder role = 'attendee'/>
             </div>
             <Link to="/">
             <Button>End Session</Button>

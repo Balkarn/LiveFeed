@@ -8,6 +8,9 @@ const JoinEventComponent = () => {
     // Event Access Code
     const [currentEventCode, setCurrentEventCode] = React.useState('');
     const [join,setJoin] = React.useState(false);
+    const [userid,setUserid] = React.useState(13);//id of the user
+    const [linkto,setLinkto] = React.useState('meeting/'+userid);//make sure user will be attendee in meeting screen
+    
 
     const [error, setError] = React.useState(false);
 
@@ -38,7 +41,7 @@ const JoinEventComponent = () => {
                         helperText={error ? 'Must be 8 Characters' : ' '}
                     />
                     <p>{currentEventCode}</p>
-                    <Link to="meeting/Da">
+                    <Link to={linkto}>
                         <Button variant="contained" color="primary" fullWidth> Search </Button>
                     </Link>
 

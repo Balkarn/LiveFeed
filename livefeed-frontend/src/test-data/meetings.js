@@ -7,6 +7,7 @@ const events = [
         event_endtime: "15:00",
         event_date: "12/03/2021",
         event_access_code: "AHDndasl",
+        event_host:12,
         templates: [
             2
         ],
@@ -18,6 +19,7 @@ const events = [
         event_endtime: "17:00",
         event_date: "12/04/2021",
         event_access_code: "BdasmAl",
+        event_host:13,
         templates: [
             1,
             2
