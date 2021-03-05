@@ -10,7 +10,8 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import IconButton from '@material-ui/core/IconButton';
 import Divider from '@material-ui/core/Divider';
-import BuildIcon from '@material-ui/icons/Build';
+import AssessmentOutlinedIcon from '@material-ui/icons/AssessmentOutlined';
+import SendIcon from '@material-ui/icons/Send';
 
 const Hostpart = ({templateset}) => {
     const [modalisOpen, setModalisOpen] = React.useState(false);
@@ -37,10 +38,10 @@ const Hostpart = ({templateset}) => {
                                     />
                                     <ListItemSecondaryAction>
                                     {senttemplates.includes(question) ? <IconButton>
-                                        <BuildIcon color="secondary" onClick = {()=>{setGraphisOpen(true);
+                                        <AssessmentOutlinedIcon color="primary" onClick = {()=>{setGraphisOpen(true);
                                                                                   }}/>
                                     </IconButton> : <IconButton>
-                                        <BuildIcon color="primary" onClick = {()=>{setModalisOpen(true);
+                                        <SendIcon color="primary" onClick = {()=>{setModalisOpen(true);
                                                                                     setCurrent(question)
                                                                                   }}/>
                                     </IconButton>}
