@@ -1,10 +1,12 @@
 import { Button } from '@material-ui/core';
 import React from 'react';
 import { Link ,useParams} from 'react-router-dom';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 
 import Header from './Meeting/Header'
 import QuestionList from './Meeting/QuestionList';
 import Reminder from './Meeting/Reminder';
+
 
 const MeetingComponent = (props) => {
     
@@ -43,7 +45,12 @@ const MeetingComponent = (props) => {
                     <Reminder role = {'host'} attendeelist = {joinedattendee}/>
                 </div>
                 <Link to="/">
-                <Button>End Session</Button>
+                <Button
+                    variant="contained"
+                    color="secondary"
+                    startIcon={<ExitToAppIcon />}>
+                    End Session
+                </Button>
                 </Link>
                 
             </div>
@@ -71,7 +78,12 @@ const MeetingComponent = (props) => {
                 <Reminder role = 'attendee'/>
             </div>
             <Link to="/">
-            <Button>End Session</Button>
+            <Button
+                variant="contained"
+                color="secondary"
+                startIcon={<ExitToAppIcon />}>
+                End Session
+            </Button>
             </Link>
             
         </div>
