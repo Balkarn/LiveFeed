@@ -23,7 +23,7 @@ const MeetingComponent = (props) => {
         {id : 1, name : 'attendee 1'},
         {id : 2, name : 'attendee 2'},
         {id : 3, name : 'attendee 3'},
-    ]);
+    ]);//avoid space in name
 
     if(id === userid){
         return (
@@ -40,7 +40,7 @@ const MeetingComponent = (props) => {
                     <QuestionList role = {'host'}
                                 templateset = {templateset}
                                 />
-                    <Reminder role = {'host'}/>
+                    <Reminder role = {'host'} attendeelist = {joinedattendee}/>
                 </div>
                 <Link to="/">
                 <Button>End Session</Button>
