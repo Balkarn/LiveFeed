@@ -12,8 +12,9 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import IconButton from '@material-ui/core/IconButton';
 import Divider from '@material-ui/core/Divider';
-import BuildIcon from '@material-ui/icons/Build';
 import EditIcon from '@material-ui/icons/Edit';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
 
 const Attendeepart = ({templateset}) => {
     const [modalisOpen, setModalisOpen] = React.useState(false);
@@ -22,18 +23,21 @@ const Attendeepart = ({templateset}) => {
     const [answer,setAnswer] = React.useState('');
     const [current,setCurrent] = React.useState([]);
     const [meetingtemplateset,setMeetingtemplate] = React.useState(templateset);
-
+    const [isanonymous,setIsanonymous] = React.useState(false);
+    const [sendanonymous,setSendanonymous] = React.useState(false);
 
 
     const handleSend = () => {
         let filtered_events = meetingtemplateset.filter( event => event !== current);
         setMeetingtemplate(filtered_events); 
+        setSendanonymous(isanonymous);
         handleCancel();
     }
 
     const handleCancel = () => {
         setModalisOpen(false);
         setAnswer('');
+        setIsanonymous(false);
     }
 
     return (
@@ -78,6 +82,17 @@ const Attendeepart = ({templateset}) => {
                         onChange = {(event)=>setAnswer(event.target.value)}/>
                 </DialogContent>
                 <DialogActions>
+                    <FormControlLabel
+                        control={
+                        <Checkbox
+                            checked={isanonymous}
+                            onChange={()=>setIsanonymous(true)}
+                            name="anonymous"
+                            color="primary"
+                        />
+                        }
+                        label="anonymous"
+                    />
                     <Button onClick={handleSend} 
                             color="primary">
                         Send
