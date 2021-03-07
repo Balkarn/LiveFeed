@@ -56,7 +56,7 @@ if (!isset($_POST['error'])) {
 	    }
 	    break;
 	  case 'addgeneralfeedback':
-	    if (!is_array($_POST['arguments']) || count($_POST['arguments']) < 3) {
+	    if (!is_array($_POST['arguments']) || count($_POST['arguments']) < 2) {
 	      $reqResult['error'] = "Invalid arguments used.";
 	    } else { # argument format: userId, meetingId, feedback
 	      $database->add_general_feedback(...$_POST['arguments']);
@@ -64,7 +64,7 @@ if (!isset($_POST['error'])) {
 		$notif = file_get_contents("http://localhost:5000/feedbackreceived");
 	    break;
 	  case 'addmoodfeedback':
-	    if (!is_array($_POST['arguments']) || count($_POST['arguments']) < 3) {
+	    if (!is_array($_POST['arguments']) || count($_POST['arguments']) < 2) {
 	      $reqResult['error'] = "Invalid arguments used.";
 	    } else { # argument format: userId, meetingId, mood
 	      $database->add_mood_feedback(...$_POST['arguments']);
@@ -72,7 +72,7 @@ if (!isset($_POST['error'])) {
 		$notif = file_get_contents("http://localhost:5000/feedbackreceived");
 	    break;
 	  case 'addtemplatefeedback':
-	    if (!is_array($_POST['arguments']) || count($_POST['arguments']) < 5) {
+	    if (!is_array($_POST['arguments']) || count($_POST['arguments']) < 4) {
 	      $reqResult['error'] = "Invalid arguments used.";
 	    } else { # argument format: templateId, questionId, userId, meetingId, feedback
 	      $database->add_template_feedback(...$_POST['arguments']);
