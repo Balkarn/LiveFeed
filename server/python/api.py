@@ -45,7 +45,8 @@ class RequestFeedback(Resource):
 
 class MeetingEnded(Resource):
 	def post(self):
-		pass
+		meetingid = request.form.get('meetingid')
+
 
 
 # Flask Initialisation

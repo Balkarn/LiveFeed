@@ -1,6 +1,7 @@
 import flair
 import mysql.connector as sql
 from configparser import ConfigParser
+from datetime import datetime, timedelta
 
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
@@ -11,6 +12,9 @@ import re
 import gensim.downloader as gensim_dl
 from gensim.models import Word2Vec
 from scipy.spatial.distance import cosine
+from sklearn.cluster import AffinityPropagation
+import numpy as np
+
 
 class DatabaseInteraction():
 	def __init__(self):
@@ -102,10 +106,15 @@ class RepeatFeedbackAnalysis():
 		self.last_id = {}
 		self.db_obj = database
 		self.feedback = {}
-		#self.model = gensim_dl.load('word2vec-google-news-300')
-		self.corpus = knbc.sents()
-		self.model = Word2Vec(self.corpus)
+		self.model = gensim_dl.load('fasttext-wiki-news-subwords-300')
+		#self.corpus = knbc.sents()
+		#self.model = Word2Vec(self.corpus)
 		self.feedback_data = {}
+		self.last_clean_op = datetime.now()
+
+	def remove_meeting_data(self, meetingid):
+		del self.feedback_data[meetingid]
+		# delete personal data from database
 	
 	def replace_contractions(self, tokens):
 		abbrev_subs = {"n't": ["not"], "'cause": ["because"], "'ve": ["have"], "e'er": ["ever"], "g'day": ["good", "day"], "'d": ["would"], "'ll": ["will"], "'re": ["are"], "'m": ["am"], "ma'am": ["madam"], "ne'er": ["never"], "o'clock": ["of", "the", "clock"], "o'er": ["over"], "'t": ["it"], "y'all": ["you", "all"],"'n'": ["not"]}
@@ -197,18 +206,42 @@ class RepeatFeedbackAnalysis():
 	def find_similar_phrases(self, meetingid):
 		vectors = self.feedback_data[meetingid][2]
 		phrases = self.feedback_data[meetingid][0]
-		similar_phrases = []
+		similar_phrases2 = []
+		similar_phrases = {}
 		for i in range(0, len(vectors)):
-			similar_phrases.append([phrases[i]])
+			similar_phrases2.append([phrases[i]])
+			similar_phrases[phrases[i]] = []
 			for j in range(i+1, len(vectors)):
+				if phrases[j] in similar_phrases:
+					continue
 				distance = cosine(vectors[i], vectors[j])
-				if distance <= 0.5:
-					similar_phrases[-1].append((phrases[j], distance))
+				if distance <= 0.3:
+					similar_phrases2[-1].append((phrases[j], distance))
+					similar_phrases[phrases[i]].append(phrases[j])
 
-			if len(similar_phrases[-1]) == 1:
-				similar_phrases.pop(-1)
+
+			if len(similar_phrases2[-1]) == 1:
+				similar_phrases2.pop(-1)
+			if len(similar_phrases[phrases[i]]) == 0:
+				del similar_phrases[phrases[i]]
 		self.feedback_data[meetingid].append(similar_phrases)
-		return similar_phrases
+		return (similar_phrases, similar_phrases2)
+
+	def find_similar_phrases2(self, meetingid):
+		phrases = np.asarray(self.feedback_data[meetingid][0])
+		similarity = np.array([[cosine(i, j) for j in self.feedback_data[meetingid][2]] for i in self.feedback_data[meetingid][2]])
+
+		#from sklearn.metrics.pairwise import cosine_distances
+		#similarity2 = cosine_distances(phrases)
+		affprop = AffinityPropagation(affinity="precomputed", damping=0.5)
+		affprop.fit(similarity)
+		for cluster_id in np.unique(affprop.labels_):
+			example = phrases[affprop.cluster_centers_indices_[cluster_id]]
+			cluster = np.unique(phrases[np.nonzero(affprop.labels_ == cluster_id)])
+			cluster_str = ", ".join(cluster)
+			print(" - *%s:* %s" % (example, cluster_str))
+
+
 	
 	def fetch_meeting_feedback(self, meetingid):
 		if meetingid not in self.last_id:
@@ -235,10 +268,35 @@ class RepeatFeedbackAnalysis():
 			result = c.fetchall()
 			if len(result) > 0:
 				self.last_id[meetingid] = result[-1][0]
+
+			# cleanup old meetings
+			if datetime.now() - self.last_clean_op >= timedelta(1):
+				self.remove_old_meetings()
 			return result
 		except sql.Error as err:
 			print(f"-[MySQL Error] {err}")
 			return []
+		finally:
+			if conn:
+				conn.close()
+
+	def remove_old_meetings(self):
+		conn = None
+		try:
+			conn = sql.connect(**self.db_obj.dbconfig)
+			c = conn.cursor()
+			query = """
+				SELECT MeetingID FROM meetings WHERE StartTime <= CURRENT_TIMESTAMP() - (INTERVAL 2 DAY)
+			"""
+			c.execute(query)
+			result = c.fetchall()
+			for row in result:
+				if row[0] in self.feedback_data:
+					del self.feedback_data[row[0]]
+			self.last_clean_op = datetime.now()
+			return result
+		except sql.Error as err:
+			print(f"-[MySQL Error] {err}")
 		finally:
 			if conn:
 				conn.close()
@@ -356,8 +414,9 @@ class Testing():
 
 	def test_popular(self, meetingid):
 		self.popular.analyse(meetingid)
-		print(self.popular.find_similar_phrases(meetingid))
-
+		a, b = self.popular.find_similar_phrases(meetingid)
+		print(a)
+		print(b)
 	def test_popular_summary(self):
 		pass
 
