@@ -30,7 +30,7 @@ import makeid from '../Functions/generateString';
 
 const HostEventComponent = () => {
 
-    const php_url = "http://localhost:80/react-backend/";
+    const php_url = "http://localhost:80/server/php/index.php";
     var qs = require('qs');
 
     const [current_events, setEvent] = React.useState([...events]);
@@ -53,17 +53,16 @@ const HostEventComponent = () => {
             event_date: currentEventDate,
             templates: selectedTemplates, 
             event_host: userid,
-            event_access_code: makeid(8),
         };
 
         // Send data of new event to backend 
         var data = {
             function: 'addmeeting',
             arguments: [currentEventName,
-            "2019-12-09 12:01:03",
-            "2019-12-09 09:01:03",
-            userid,
-            selectedTemplates]
+            currentEventDate,
+            3,
+            selectedTemplates,
+            ]
         }
         
         axios.post(php_url, qs.stringify(data))

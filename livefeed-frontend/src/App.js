@@ -32,8 +32,6 @@ export default function Main() {
 
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   
-	  
-
   if (!isLoggedIn) {
     return <LoginComponent setIsLoggedIn={setIsLoggedIn}/>
   } else { //Otherwise render the main screen
@@ -55,7 +53,7 @@ const LoginComponent = ({setIsLoggedIn}) => {
   }, []); // Only run once
 
   var qs = require('qs');
-  const phpurl = "http://localhost:80/react-backend/";
+  const phpurl = "http://localhost:80/server/php/index.php";
 	
   const [SIGNUPnameTextfieldValue, SIGNUPsetNameTextfieldValue] = React.useState('');
   const [SIGNUPpasswordTextfieldValue, SIGNUPsetPasswordTextfieldValue] = React.useState('');
