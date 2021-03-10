@@ -1,4 +1,4 @@
-import React ,{ Component } from 'react'
+import React ,{ Component } from 'react';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -15,6 +15,11 @@ import Divider from '@material-ui/core/Divider';
 import EditIcon from '@material-ui/icons/Edit';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControl from '@material-ui/core/FormControl';
+import Select from 'react-select';
+
 
 const Attendeepart = ({templateset}) => {
     const [modalisOpen, setModalisOpen] = React.useState(false);
@@ -25,7 +30,7 @@ const Attendeepart = ({templateset}) => {
     const [meetingtemplateset,setMeetingtemplate] = React.useState(templateset);
     const [isanonymous,setIsanonymous] = React.useState(false);
     const [sendanonymous,setSendanonymous] = React.useState(false);
-
+    var [multianswer,setMultianswer] = React.useState();
 
     const handleSend = () => {
         let filtered_events = meetingtemplateset.filter( event => event !== current);
@@ -40,6 +45,50 @@ const Attendeepart = ({templateset}) => {
         setIsanonymous(false);
     }
 
+    const options = [
+        { value: 'multichoice-option1', label: 'multichoice-option1' },
+        { value: 'multichoice-option2', label: 'multichoice-option2' },
+        { value: 'multichoice-option3', label: 'multichoice-option3' },
+        { value: 'multichoice-option4', label: 'multichoice-option4' },
+      ]
+
+    const Ddlhandle = (e) => {
+        setMultianswer = (Array.isArray(e)?e.map(x=>x.label):[]);
+    }
+
+    const renderSwitch = (param)=> {
+        switch(param){
+            case 'written':
+                return (
+                    <TextField
+                        multiline
+                        margin="dense"
+                        id="name"
+                        label="Post your answer here"
+                        type="text"
+                        fullWidth
+                        onChange = {(event)=>setAnswer(event.target.value)}/>
+                )
+            case 'score':
+                return (
+                    <FormControl component="fieldset">
+                        <RadioGroup name="Score" defaultValue="1" onChange={(event)=>{setAnswer(event.target.value)}}>
+                            <FormControlLabel value="1" control={<Radio />} label="1" />
+                            <FormControlLabel value="2" control={<Radio />} label="2" />
+                            <FormControlLabel value="3" control={<Radio />} label="3" />
+                            <FormControlLabel value="4" control={<Radio />} label="4" />
+                            <FormControlLabel value="5" control={<Radio />} label="5" />
+                        </RadioGroup>
+                    </FormControl> 
+                )
+            case 'multichoice':
+                return (
+                    <Select isMulti options={options} onChange={Ddlhandle}/>
+                )
+        }
+    }
+
+
     return (
         <div>
             <div className="list">
@@ -52,8 +101,10 @@ const Attendeepart = ({templateset}) => {
                                 <ListItem>
                                     <ListItemText
                                     primary={question.templatename}
+                                    secondary = {question.questiontype}
                                     />
                                     <ListItemSecondaryAction>
+                                        {}
                                     <IconButton>
                                         <EditIcon color="primary" onClick = {()=>{setModalisOpen(true);setCurrent(question)}}/>
                                     </IconButton>
@@ -66,20 +117,14 @@ const Attendeepart = ({templateset}) => {
             <Dialog open={modalisOpen} 
                     onClose={()=>setModalisOpen(false)} 
                     aria-labelledby="form-dialog-title"
-                    fullWidth = 'xs'>
+                    fullWidth = 'sm'
+                    height = '800'>
                 <DialogTitle id="form-dialog-title">Answer</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
                         {current.questioncontent}
                     </DialogContentText>
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="name"
-                        label="Post your answer here"
-                        type="email"
-                        fullWidth
-                        onChange = {(event)=>setAnswer(event.target.value)}/>
+                    {renderSwitch(current.questiontype)}  
                 </DialogContent>
                 <DialogActions>
                     <FormControlLabel
@@ -103,7 +148,6 @@ const Attendeepart = ({templateset}) => {
                     </Button>
                 </DialogActions>
             </Dialog>  
-            <p>{answer}</p>
         </div>
 
     )

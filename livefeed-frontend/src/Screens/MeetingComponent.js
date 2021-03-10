@@ -17,9 +17,9 @@ const MeetingComponent = (props) => {
     let {id} = useParams();
 
     const [templateset,setTemplateset] = React.useState([
-        { templateid : 1 , templatename : 'Name of T1',questioncontent : 'content of Q1',questiontype : 'Written Answer'},
-        { templateid : 2 , templatename : 'Name of T2',questioncontent : 'content of Q2',questiontype : 'Score 1-5'},
-        { templateid : 3 , templatename : 'Name of T3',questioncontent : 'content of Q3',questiontype : 'Multiple Choice'},
+        { templateid : 1 , templatename : 'Name of T1',questioncontent : 'content of Q1',questiontype : 'written'},
+        { templateid : 2 , templatename : 'Name of T2',questioncontent : 'content of Q2',questiontype : 'score'},
+        { templateid : 3 , templatename : 'Name of T3',questioncontent : 'content of Q3',questiontype : 'multichoice'},
     ]);
     const [joinedattendee,setJoinedattendee] = React.useState([
         {id : 1, name : 'attendee 1'},
