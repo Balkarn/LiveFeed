@@ -78,6 +78,7 @@ function insert_data() {
 			array(1, 1, "What are you doing!"),
 			array(3, 1, "Cool cool."),
 			array(4, 1, "Can you skip the safety briefing."),
+			array(4, 1, "This workshop was very hard!"),
 	);
 	foreach ($general_feedback as $feedback) {
 		$database->add_general_feedback(...$feedback);
