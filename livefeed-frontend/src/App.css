@@ -101,6 +101,11 @@ body {
   text-align: center;
 }
 
+.centering2 {
+  text-align: center;
+  padding-bottom: 3vh;
+}
+
 .errorClass { color: 'red' }
 
 /* Form */

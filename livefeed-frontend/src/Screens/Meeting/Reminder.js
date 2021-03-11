@@ -48,12 +48,6 @@ const Reminder = ({role,attendeelist}) => {
             </div>
             
         )
-    }else {
-        return (
-            <div>
-                <Typography>Meeting is running, if there are no tempaltes, please be patient</Typography>
-            </div>
-        )
     }
 }
 

@@ -58,7 +58,7 @@ const Attendeepart = ({templateset}) => {
 
     const renderSwitch = (param)=> {
         switch(param){
-            case 'written':
+            case 'Written Question':
                 return (
                     <TextField
                         multiline
@@ -69,7 +69,7 @@ const Attendeepart = ({templateset}) => {
                         fullWidth
                         onChange = {(event)=>setAnswer(event.target.value)}/>
                 )
-            case 'score':
+            case 'Numerical Rating':
                 return (
                     <FormControl component="fieldset">
                         <RadioGroup name="Score" defaultValue="1" onChange={(event)=>{setAnswer(event.target.value)}}>
@@ -81,7 +81,7 @@ const Attendeepart = ({templateset}) => {
                         </RadioGroup>
                     </FormControl> 
                 )
-            case 'multichoice':
+            case 'Multiple Choice':
                 return (
                     <Select isMulti options={options} onChange={Ddlhandle}/>
                 )
@@ -132,7 +132,7 @@ const Attendeepart = ({templateset}) => {
                         <Checkbox
                             checked={isanonymous}
                             onChange={()=>setIsanonymous(true)}
-                            name="anonymous"
+                            name="Anonymous?"
                             color="primary"
                         />
                         }
