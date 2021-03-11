@@ -107,7 +107,6 @@ const Hostpart = ({templateset}) => {
 
     return (
         <div>
-            <h1>Live updating feedback dashboard</h1>
             <div className="list2">
                 
                 <List>
