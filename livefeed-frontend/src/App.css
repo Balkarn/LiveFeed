@@ -97,6 +97,12 @@ body {
   overflow: auto;
 }
 
+.list2 {
+  width: 80vw;
+  height: calc(90vh - 90px - 150px);
+  overflow: auto;
+}
+
 .centering {
   text-align: center;
 }
