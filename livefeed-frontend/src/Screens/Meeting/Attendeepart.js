@@ -19,7 +19,6 @@ import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControl from '@material-ui/core/FormControl';
 import Select from 'react-select';
-import { makeStyles } from '@material-ui/core/styles';
 
 
 
@@ -38,12 +37,6 @@ const Attendeepart = ({templateset}) => {
     const [minvalue,setMinvalue] = React.useState(1);
 
 
-    const useStyles = makeStyles(theme => ({
-        dialogPaper: {
-           
-            height : '800px'
-        },
-    }));
 
 
     const handleSend = () => {
