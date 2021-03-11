@@ -48,21 +48,27 @@ const DisplayAnalysis = ({question}) => {
             );
         case 'Multiple Choice':
             return (
-                <PieChart width={300} height={300}>
+                <PieChart width={350} height={350}>
                     <Pie
                         data={data}
                         cx="50%"
                         cy="50%"
-                        labelLine={false}
-                        label={customLabel}
-                        outerRadius={80}
+                        labelLine={true}
+                        outerRadius={110}
                         fill="#8884d8"
                         dataKey="value"
+                        label
                     >
                         {data.map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={COLORS[Math.max(0,index)]} />
                         ))}
                     </Pie>
+                    {/* <Pie data={data} dataKey="value" cx="50%" cy="50%" innerRadius={0} outerRadius={110} fill="#82ca9d" label={customLabel} >
+                    
+                        {data.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[Math.max(0, index)]} />
+                        ))}
+                    </Pie> */}
                 </PieChart>
             );
     }
