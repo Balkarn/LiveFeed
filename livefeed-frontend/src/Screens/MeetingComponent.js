@@ -15,7 +15,7 @@ const MeetingComponent = (props) => {
         document.body.style.backgroundColor = "#15bfff"
     }, []); // Only run once
     
-    const [userid,setUsername] = React.useState('12');
+    const [userid,setUsername] = React.useState('-1');
     const [sessionname,setSessionname] = React.useState("test");
     const [sessiondate,setSessiondate] = React.useState("24-Feb-21");
     const [hostname,setHostname] = React.useState("James");
