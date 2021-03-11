@@ -48,7 +48,6 @@ const MeetingComponent = (props) => {
                     <QuestionList role = {'host'}
                                 templateset = {templateset}
                                 />
-                    <Reminder role = {'host'} attendeelist = {joinedattendee}/>
                 </div>
                     
                 <Link to="/">

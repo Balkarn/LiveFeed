@@ -13,9 +13,6 @@ const Header = ({sessionname,sessiondate,hostname}) => {
         <h1 textAlign='right'>
             Session Name: <span className="light">{sessionname}</span>
         </h1>     
-        <h3 textAlign='right'>
-            Date: <span className="light">{sessiondate}</span>
-        </h3>
         <h3>
             Host: <span className="light">{hostname}</span>
         </h3>

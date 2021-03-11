@@ -13,18 +13,18 @@ import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
 import AssessmentOutlinedIcon from '@material-ui/icons/AssessmentOutlined';
 import SendIcon from '@material-ui/icons/Send';
-import { PieChart, Pie, Sector, Cell, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, Sector, Cell, ResponsiveContainer, Legend } from 'recharts';
 
 
 const DisplayAnalysis = ({question}) => {
     const data = [
         { name: 'Group A', value: 400 },
         { name: 'Group B', value: 300 },
-        { name: 'Group C', value: 300 },
-        { name: 'Group D', value: 200 },
+        { name: 'Group C', value: 200 },
+        { name: 'Group D', value: 100 },
     ];
 
-    const COLORS = ['#0088FE', '#00C49F', '#ff4040', '#f7911b'];
+    const COLORS = ['#0088FE', '#00C49F', '#ff4040', '#ff9d00'];
 
     const customLabel = () => {
         return (
@@ -41,14 +41,40 @@ const DisplayAnalysis = ({question}) => {
             );
         case 'Numerical Rating':
             return (
-                <PieChart width={300} height={300}>
-                    <Pie data={data} dataKey="value" cx="50%" cy="50%" outerRadius={60} fill="#8884d8" />
-                    <Pie data={data} dataKey="value" cx="50%" cy="50%" innerRadius={70} outerRadius={90} fill="#82ca9d" label />
+                <div>
+                <p>A Pie chart to show the distribution of numerical scores</p>
+                <PieChart width={400} height={350}>
+                    <Legend layout="vertical" verticalAlign="top" align="right" />
+                    <Pie
+                        data={data}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={true}
+                        outerRadius={110}
+                        fill="#8884d8"
+                        dataKey="value"
+                        label
+                    >
+                        {data.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[Math.max(0, index)]} />
+                        ))}
+                        
+                    </Pie>
+                    {/* <Pie data={data} dataKey="value" cx="50%" cy="50%" innerRadius={0} outerRadius={110} fill="#82ca9d" label={customLabel} >
+                    
+                        {data.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[Math.max(0, index)]} />
+                        ))}
+                    </Pie> */}
                 </PieChart>
+                </div>
             );
         case 'Multiple Choice':
             return (
-                <PieChart width={350} height={350}>
+                <div>
+                <p>A Pie chart to show the distribution of multiple choice answers</p>
+                <PieChart width={400} height={350}>
+                    <Legend layout="vertical" verticalAlign="top" align="right" />
                     <Pie
                         data={data}
                         cx="50%"
@@ -70,6 +96,7 @@ const DisplayAnalysis = ({question}) => {
                         ))}
                     </Pie> */}
                 </PieChart>
+                </div>
             );
     }
 
@@ -80,7 +107,7 @@ const Hostpart = ({templateset}) => {
 
     return (
         <div>
-            <div className="list">
+            <div className="list2">
                 
                 <List>
                     <Divider />
@@ -88,8 +115,7 @@ const Hostpart = ({templateset}) => {
                         <div>
                             <ListItem key={question.templateid}>
                                 <div>
-                                    <Typography/> {question.templatename} <br/>
-                                    <Typography/>
+                                    <h3> {question.templatename} </h3>
                                     <DisplayAnalysis question={question}/>
                                 </div>
 
