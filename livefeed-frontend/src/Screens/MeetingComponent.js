@@ -1,14 +1,19 @@
+import '../App.css';
 import { Button } from '@material-ui/core';
-import React from 'react';
+import React, { useEffect/*, useState*/, Component } from "react";
 import { Link ,useParams} from 'react-router-dom';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
-
+import Paper from '@material-ui/core/Paper';
 import Header from './Meeting/Header'
 import QuestionList from './Meeting/QuestionList';
 import Reminder from './Meeting/Reminder';
 
 
 const MeetingComponent = (props) => {
+
+    useEffect(() => {
+        document.body.style.backgroundColor = "#15bfff"
+    }, []); // Only run once
     
     const [userid,setUsername] = React.useState('12');
     const [sessionname,setSessionname] = React.useState("test");
@@ -17,9 +22,9 @@ const MeetingComponent = (props) => {
     let {id} = useParams();
 
     const [templateset,setTemplateset] = React.useState([
-        { templateid : 1 , templatename : 'Name of T1',questioncontent : 'content of Q1',questiontype : 'written'},
-        { templateid : 2 , templatename : 'Name of T2',questioncontent : 'content of Q2',questiontype : 'score'},
-        { templateid : 3 , templatename : 'Name of T3',questioncontent : 'content of Q3',questiontype : 'multichoice'},
+        { templateid : 1 , templatename : 'Question 1',questioncontent : 'content of Q1',questiontype : 'Written Question'},
+        { templateid : 2 , templatename : 'Question 2',questioncontent : 'content of Q2',questiontype : 'Numerical Rating'},
+        { templateid : 3 , templatename : 'Question 3',questioncontent : 'content of Q3',questiontype : 'Multiple Choice'},
     ]);
     const [joinedattendee,setJoinedattendee] = React.useState([
         {id : 1, name : 'attendee 1'},
@@ -29,9 +34,10 @@ const MeetingComponent = (props) => {
 
     if(id === userid){
         return (
-            <>
     
             <div className="meeting-screen">
+                <Paper>
+                    <div className="centering2">
                 <Header sessionname = {sessionname}
                         sessiondate = {sessiondate}
                         hostname = {hostname}
@@ -44,6 +50,7 @@ const MeetingComponent = (props) => {
                                 />
                     <Reminder role = {'host'} attendeelist = {joinedattendee}/>
                 </div>
+                    
                 <Link to="/">
                 <Button
                     variant="contained"
@@ -52,10 +59,10 @@ const MeetingComponent = (props) => {
                     End Session
                 </Button>
                 </Link>
-                
+                    </div>
+                </Paper>
+
             </div>
-    
-            </>
     
         )
     }else{
@@ -64,7 +71,8 @@ const MeetingComponent = (props) => {
         <>
 
         <div className="meeting-screen">
-
+            <Paper>
+                    <div className="centering2">
             <Header sessionname = {sessionname}
                     sessiondate = {sessiondate}
                     hostname = {hostname}
@@ -75,7 +83,6 @@ const MeetingComponent = (props) => {
                 <QuestionList role ='attendee'
                             templateset = {templateset}
                             />
-                <Reminder role = 'attendee'/>
             </div>
             <Link to="/">
             <Button
@@ -85,6 +92,8 @@ const MeetingComponent = (props) => {
                 End Session
             </Button>
             </Link>
+            </div>
+            </Paper>
             
         </div>
 
