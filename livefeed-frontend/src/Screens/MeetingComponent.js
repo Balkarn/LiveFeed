@@ -32,7 +32,7 @@ const MeetingComponent = (props) => {
         {id : 3, name : 'attendee 3'},
     ]);//avoid space in name
 
-    if(id === userid){
+    if(id !== userid){
         return (
     
             <div className="meeting-screen">
