@@ -1,5 +1,6 @@
 import React, { useEffect/*, useState*/    } from "react";
 import { TextField, Button } from '@material-ui/core';
+import axios from 'axios';
 import 'fontsource-roboto';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
@@ -29,6 +30,9 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import '../App.css';
 
 const TemplateComponent = () => {
+
+    const php_url = "http://localhost:80/server/php/index.php";
+    var qs = require('qs');
 
     const [open, setOpen] = React.useState(false);
     const [creatingQ, setCreatingQ] = React.useState(false);
@@ -174,9 +178,31 @@ const TemplateComponent = () => {
       setTemplateNames([...templateNames, currentTemplateName]);
       setTemplateQuestions([...templateQuestions,currentTemplateQuestions]);
 
+      console.log(currentTemplateName);
+      console.log(currentTemplateQuestions);
+
       //templateNames is [name1, name2, name3 ...]
       //templateQuestions is [[[question1 name, question 1 type, (if applicable options..)],[question2 details],...], template2's questions]
       //here connect to the backend
+
+      var data = {
+        function: "addtemplate",
+        arguments: [
+          currentTemplateName,
+          3,
+          currentTemplateQuestions
+        ] 
+      }
+
+      axios.post(php_url, qs.stringify(data))
+        .then(res => {
+            console.log(res);
+            if (res.data.error) {
+                console.log(res.data.error);
+            }
+        }).catch(err => console.log(err));
+
+
     };
 
     function getSteps() {
