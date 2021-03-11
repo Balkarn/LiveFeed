@@ -40,7 +40,7 @@ const JoinEventComponent = (props) => {
                         className="input"
                         helperText={error ? 'Must be 8 Characters' : ' '}
                     />
-                    <p>{currentEventCode}</p>
+                    
                     <Link to={linkto}>
                         <Button variant="contained" color="primary" fullWidth> Search </Button>
                     </Link>
