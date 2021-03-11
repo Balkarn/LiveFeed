@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { TextField, Button, Checkbox } from '@material-ui/core';
 import 'fontsource-roboto';
 
-const JoinEventComponent = () => {
+const JoinEventComponent = (props) => {
 
     // Event Access Code
     const [currentEventCode, setCurrentEventCode] = React.useState('');

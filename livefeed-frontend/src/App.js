@@ -31,22 +31,23 @@ import AccountSettingComponent from './Screens/AccountSettingComponent';
 export default function Main() {
 
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  const [userID, setUserID] = React.useState(-1);
   
   if (!isLoggedIn) {
-    return <LoginComponent setIsLoggedIn={setIsLoggedIn}/>
+    return <LoginComponent setIsLoggedIn={setIsLoggedIn} setUserID={setUserID} />
   } else { //Otherwise render the main screen
     return (
       <>
       <Switch>
         <Route component={MeetingComponent} path='/meeting/:id' exact></Route>
-        <Route component={MenuScreen} path='/' ></Route>
+        <Route component={() => <MenuScreen userID={userID} />} path='/' ></Route>
       </Switch>
       </>
     );
   }
 }
 
-const LoginComponent = ({setIsLoggedIn}) => {
+const LoginComponent = (props) => {
 	
   useEffect(() => {
     document.body.style.backgroundColor = "#15bfff"
@@ -142,17 +143,18 @@ const LoginComponent = ({setIsLoggedIn}) => {
 
       axios.post(phpurl, qs.stringify(data))
           .then(res => {
-            console.log(res) //DELETE
+            
             if (res.data.error) {
               console.log(res.data.error)
             }
             if (res.data.result) {
-              setIsLoggedIn(true)
+              console.log(res.data.result) 
+              props.setIsLoggedIn(true)
             }
           })
           .catch(err => console.log(err));
 
-      setIsLoggedIn(true) //TEMPORARY LINE FOR TESTING WITHOUT DATABASE
+      props.setIsLoggedIn(true) //TEMPORARY LINE FOR TESTING WITHOUT DATABASE
     } else {
       setOpen(true)
     }
@@ -173,12 +175,13 @@ const LoginComponent = ({setIsLoggedIn}) => {
       }
       axios.post(phpurl, qs.stringify(data))
           .then(res => {
-            console.log(res) //DELETE
+            
             if (res.data.error) {
               console.log(res.data.error)
             }
             if (res.data.result) {
-              setIsLoggedIn(true)
+              props.setUserID(res.data.result)
+              props.setIsLoggedIn(true)
             }
           })
           .catch(err => console.log(err));
@@ -373,7 +376,7 @@ const LoginComponent = ({setIsLoggedIn}) => {
 
 }
 
-const MenuScreen = () => {
+const MenuScreen = (props) => {
 
   const [tabValue, setTabValue] = React.useState(2);
 
@@ -384,9 +387,9 @@ const MenuScreen = () => {
         <div className="main2">
           <Paper elevation={10}>
             <div className="page">
-              {tabValue === 0 && <HostEventComponent />}
-              {tabValue === 1 && <TemplateComponent />}
-              {tabValue === 2 && <JoinEventComponent />}
+              {tabValue === 0 && <HostEventComponent userID={props.userID} />}
+              {tabValue === 1 && <TemplateComponent userID={props.userID} />}
+              {tabValue === 2 && <JoinEventComponent userID={props.userID} />}
               {tabValue === 3 && <EventHistoryComponent />}
               {tabValue === 4 && <AccountSettingComponent />}
             </div>

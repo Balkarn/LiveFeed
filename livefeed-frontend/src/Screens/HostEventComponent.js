@@ -28,7 +28,7 @@ import templates from '../test-data/templates';
 import makeid from '../Functions/generateString';
 
 
-const HostEventComponent = () => {
+const HostEventComponent = (props) => {
 
     const php_url = "http://localhost:80/server/php/index.php";
     var qs = require('qs');

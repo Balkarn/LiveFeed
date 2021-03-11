@@ -29,7 +29,7 @@ import BuildIcon from '@material-ui/icons/Build';
 import DeleteIcon from '@material-ui/icons/Delete';
 import '../App.css';
 
-const TemplateComponent = () => {
+const TemplateComponent = (props) => {
 
     const php_url = "http://localhost:80/server/php/index.php";
     var qs = require('qs');
