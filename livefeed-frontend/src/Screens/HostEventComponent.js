@@ -35,7 +35,7 @@ const HostEventComponent = (props) => {
 
     const [current_events, setEvent] = React.useState([...events]);
     const [userid,setUserid] = React.useState(12);//current user id
-    const [linkto,setLinkto] = React.useState('meeting/' + props.userID);//move to meeting screen as host
+    const [linkto,setLinkto] = React.useState('meeting/' + userid);//move to meeting screen as host
 
     // Delete Event 
     const handleDeleteEvent = (_event) => {
@@ -53,7 +53,6 @@ const HostEventComponent = (props) => {
             event_date: currentEventDate,
             templates: selectedTemplates, 
             event_host: userid,
-            event_access_code: makeid(8)
         };
 
         // Send data of new event to backend 
@@ -61,7 +60,7 @@ const HostEventComponent = (props) => {
             function: 'addmeeting',
             arguments: [currentEventName,
             currentEventDate,
-            props.userID,
+            3,
             selectedTemplates,
             ]
         }
@@ -174,7 +173,7 @@ const HostEventComponent = (props) => {
 
                         <ListItemText
                             primary={event.event_name}
-                            secondary={`${event.event_date} | Event Access Code: ${event.event_access_code}`}
+                            secondary={`${event.event_starttime} - ${event.event_endtime} | Event Access Code: ${event.event_access_code}`}
                         />
 
                         <ListItemSecondaryAction>
