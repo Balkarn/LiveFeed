@@ -24,6 +24,7 @@ import {
 
 var qs = require('qs');
 const phpurl = "http://localhost:80/index.php"
+const pythonurl = "http://localhost:81/api.py"
 
 const DisplayAnalysis = ({question}) => {
 
@@ -181,8 +182,8 @@ const DisplayAnalysis = ({question}) => {
 const Hostpart = () => {
     const [questions,setQuestions] = React.useState([]);
     const [data,setData] = React.useState([]);
+    const [currentTemplate,setCurrentTemplate] = React.useState(-1);
     const meetingid = 1;
-    var currTemplate = "-1";
     var questionList = []
 
     axios.post(phpurl, qs.stringify({function:'getmeetingtemplates', arguments:['1']}))
@@ -192,7 +193,7 @@ const Hostpart = () => {
             }
             if (res.data.result) {
                 console.log(res.data.result);
-                currTemplate = res.data.result[0].TemplateID;
+                setCurrentTemplate(res.data.result[0].TemplateID)
             }
         })
         .catch(err => console.log(err));
@@ -205,16 +206,94 @@ const Hostpart = () => {
                 console.log(currTemplate)
                 console.log(res.data.result)
                 for (const [key, value] of Object.entries(res.data.result)) {
-                    questionList.push({questionid: key, questionname: value[0], questiontype: value[1]})
+                    questionList.push({questionid: key, questionname: value[0], questiontype: value[1], questiondata: []})
                     switch (value[1]) {
                         case "multiple":
+                            axios.post(pythonurl, qs.stringify({function:'getmeetingtemplates', arguments:['1']}))
+                                .then(res2 => {
+                                    if (res2.data.error) {
+                                        console.log(res2.data.error);
+                                    }
+                                    if (res2.data.result) {
+                                        console.log(res2.data.result);
+                                        for (const [key2, value2] of Object.entries(res2.data.result)) {
+                                            questionList[-1].questiondata.push({name: key2, Quantity: value2})
+                                        }
+                                    }
+                                })
+                                .catch(err => console.log(err));
                             break;
                         case "open":
+                            axios.post(pythonurl, qs.stringify({function:'getmeetingtemplates', arguments:['1']}))
+                                .then(res2 => {
+                                    if (res2.data.error) {
+                                        console.log(res2.data.error);
+                                    }
+                                    if (res2.data.result) {
+                                        console.log(res2.data.result);
+                                        questionList[-1].questiondata.push([])
+                                        for (const [key2, value2] of Object.entries(res2.data.result)) {
+                                            var mood = "";
+                                            switch (key2) {
+                                                case 'happy':
+                                                    mood = "Positive"
+                                                    break;
+                                                case 'neutral':
+                                                    mood = "Ambivalent"
+                                                    break;
+                                                case 'sad':
+                                                    mood = "Negative"
+                                                    break;
+                                            }
+                                            questionList[-1].questiondata[-1].push({name: mood, Quantity: value2})
+                                        }
+                                    }
+                                })
+                                .catch(err => console.log(err));
+                            axios.post(pythonurl, qs.stringify({function:'getmeetingtemplates', arguments:['1']}))
+                                .then(res2 => {
+                                    if (res2.data.error) {
+                                        console.log(res2.data.error);
+                                    }
+                                    if (res2.data.result) {
+                                        console.log(res2.data.result);
+                                        questionList[-1].questiondata.push([])
+                                        for (const [key2, value2] of Object.entries(res2.data.result)) {
+                                            var mood = "";
+                                            switch (key2) {
+                                                case 'happy':
+                                                    mood = "Positive"
+                                                    break;
+                                                case 'neutral':
+                                                    mood = "Ambivalent"
+                                                    break;
+                                                case 'sad':
+                                                    mood = "Negative"
+                                                    break;
+                                            }
+                                            questionList[-1].questiondata[-1].push({name: mood, Quantity: value2})
+                                        }
+                                    }
+                                })
+                                .catch(err => console.log(err));
                             break;
                         case "rating":
+                            axios.post(pythonurl, qs.stringify({function:'getmeetingtemplates', arguments:['1']}))
+                                .then(res2 => {
+                                    if (res2.data.error) {
+                                        console.log(res2.data.error);
+                                    }
+                                    if (res2.data.result) {
+                                        console.log(res2.data.result);
+                                        for (const [key2, value2] of Object.entries(res2.data.result)) {
+                                            questionList[-1].questiondata.push({name: key2, Quantity: value2})
+                                        }
+                                    }
+                                })
+                                .catch(err => console.log(err));
                             break;
-                        case "mood":
-                            break;
+                        default:
+                           break;
                     }
                 }
                 console.log(questionList)
