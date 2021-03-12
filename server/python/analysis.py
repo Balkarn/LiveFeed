@@ -184,7 +184,7 @@ class RepeatFeedbackAnalysis():
 							questionid = "_"
 						if meetingid not in self.feedback_data or questionid not in self.feedback_data[meetingid]:
 							self.feedback_data[meetingid] = {}
-							self.feedback_data[meetingid][questionid] = []
+							self.feedback_data[meetingid][questionid] = [[],[]]
 						self.feedback_data[meetingid][questionid][0].append(phrase)
 						self.feedback_data[meetingid][questionid][1].append(self.str_to_vec(chunk))
 
@@ -207,7 +207,7 @@ class RepeatFeedbackAnalysis():
 
 	def meeting_findsimilar(self, meetingid):
 		vectors = [x for y in self.feedback_data[meetingid].values() for x in y[1]]
-		phrases = [x for y in self.feedback_data[meetingid][0] for x in y[0]]
+		phrases = [x for y in self.feedback_data[meetingid].values() for x in y[0]]
 		return self.findsimilar(vectors, phrases)
 
 
