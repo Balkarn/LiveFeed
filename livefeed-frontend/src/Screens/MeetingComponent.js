@@ -27,7 +27,6 @@ const MeetingComponent = (props) => {
     let {id} = useParams();
 
     const [para,setPara] = React.useState(id.split('&'));// ['user_id','event_id']
-    
 
     const [templateset,setTemplateset] = React.useState([
         { templateid : 1 , templatename : 'Question 1',questioncontent : 'content of Q1',questiontype : 'Written Question'},
@@ -76,8 +75,9 @@ const MeetingComponent = (props) => {
         })
         .catch(err => console.log(err));
 
+    console.log(para)
         
-    if(para[0] === userid){
+    if(para[2] === 'host'){
         return (
     
             <div className="meeting-screen">
