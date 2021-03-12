@@ -86,6 +86,13 @@ if (!isset($_POST['error'])) {
 	      $database->validate_meeting_code(...$_POST['arguments']);
 	    }
 	    break;
+		case 'getmeetings':
+			if (!is_array($_POST['arguments']) || count($_POST['arguments']) < 1) {
+				$reqResult['error'] = "Invalid arguments used.";
+			} else { # argument format: hostid
+				$database->get_meetings(...$_POST['arguments']);
+			}
+			break;
 		case 'getmeetinginfo':
 			if (!is_array($_POST['arguments']) || count($_POST['arguments']) < 2) {
 				$reqResult['error'] = "Invalid arguments used.";
