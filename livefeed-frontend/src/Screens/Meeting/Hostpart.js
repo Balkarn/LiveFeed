@@ -54,9 +54,9 @@ const DisplayAnalysis = ({question}) => {
         case 'Written Question':
             return (
                 <div>
-                    <Typography>Mood distribution and repeat analysis</Typography>
+                    <Typography>A bar chart to show the mood distribution</Typography>
                     <BarChart
-                    width={500}
+                    width={600}
                     height={350}
                     data={data2}
                     margin={{
@@ -70,7 +70,6 @@ const DisplayAnalysis = ({question}) => {
                     <XAxis dataKey="name" />
                     <YAxis />
                     <Tooltip />
-                    <Legend layout="vertical" verticalAlign="top" align="right"/>
                     <Bar dataKey="number" fill="#0088FE" />
                     </BarChart>
                 </div>
@@ -79,7 +78,7 @@ const DisplayAnalysis = ({question}) => {
             return (
                 <div>
                 <p>A Pie chart to show the distribution of numerical scores</p>
-                <PieChart width={400} height={350}>
+                <PieChart width={600} height={350}>
                     <Legend layout="vertical" verticalAlign="top" align="right" />
                     <Tooltip />
                     <Pie
@@ -110,7 +109,7 @@ const DisplayAnalysis = ({question}) => {
             return (
                 <div>
                 <p>A Pie chart to show the distribution of multiple choice answers</p>
-                <PieChart width={400} height={350}>
+                <PieChart width={600} height={350}>
                     <Legend layout="vertical" verticalAlign="top" align="right" />
                     <Tooltip />
                     <Pie
