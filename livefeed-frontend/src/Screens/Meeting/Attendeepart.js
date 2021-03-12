@@ -114,7 +114,7 @@ const Attendeepart = ({templateset}) => {
                         <div>
                     {/* <p key = {question.id}>{question.name}</p> */}
                             <Divider /> 
-                                <ListItem>
+                                <ListItem key={question.questionid}>
                                     <ListItemText
                                     primary={question.templatename}
                                     secondary = {question.questiontype}
