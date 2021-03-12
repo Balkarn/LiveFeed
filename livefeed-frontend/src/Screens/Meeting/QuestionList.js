@@ -23,7 +23,7 @@ const QuestionList = ({role,templateset}) => {
     }else{
         return (
             <div>
-                <Hostpart templateset = {templateset}/>
+                <Hostpart /*templateset = {templateset}*//>
             </div>
         )
     }

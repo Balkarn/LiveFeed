@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect/*, useState*/, Component } from "react";
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -102,8 +102,18 @@ const DisplayAnalysis = ({question}) => {
 
 }
 
-const Hostpart = ({templateset}) => {
-    const meetingtemplatset = templateset;
+const Hostpart = () => {
+    const [questions,setQuestions] = React.useState([]);
+
+    useEffect(() => {
+        setQuestions([
+            { templateid: 1, templatename: 'Question 1', questioncontent: 'content of Q1', questiontype: 'Written Question' },
+            { templateid: 2, templatename: 'Question 2', questioncontent: 'content of Q2', questiontype: 'Numerical Rating' },
+            { templateid: 3, templatename: 'Question 3', questioncontent: 'content of Q3', questiontype: 'Multiple Choice' },
+        ]);
+    }, []); // Only run once
+
+
 
     return (
         <div>
@@ -111,7 +121,7 @@ const Hostpart = ({templateset}) => {
                 
                 <List>
                     <Divider />
-                    {meetingtemplatset.map(question => (
+                    {questions.map(question => (
                         <div>
                             <ListItem key={question.templateid}>
                                 <div>
