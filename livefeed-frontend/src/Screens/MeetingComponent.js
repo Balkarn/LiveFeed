@@ -17,10 +17,11 @@ const MeetingComponent = (props) => {
     }, []); // Only run once
     
     const [userid,setUsername] = React.useState('-1');
+    const [meetingid,setMeetingid] = React.useState();
     const [sessionname,setSessionname] = React.useState("test");
     const [sessiondate,setSessiondate] = React.useState("24-Feb-21");
     const [hostname,setHostname] = React.useState("James");
-    const [template,setTemplate] = React.useState();
+    const [templateid,setTemplateid] = React.useState([]);
     var qs = require('qs');
     const phpurl = "http://localhost:80/server/php/index.php";
     let {id} = useParams();
@@ -37,7 +38,7 @@ const MeetingComponent = (props) => {
         {id : 1, name : 'attendee 1'},
         {id : 2, name : 'attendee 2'},
         {id : 3, name : 'attendee 3'},
-    ]);//avoid space in name
+    ]);
 
     var data = {
         function:"getmeetinginfo",
@@ -53,6 +54,24 @@ const MeetingComponent = (props) => {
             setSessionname(res.data.result.MeetingName)
             setSessiondate(res.data.result.StartTime)
             setHostname(res.data.result.HostID)
+            setMeetingid(res.data.result.MeetingID)
+        }
+        })
+        .catch(err => console.log(err));
+
+
+    var data = {
+        function:"getmeetingtemplates",
+        arguments:[Number(meetingid)]
+        }
+    axios.post(phpurl, qs.stringify(data))
+        .then(res => {
+        
+        if (res.data.error) {
+            console.log(res.data.error)
+        }
+        if (res.data.result) {
+            setTemplateid([...res.data.result.TemplateID]);
         }
         })
         .catch(err => console.log(err));
