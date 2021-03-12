@@ -15,11 +15,14 @@ const MeetingComponent = (props) => {
         document.body.style.backgroundColor = "#15bfff"
     }, []); // Only run once
     
-    const [userid,setUsername] = React.useState('12');
+    const [userid,setUsername] = React.useState('-1');
     const [sessionname,setSessionname] = React.useState("test");
     const [sessiondate,setSessiondate] = React.useState("24-Feb-21");
     const [hostname,setHostname] = React.useState("James");
     let {id} = useParams();
+
+    const [para,setPara] = React.useState(id.split('&'));
+    
 
     const [templateset,setTemplateset] = React.useState([
         { templateid : 1 , templatename : 'Question 1',questioncontent : 'content of Q1',questiontype : 'Written Question'},
@@ -32,7 +35,7 @@ const MeetingComponent = (props) => {
         {id : 3, name : 'attendee 3'},
     ]);//avoid space in name
 
-    if(id !== userid){
+    if(para[0] === userid){
         return (
     
             <div className="meeting-screen">
@@ -48,7 +51,6 @@ const MeetingComponent = (props) => {
                     <QuestionList role = {'host'}
                                 templateset = {templateset}
                                 />
-                    <Reminder role = {'host'} attendeelist = {joinedattendee}/>
                 </div>
                     
                 <Link to="/">
@@ -77,7 +79,6 @@ const MeetingComponent = (props) => {
                     sessiondate = {sessiondate}
                     hostname = {hostname}
             />
-
             <div className="meeting-content">
             
                 <QuestionList role ='attendee'

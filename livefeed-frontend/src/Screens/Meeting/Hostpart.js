@@ -10,85 +10,125 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import IconButton from '@material-ui/core/IconButton';
 import Divider from '@material-ui/core/Divider';
+import Typography from '@material-ui/core/Typography';
 import AssessmentOutlinedIcon from '@material-ui/icons/AssessmentOutlined';
 import SendIcon from '@material-ui/icons/Send';
+import { PieChart, Pie, Sector, Cell, ResponsiveContainer, Legend } from 'recharts';
+
+
+const DisplayAnalysis = ({question}) => {
+    const data = [
+        { name: 'Group A', value: 400 },
+        { name: 'Group B', value: 300 },
+        { name: 'Group C', value: 200 },
+        { name: 'Group D', value: 100 },
+    ];
+
+    const COLORS = ['#0088FE', '#00C49F', '#ff4040', '#ff9d00'];
+
+    const customLabel = () => {
+        return (
+            "Label"
+        );
+    };
+
+
+    switch (question.questiontype) {
+
+        case 'Written Question':
+            return (
+                <Typography>Mood distribution and repeat analysis</Typography>
+            );
+        case 'Numerical Rating':
+            return (
+                <div>
+                <p>A Pie chart to show the distribution of numerical scores</p>
+                <PieChart width={400} height={350}>
+                    <Legend layout="vertical" verticalAlign="top" align="right" />
+                    <Pie
+                        data={data}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={true}
+                        outerRadius={110}
+                        fill="#8884d8"
+                        dataKey="value"
+                        label
+                    >
+                        {data.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[Math.max(0, index)]} />
+                        ))}
+                        
+                    </Pie>
+                    {/* <Pie data={data} dataKey="value" cx="50%" cy="50%" innerRadius={0} outerRadius={110} fill="#82ca9d" label={customLabel} >
+                    
+                        {data.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[Math.max(0, index)]} />
+                        ))}
+                    </Pie> */}
+                </PieChart>
+                </div>
+            );
+        case 'Multiple Choice':
+            return (
+                <div>
+                <p>A Pie chart to show the distribution of multiple choice answers</p>
+                <PieChart width={400} height={350}>
+                    <Legend layout="vertical" verticalAlign="top" align="right" />
+                    <Pie
+                        data={data}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={true}
+                        outerRadius={110}
+                        fill="#8884d8"
+                        dataKey="value"
+                        label
+                    >
+                        {data.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[Math.max(0,index)]} />
+                        ))}
+                    </Pie>
+                    {/* <Pie data={data} dataKey="value" cx="50%" cy="50%" innerRadius={0} outerRadius={110} fill="#82ca9d" label={customLabel} >
+                    
+                        {data.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[Math.max(0, index)]} />
+                        ))}
+                    </Pie> */}
+                </PieChart>
+                </div>
+            );
+    }
+
+}
 
 const Hostpart = ({templateset}) => {
-    const [modalisOpen, setModalisOpen] = React.useState(false);
-    const [graphisOpen,setGraphisOpen] = React.useState(false);
-    const [send,setSend] = React.useState(false);
-    const [templatesend,setTemplatesend] = React.useState([]);
     const meetingtemplatset = templateset;
-
-    const [senttemplates,setSenttemplates] = React.useState([]);
-    const [current,setCurrent] = React.useState([]);
 
     return (
         <div>
-            <div className="list">
+            <div className="list2">
                 
                 <List>
+                    <Divider />
                     {meetingtemplatset.map(question => (
                         <div>
-                    {/* <p key = {question.id}>{question.name}</p> */}
-                            <Divider /> 
-                                <ListItem key={question.templateid}>
-                                    <ListItemText
-                                    primary={question.templatename}
-                                    />
-                                    <ListItemSecondaryAction>
-                                    {senttemplates.includes(question) ? <IconButton>
-                                        <AssessmentOutlinedIcon color="primary" onClick = {()=>{setGraphisOpen(true);
-                                                                                  }}/>
-                                    </IconButton> : <IconButton>
-                                        <SendIcon color="primary" onClick = {()=>{setModalisOpen(true);
-                                                                                    setCurrent(question)
-                                                                                  }}/>
-                                    </IconButton>}
-                                    
-                                    </ListItemSecondaryAction>
-                                </ListItem>
+                            <ListItem key={question.templateid}>
+                                <div>
+                                    <h3> {question.templatename} </h3>
+                                    <DisplayAnalysis question={question}/>
+                                </div>
+
+                            </ListItem>
                             <Divider/>
                         </div>
                     
                     ))}
-                </List> 
-                <Dialog open={modalisOpen} 
-                        onClose={()=>setModalisOpen(false)} 
-                        aria-labelledby="form-dialog-title"
-                        fullWidth = 'xs'>
-                    <DialogTitle id="form-dialog-title">Send?</DialogTitle>
-                    <DialogContent>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={()=>{setModalisOpen(false);
-                                                setSend(true);
-                                                setTemplatesend(current);
-                                                senttemplates.push(current);
-                                        }} 
-                                color="primary">
-                            Send
-                        </Button>
-                        <Button onClick={()=>setModalisOpen(false)} color="primary">
-                            Cancel
-                        </Button>
-                    </DialogActions>
 
-                </Dialog>  
-                <Dialog open={graphisOpen} 
-                        onClose={()=>setGraphisOpen(false)} 
-                        aria-labelledby="form-dialog-title"
-                        fullWidth = 'xs'>
-                    <DialogTitle id="form-dialog-title">Graph</DialogTitle>
-                    <DialogContent>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={()=>setGraphisOpen(false)} color="primary">
-                            Cancel
-                        </Button>
-                    </DialogActions>
-                </Dialog>  
+                </List> 
+
             </div>
+
         </div>
 
     )

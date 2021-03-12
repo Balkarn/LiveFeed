@@ -21,6 +21,8 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from 'react-select';
 
 
+
+
 const Attendeepart = ({templateset}) => {
     const [modalisOpen, setModalisOpen] = React.useState(false);
     // const [meetingtemplate, setMeetingtemplate] = React.useState(template);
@@ -31,6 +33,11 @@ const Attendeepart = ({templateset}) => {
     const [isanonymous,setIsanonymous] = React.useState(false);
     const [sendanonymous,setSendanonymous] = React.useState(false);
     var [multianswer,setMultianswer] = React.useState();
+    const [maxvalue,setMaxvalue] = React.useState(9);
+    const [minvalue,setMinvalue] = React.useState(1);
+
+
+
 
     const handleSend = () => {
         let filtered_events = meetingtemplateset.filter( event => event !== current);
@@ -39,6 +46,7 @@ const Attendeepart = ({templateset}) => {
         handleCancel();
     }
 
+
     const handleCancel = () => {
         setModalisOpen(false);
         setAnswer('');
@@ -46,14 +54,22 @@ const Attendeepart = ({templateset}) => {
     }
 
     const options = [
-        { value: 'multichoice-option1', label: 'multichoice-option1' },
-        { value: 'multichoice-option2', label: 'multichoice-option2' },
-        { value: 'multichoice-option3', label: 'multichoice-option3' },
-        { value: 'multichoice-option4', label: 'multichoice-option4' },
+        { value: 'multichoice-option1', label: 'option1' },
+        { value: 'multichoice-option2', label: 'option2' },
+        { value: 'multichoice-option3', label: 'option3' },
+        { value: 'multichoice-option4', label: 'option4' },
       ]
 
+      const scores = [
+        {value: '1',label: '1'},
+        {value: '2',label: '2'},
+        {value: '3',label: '3'},
+        {value: '4',label: '4'},
+        {value: '5',label: '5'},
+      ];
+
     const Ddlhandle = (e) => {
-        setMultianswer = (Array.isArray(e)?e.map(x=>x.label):[]);
+        setMultianswer(Array.isArray(e)?e.map(x=>x.label):[]);
     }
 
     const renderSwitch = (param)=> {
@@ -72,12 +88,12 @@ const Attendeepart = ({templateset}) => {
             case 'Numerical Rating':
                 return (
                     <FormControl component="fieldset">
-                        <RadioGroup name="Score" defaultValue="1" onChange={(event)=>{setAnswer(event.target.value)}}>
-                            <FormControlLabel value="1" control={<Radio />} label="1" />
-                            <FormControlLabel value="2" control={<Radio />} label="2" />
-                            <FormControlLabel value="3" control={<Radio />} label="3" />
-                            <FormControlLabel value="4" control={<Radio />} label="4" />
-                            <FormControlLabel value="5" control={<Radio />} label="5" />
+                        <RadioGroup name="Score"  defaultValue={'1'} onChange={(event)=>{setAnswer(event.target.value)}}>
+                            {scores.map(option => (
+                                <div>
+                                <FormControlLabel value={option.value} control={<Radio />} label={option.label} />
+                                </div>
+                            ))}
                         </RadioGroup>
                     </FormControl> 
                 )
@@ -104,7 +120,6 @@ const Attendeepart = ({templateset}) => {
                                     secondary = {question.questiontype}
                                     />
                                     <ListItemSecondaryAction>
-                                        {}
                                     <IconButton>
                                         <EditIcon color="primary" onClick = {()=>{setModalisOpen(true);setCurrent(question)}}/>
                                     </IconButton>
@@ -118,13 +133,14 @@ const Attendeepart = ({templateset}) => {
                     onClose={()=>setModalisOpen(false)} 
                     aria-labelledby="form-dialog-title"
                     fullWidth = 'sm'
-                    height = '800'>
+                    // style = {{height: 600}}
+                    >
                 <DialogTitle id="form-dialog-title">Answer</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        {current.questioncontent}
+                        {current.questioncontent}  
                     </DialogContentText>
-                    {renderSwitch(current.questiontype)}  
+                    {renderSwitch(current.questiontype)} 
                 </DialogContent>
                 <DialogActions>
                     <FormControlLabel

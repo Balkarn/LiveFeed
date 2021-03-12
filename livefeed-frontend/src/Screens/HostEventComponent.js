@@ -180,7 +180,7 @@ const HostEventComponent = (props) => {
                         <ListItemSecondaryAction>
                             <IconButton>
 
-                            <Link to={linkto} ><PlayCircleOutlineIcon color="primary"/></Link>
+                            <Link to={linkto+'&'+event.event_id} ><PlayCircleOutlineIcon color="primary"/></Link>
                             </IconButton>
                             <IconButton>
                                 <DeleteIcon color="error" onClick={() => handleDeleteEvent(event)} />
