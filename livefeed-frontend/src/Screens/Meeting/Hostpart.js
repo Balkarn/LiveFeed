@@ -22,20 +22,28 @@ import {
 } from 'recharts';
 
 const DisplayAnalysis = ({question}) => {
-    const data = [
+    const multipleChoiceData = [
         { name: 'Group A', value: 400 },
         { name: 'Group B', value: 300 },
         { name: 'Group C', value: 200 },
         { name: 'Group D', value: 100 },
     ];
 
-    const data2 = [
+    const numericalScoreData = [
+        { name: '1', value: 400 },
+        { name: '2', value: 300 },
+        { name: '3', value: 200 },
+        { name: '4', value: 100 },
+        { name: '5', value: 300 },
+    ];
+
+    const moodData = [
         {
-            name: 'Very Positive',
+            name: 'Positive',
             Quantity: 4,
         },
         {
-            name: 'Neutral',
+            name: 'Ambivalent',
             Quantity: 3,
         },
         {
@@ -44,7 +52,7 @@ const DisplayAnalysis = ({question}) => {
         },
     ];
 
-    const data3 = [
+    const repeatData = [
         {
             name: 'Feedback 1',
             feedback: 'Turn up the volume',
@@ -80,7 +88,7 @@ const DisplayAnalysis = ({question}) => {
                     <BarChart
                     width={600}
                     height={350}
-                    data={data2}
+                    data={moodData}
                     margin={{
                         top: 5,
                         right: 30,
@@ -88,18 +96,18 @@ const DisplayAnalysis = ({question}) => {
                         bottom: 5,
                     }}
                     >
-                    <CartesianGrid strokeDasharray="5 5" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="Quantity" fill="#0088FE" />
+                        <CartesianGrid strokeDasharray="5 5" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Bar dataKey="Quantity" fill="#0088FE" />
                     </BarChart>
 
                     <h4>Top 3 Most frequently repeated feedback: </h4>
                     <Typography>
-                    {"1: " + data3[0].feedback} <br/>
-                    {"2: " + data3[1].feedback} <br />
-                    {"3: " + data3[2].feedback} <br />
+                        {"1: " + repeatData[0].feedback} <br/>
+                        {"2: " + repeatData[1].feedback} <br />
+                        {"3: " + repeatData[2].feedback} <br />
                     </Typography>
                     
 
@@ -107,7 +115,7 @@ const DisplayAnalysis = ({question}) => {
                         layout="vertical"
                         width={600}
                         height={350}
-                        data={data3}
+                        data={repeatData}
                         margin={{
                             top: 5,
                             right: 20,
@@ -131,7 +139,7 @@ const DisplayAnalysis = ({question}) => {
                     <Legend layout="vertical" verticalAlign="top" align="right" />
                     <Tooltip />
                     <Pie
-                        data={data}
+                        data={numericalScoreData}
                         cx="50%"
                         cy="50%"
                         labelLine={true}
@@ -140,17 +148,12 @@ const DisplayAnalysis = ({question}) => {
                         dataKey="value"
                         label
                     >
-                        {data.map((entry, index) => (
+                        {numericalScoreData.map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={COLORS[Math.max(0, index)]} />
                         ))}
                         
                     </Pie>
-                    {/* <Pie data={data} dataKey="value" cx="50%" cy="50%" innerRadius={0} outerRadius={110} fill="#82ca9d" label={customLabel} >
-                    
-                        {data.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={COLORS[Math.max(0, index)]} />
-                        ))}
-                    </Pie> */}
+
                 </PieChart>
                 </div>
             );
@@ -162,7 +165,7 @@ const DisplayAnalysis = ({question}) => {
                     <Legend layout="vertical" verticalAlign="top" align="right" />
                     <Tooltip />
                     <Pie
-                        data={data}
+                        data={multipleChoiceData}
                         cx="50%"
                         cy="50%"
                         labelLine={true}
@@ -171,16 +174,11 @@ const DisplayAnalysis = ({question}) => {
                         dataKey="value"
                         label
                     >
-                        {data.map((entry, index) => (
+                        {multipleChoiceData.map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={COLORS[Math.max(0,index)]} />
                         ))}
                     </Pie>
-                    {/* <Pie data={data} dataKey="value" cx="50%" cy="50%" innerRadius={0} outerRadius={110} fill="#82ca9d" label={customLabel} >
-                    
-                        {data.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={COLORS[Math.max(0, index)]} />
-                        ))}
-                    </Pie> */}
+
                 </PieChart>
                 </div>
             );
