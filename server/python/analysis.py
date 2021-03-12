@@ -511,13 +511,13 @@ class Testing():
 		print(self.popular.fetch_feedback())
 
 	def test_summary(self):
-		print(self.summary.multiple_getresponse(4))
-		print(self.summary.multiple_getresponse(5))
+		print(self.summary.response_tally(4))
+		print(self.summary.response_tally(5))
 
 if __name__ == "__main__":
 	test = Testing()
-	#test.test_sa()
-	#test.test_sa_summary(1)
-	#test.test_popular()
+	test.test_sa()
+	test.test_sa_summary(1)
+	test.test_popular(1)
 	test.test_summary()
 
