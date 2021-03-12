@@ -7,6 +7,7 @@ import Paper from '@material-ui/core/Paper';
 import Header from './Meeting/Header'
 import QuestionList from './Meeting/QuestionList';
 import Reminder from './Meeting/Reminder';
+import axios from 'axios';
 
 
 const MeetingComponent = (props) => {
@@ -19,9 +20,12 @@ const MeetingComponent = (props) => {
     const [sessionname,setSessionname] = React.useState("test");
     const [sessiondate,setSessiondate] = React.useState("24-Feb-21");
     const [hostname,setHostname] = React.useState("James");
+    const [template,setTemplate] = React.useState();
+    var qs = require('qs');
+    const phpurl = "http://localhost:80/server/php/index.php";
     let {id} = useParams();
 
-    const [para,setPara] = React.useState(id.split('&'));
+    const [para,setPara] = React.useState(id.split('&'));// ['user_id','event_id']
     
 
     const [templateset,setTemplateset] = React.useState([
@@ -35,6 +39,25 @@ const MeetingComponent = (props) => {
         {id : 3, name : 'attendee 3'},
     ]);//avoid space in name
 
+    var data = {
+        function:"getmeetinginfo",
+        arguments:[Number(para[0]), Number(para[1])]
+      }
+    axios.post(phpurl, qs.stringify(data))
+        .then(res => {
+        
+        if (res.data.error) {
+            console.log(res.data.error)
+        }
+        if (res.data.result) {
+            setSessionname(res.data.result.MeetingName)
+            setSessiondate(res.data.result.StartTime)
+            setHostname(res.data.result.HostID)
+        }
+        })
+        .catch(err => console.log(err));
+
+        
     if(para[0] === userid){
         return (
     
