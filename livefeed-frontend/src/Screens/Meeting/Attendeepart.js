@@ -74,7 +74,7 @@ const Attendeepart = ({templateset}) => {
 
     const renderSwitch = (param)=> {
         switch(param){
-            case 'Written Question':
+            case 'open':
                 return (
                     <TextField
                         multiline
@@ -85,7 +85,7 @@ const Attendeepart = ({templateset}) => {
                         fullWidth
                         onChange = {(event)=>setAnswer(event.target.value)}/>
                 )
-            case 'Numerical Rating':
+            case 'rating':
                 return (
                     <FormControl component="fieldset">
                         <RadioGroup name="Score"  defaultValue={'1'} onChange={(event)=>{setAnswer(event.target.value)}}>
@@ -97,7 +97,7 @@ const Attendeepart = ({templateset}) => {
                         </RadioGroup>
                     </FormControl> 
                 )
-            case 'Multiple Choice':
+            case 'multiple':
                 return (
                     <Select isMulti options={options} onChange={Ddlhandle}/>
                 )

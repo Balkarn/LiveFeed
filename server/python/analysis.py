@@ -182,11 +182,13 @@ class RepeatFeedbackAnalysis():
 					if len(phrase) > 2: # eliminate one and two letter words
 						if questionid == None:
 							questionid = "_"
-						if meetingid not in self.feedback_data or questionid not in self.feedback_data[meetingid]:
+						if meetingid not in self.feedback_data:
 							self.feedback_data[meetingid] = {}
+						if questionid not in self.feedback_data[meetingid]:
 							self.feedback_data[meetingid][questionid] = [[],[]]
 						self.feedback_data[meetingid][questionid][0].append(phrase)
 						self.feedback_data[meetingid][questionid][1].append(self.str_to_vec(chunk))
+		return True
 
 	def findsimilar(self, vectors, phrases):
 		similar_phrases = []
@@ -411,6 +413,15 @@ class GenerateMeetingSummary():
 			if conn:
 				conn.close()
 
+	def question_mood_tally(self, questionid):
+		mood_tally = {}
+		mood_dict = self.question_getmoodaverage(questionid)
+		for i in mood_dict:
+			if mood_dict[i] in mood_tally:
+				mood_tally[mood_dict[i]] += 1
+			else:
+				mood_tally[mood_dict[i]] = 1
+
 
 	def response_tally(self, questionid):
 		conn = None
@@ -503,10 +514,9 @@ class Testing():
 		self.summary.get_moodaverage(meetingid)
 
 	def test_popular(self, meetingid):
+		self.popular.last_id = 0
 		self.popular.analyse()
 		print(self.popular.meeting_findsimilar(meetingid))
-		print(self.popular.feedback_data[1][0])
-		print(self.popular.feedback_data[1][1])
 		self.popular.last_id = 0
 		print(self.popular.fetch_feedback())
 
@@ -516,8 +526,8 @@ class Testing():
 
 if __name__ == "__main__":
 	test = Testing()
-	test.test_sa()
-	test.test_sa_summary(1)
+	#test.test_sa()
+	#test.test_sa_summary(1)
 	test.test_popular(1)
 	test.test_summary()
 

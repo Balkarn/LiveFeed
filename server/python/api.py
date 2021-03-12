@@ -36,7 +36,7 @@ class QuestionPopular(Resource):
 class QuestionMood(Resource):
 	def post(self):
 		questionid = request.form.get('questionid')
-		return summary.question_getmoodaverage(questionid)
+		return summary.question_mood_tally(questionid)
 
 # Flask Initialisation
 app = Flask(__name__)
@@ -50,9 +50,10 @@ polling = Polling(dbi)
 summary = GenerateMeetingSummary(dbi)
 
 # Flask endpoints
-api.add_resource(FeedbackReceivedNotif, '/feedbackreceived')
-api.add_resource(RequestFeedback, '/feedbackprocessed')
-api.add_resource(MeetingEnded, '/meetingended')
+api.add_resource(QuestionTally, '/questiontally')
+api.add_resource(QuestionPopular, '/questionpopular')
+api.add_resource(QuestionMood, '/questionmood')
+
 
 if __name__ == "__main__":
 	app.run(port=5000)
