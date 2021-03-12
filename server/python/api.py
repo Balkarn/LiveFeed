@@ -22,12 +22,21 @@ class MeetingEnded(Resource):
 	def post(self):
 		meetingid = request.form.get('meetingid')
 
-class QuestionEnded(Resource):
+class QuestionTally(Resource):
+	def post(self):
+		questionid = request.form.get('questionid')
+		return summary.response_tally(questionid)
+
+class QuestionPopular(Resource):
 	def post(self):
 		meetingid = request.form.get('meetingid')
 		questionid = request.form.get('questionid')
-		response = {}
-		summary.response_tally(questionid)
+		return rfa.question_findsimilar(meetingid, questionid)
+
+class QuestionMood(Resource):
+	def post(self):
+		questionid = request.form.get('questionid')
+		return summary.question_getmoodaverage(questionid)
 
 # Flask Initialisation
 app = Flask(__name__)
