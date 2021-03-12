@@ -191,7 +191,7 @@ const DisplayAnalysis = ({question}) => {
                         labelLine={true}
                         outerRadius={110}
                         fill="#8884d8"
-                        dataKey="value"
+                        dataKey="Quantity"
                         label
                     >
                         {multipleChoiceData.map((entry, index) => (
