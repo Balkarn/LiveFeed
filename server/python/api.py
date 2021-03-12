@@ -3,13 +3,6 @@ from flask_restful import Resource, Api, reqparse
 from multiprocessing import Process
 from analysis import *
 
-"""
-PHP --send notifications--> python
-ReactJS --send request--> python
-	- for historic meetings, query the php
-	- for recent meetings, query 
-Python --response--> reactjs
-"""
 
 class FeedbackReceivedNotif(Resource):
 	def get(self):
@@ -29,7 +22,12 @@ class MeetingEnded(Resource):
 	def post(self):
 		meetingid = request.form.get('meetingid')
 
-
+class QuestionEnded(Resource):
+	def post(self):
+		meetingid = request.form.get('meetingid')
+		questionid = request.form.get('questionid')
+		response = {}
+		summary.response_tally(questionid)
 
 # Flask Initialisation
 app = Flask(__name__)
@@ -40,6 +38,7 @@ dbi = DatabaseInteraction()
 sa = SentimentAnalysis(dbi)
 rfa = RepeatFeedbackAnalysis(dbi)
 polling = Polling(dbi)
+summary = GenerateMeetingSummary(dbi)
 
 # Flask endpoints
 api.add_resource(FeedbackReceivedNotif, '/feedbackreceived')

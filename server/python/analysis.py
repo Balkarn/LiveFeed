@@ -363,8 +363,76 @@ class GenerateMeetingSummary():
 			if conn:
 				conn.close()
 
-	def multiple_getresponse(self, questionid):
-		pass
+	def question_getmoodaverage(self, questionid):
+		query = """
+			SELECT avgs.UserID, moods.Mood, avgs.moodavg
+			FROM moods
+			INNER JOIN 
+			(
+				SELECT UserID, ROUND(AVG(MoodVal)) AS moodavg FROM mood_feedback
+				INNER JOIN feedback USING (FeedbackID)
+				INNER JOIN template_feedback USING (FeedbackID)
+				INNER JOIN moods USING (Mood)
+				WHERE QuestionID = 3
+				GROUP BY UserID
+			) avgs ON moods.MoodVal = avgs.moodavg
+			ORDER BY avgs.UserID;
+		"""
+		conn=None
+		try:
+			conn = sql.connect(**self.db_obj.dbconfig)
+			c = conn.cursor()
+			c.execute(query, (questionid, ))
+			result = c.fetchall()
+			moodavgs = {}
+			avgmood = 0
+			if len(result) == 0:
+				return {}
+			for row in result:
+				moodavgs[row[0]] = row[1]
+				avgmood += row[2]
+			avgmood /= len(result)
+
+			query2 = """
+				SELECT Mood FROM moods
+				WHERE MoodVal = %s
+				LIMIT 1
+			"""
+			c.execute(query2, ( int(round(avgmood)), ))
+			result2 = c.fetchall()
+			if len(result2) == 0:
+				return {}
+			moodavgs['totalavg'] = result2[0][0]
+			return moodavgs
+		except sql.Error as err:
+			print(f"-[MySQL Error] {err}")
+			return False
+		finally:
+			if conn:
+				conn.close()
+
+
+	def response_tally(self, questionid):
+		conn = None
+		query = "SELECT Feedback FROM template_feedback WHERE QuestionID=%s"
+		try:
+			conn = sql.connect(**self.db_obj.dbconfig)
+			c = conn.cursor()
+			c.execute(query, (questionid, ))
+			tally = {}
+			for feedback in c.fetchall():
+				if feedback[0] in tally:
+					tally[feedback[0]] += 1
+				else:
+					tally[feedback[0]] = 1
+			return tally
+		except sql.Error as err:
+			print(f"-[MySQL Error] {err}")
+			return False
+		finally:
+			if conn:
+				conn.close()
+
 
 	def end_meeting(self, meetingid):
 		query = "UPDATE meetings SET EndTime=now() WHERE MeetingID=?"
@@ -373,6 +441,7 @@ class GenerateMeetingSummary():
 			conn = sql.connect(**self.db_obj.dbconfig)
 			c = conn.cursor()
 			c.execute(query, (meetingid, ))
+			conn.commit()
 		except sql.Error as err:
 			print(f"-[MySQL Error] {err}")
 			return False
@@ -417,7 +486,7 @@ class Testing():
 		print("Initialising...")
 		self.dbi = DatabaseInteraction()
 		print("DB Initialised")
-		#self.sa = SentimentAnalysis(self.dbi)
+		self.sa = SentimentAnalysis(self.dbi)
 		print("Sentiment Analysis Initialised")
 		self.popular = RepeatFeedbackAnalysis(self.dbi)
 		print("Repeat Feedback Initialised")
@@ -434,23 +503,21 @@ class Testing():
 		self.summary.get_moodaverage(meetingid)
 
 	def test_popular(self, meetingid):
-		self.popular.analyse(meetingid)
-		print(self.popular.find_similar_phrases(meetingid))
+		self.popular.analyse()
+		print(self.popular.meeting_findsimilar(meetingid))
 		print(self.popular.feedback_data[1][0])
 		print(self.popular.feedback_data[1][1])
-		self.popular.last_id = {}
-		print(self.popular.fetch_meeting_feedback(1))
-
-	def test_popular2(self):
+		self.popular.last_id = 0
 		print(self.popular.fetch_feedback())
 
-	def test_popular_summary(self):
-		pass
+	def test_summary(self):
+		print(self.summary.multiple_getresponse(4))
+		print(self.summary.multiple_getresponse(5))
 
 if __name__ == "__main__":
 	test = Testing()
 	#test.test_sa()
 	#test.test_sa_summary(1)
-	test.test_popular2()
-
+	#test.test_popular()
+	test.test_summary()
 
