@@ -10,9 +10,9 @@ header('Content-Type: application/json, multipart/form-data');
 $database = new DatabaseInteraction();
 $reqResult = &$database->reqResult;
 
-// ob_start();
-// var_dump($_POST);
-// error_log(ob_get_clean(), 4);
+ob_start();
+var_dump($_POST);
+error_log(ob_get_clean(), 4);
 
 
 if (!isset($_POST['function'])) { $reqResult['error'] = "No function name."; }

@@ -54,7 +54,7 @@ const LoginComponent = (props) => {
   }, []); // Only run once
 
   var qs = require('qs');
-  const phpurl = "http://localhost:80/server/php/index.php";
+  const phpurl = "http://localhost:80/index.php";
 	
   const [SIGNUPnameTextfieldValue, SIGNUPsetNameTextfieldValue] = React.useState('');
   const [SIGNUPpasswordTextfieldValue, SIGNUPsetPasswordTextfieldValue] = React.useState('');

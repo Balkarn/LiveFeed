@@ -13,6 +13,7 @@ import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
 import AssessmentOutlinedIcon from '@material-ui/icons/AssessmentOutlined';
 import SendIcon from '@material-ui/icons/Send';
+import axios from "axios";
 import { PieChart, Pie, Sector, Cell, ResponsiveContainer, Legend } from 'recharts';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import {
@@ -20,6 +21,9 @@ import {
     Line,
     Area,
 } from 'recharts';
+
+var qs = require('qs');
+const phpurl = "http://localhost:80/index.php"
 
 const DisplayAnalysis = ({question}) => {
 
@@ -177,6 +181,36 @@ const DisplayAnalysis = ({question}) => {
 const Hostpart = () => {
     const [questions,setQuestions] = React.useState([]);
     const [data,setData] = React.useState([]);
+    const meetingid = 1;
+    var currTemplate = "-1";
+
+    axios.post(phpurl, qs.stringify({function:'getmeetingtemplates', arguments:['1']}))
+        .then(res => {
+            if (res.data.error) {
+                console.log(res.data.error);
+            }
+            if (res.data.result) {
+                console.log(res.data.result);
+                currTemplate = res.data.result[0].TemplateID;
+            }
+        })
+        .catch(err => console.log(err));
+    var data1 = {function:'gettemplatequestions', arguments:[""+currTemplate]}
+    axios.post(phpurl, qs.stringify(data1))
+        .then(res => {
+            if (res.data.error) {
+                console.log(res.data.error)
+            }
+            if (res.data.result) {
+                console.log(currTemplate)
+                console.log(res.data.result)
+                for (let question of res.data.result) {
+                    continue
+                }
+
+            }
+        })
+        .catch(err => console.log(err));
 
     //The following 3 consts are temporary data for testing only
     const multipleChoiceData = [
