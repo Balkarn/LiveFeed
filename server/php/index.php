@@ -86,6 +86,13 @@ if (!isset($_POST['error'])) {
 	      $database->validate_meeting_code(...$_POST['arguments']);
 	    }
 	    break;
+		case 'getmeetinginfo':
+			if (!is_array($_POST['arguments']) || count($_POST['arguments']) < 2) {
+				$reqResult['error'] = "Invalid arguments used.";
+			} else { # argument format: userId, meetingId
+				$database->get_meeting_info(...$_POST['arguments']);
+			}
+			break;
 	  default:
 	    $reqResult['error'] = 'Function named: '.$_POST['function'].' was not found.';
 	    break;

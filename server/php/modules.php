@@ -88,6 +88,10 @@ class DatabaseInteraction {
 		}
 	}
 
+	function check_username() {
+
+	}
+
 	function add_user($username, $password, $fname, $lname, $email, $role) {
 		$this->connect();
 		$this->conn->autocommit(false);
@@ -371,6 +375,8 @@ class DatabaseInteraction {
 		while ($meeting = $res->fetch_assoc()) {
 			$this->reqResult['result'][] = $meeting;
 		}
+		$stmt->close();
+		$this->conn->close();
 
 		return true;
 
@@ -458,6 +464,27 @@ class DatabaseInteraction {
 		$this->conn->close();
 
 		return $row['StartTime'];
+
+	}
+
+	function get_meeting_info($userId, $meetingId) {
+		$this->connect();
+		$query = "SELECT * FROM meetings WHERE HostID=? AND MeetingID=?";
+		if (!($stmt = $this->prepared_stmt($query, true, false,"ii", $userId, $meetingId))) {
+			$this->conn->close();
+			return false;
+		}
+		if (!($res = $stmt->get_result())) {
+			$this->conn->close();
+			return false;
+		}
+		$row = $res->fetch_assoc();
+		$this->reqResult['result'] = $row;
+
+		$stmt->close();
+		$this->conn->close();
+
+		return true;
 
 	}
 

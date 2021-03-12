@@ -126,7 +126,7 @@ function insert_data() {
 	echo "\nAdd mood feedback: \n";
 	var_dump($reqResult);
 }
-insert_data();
+#insert_data();
 echo "\nGet User Templates: \n";
 $database->get_user_templates(2);
 var_dump($reqResult);
@@ -145,6 +145,10 @@ var_dump($reqResult);
 
 echo "\nGet Template Questions: \n";
 $database->get_template_questions(1);
+var_dump($reqResult);
+
+echo "\nGet Meeting Info: \n";
+$database->get_meeting_info(2, 1);
 var_dump($reqResult);
 
 ?>
