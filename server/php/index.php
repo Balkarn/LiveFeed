@@ -100,6 +100,20 @@ if (!isset($_POST['error'])) {
 				$database->get_meeting_info(...$_POST['arguments']);
 			}
 			break;
+		case 'getmeetingtemplates':
+			if (!is_array($_POST['arguments']) || count($_POST['arguments']) < 1) {
+				$reqResult['error'] = "Invalid arguments used.";
+			} else { # argument format: meetingId
+				$database->get_meeting_templates(...$_POST['arguments']);
+			}
+			break;
+		case 'gettemplatequestions':
+			if (!is_array($_POST['arguments']) || count($_POST['arguments']) < 1) {
+				$reqResult['error'] = "Invalid arguments used.";
+			} else { # argument format: templateId
+				$database->get_template_questions(...$_POST['arguments']);
+			}
+			break;
 	  default:
 	    $reqResult['error'] = 'Function named: '.$_POST['function'].' was not found.';
 	    break;
