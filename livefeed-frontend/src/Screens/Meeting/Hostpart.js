@@ -183,6 +183,7 @@ const Hostpart = () => {
     const [data,setData] = React.useState([]);
     const meetingid = 1;
     var currTemplate = "-1";
+    var questionList = []
 
     axios.post(phpurl, qs.stringify({function:'getmeetingtemplates', arguments:['1']}))
         .then(res => {
@@ -195,8 +196,7 @@ const Hostpart = () => {
             }
         })
         .catch(err => console.log(err));
-    var data1 = {function:'gettemplatequestions', arguments:[""+currTemplate]}
-    axios.post(phpurl, qs.stringify(data1))
+    axios.post(phpurl, qs.stringify({function:'gettemplatequestions', arguments:['1']}))
         .then(res => {
             if (res.data.error) {
                 console.log(res.data.error)
@@ -204,9 +204,20 @@ const Hostpart = () => {
             if (res.data.result) {
                 console.log(currTemplate)
                 console.log(res.data.result)
-                for (let question of res.data.result) {
-                    continue
+                for (const [key, value] of Object.entries(res.data.result)) {
+                    questionList.push({questionid: key, questionname: value[0], questiontype: value[1]})
+                    switch (value[1]) {
+                        case "multiple":
+                            break;
+                        case "open":
+                            break;
+                        case "rating":
+                            break;
+                        case "mood":
+                            break;
+                    }
                 }
+                console.log(questionList)
 
             }
         })
