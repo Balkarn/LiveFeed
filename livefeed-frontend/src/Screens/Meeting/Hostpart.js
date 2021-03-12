@@ -54,25 +54,25 @@ const DisplayAnalysis = ({question}) => {
         case 'Written Question':
             return (
                 <div>
-                <Typography>Mood distribution and repeat analysis</Typography>
-                <BarChart
-                width={500}
-                height={350}
-                data={data2}
-                margin={{
-                    top: 5,
-                    right: 30,
-                    left: 20,
-                    bottom: 5,
-                }}
-                >
-                <CartesianGrid strokeDasharray="5 5" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend layout="vertical" verticalAlign="top" align="right"/>
-                <Bar dataKey="number" fill="#0088FE" />
-                </BarChart>
+                    <Typography>Mood distribution and repeat analysis</Typography>
+                    <BarChart
+                    width={500}
+                    height={350}
+                    data={data2}
+                    margin={{
+                        top: 5,
+                        right: 30,
+                        left: 20,
+                        bottom: 5,
+                    }}
+                    >
+                    <CartesianGrid strokeDasharray="5 5" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend layout="vertical" verticalAlign="top" align="right"/>
+                    <Bar dataKey="number" fill="#0088FE" />
+                    </BarChart>
                 </div>
             );
         case 'Numerical Rating':
