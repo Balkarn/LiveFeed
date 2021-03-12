@@ -39,7 +39,7 @@ export default function Main() {
     return (
       <>
       <Switch>
-        <Route component={MeetingComponent} path='/meeting/:id' exact></Route>
+        <Route component={() => <MeetingComponent />} path='/meeting/:id' exact></Route>
         <Route component={() => <MenuScreen userID={userID} />} path='/' ></Route>
       </Switch>
       </>
