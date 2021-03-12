@@ -61,11 +61,11 @@ const Attendeepart = ({templateset}) => {
       ]
 
       const scores = [
-        {value: '1',label: '1'},
-        {value: '2',label: '2'},
-        {value: '3',label: '3'},
-        {value: '4',label: '4'},
-        {value: '5',label: '5'},
+        {value: minvalue.toString(),label: minvalue.toString()},
+        {value: ((maxvalue-minvalue)/4+minvalue).toString(),label: ((maxvalue-minvalue)/4+minvalue).toString()},
+        {value: ((maxvalue-minvalue)*2/4+minvalue).toString(),label: ((maxvalue-minvalue)*2/4+minvalue).toString()},
+        {value: ((maxvalue-minvalue)*3/4+minvalue).toString(),label: ((maxvalue-minvalue)*3/4+minvalue).toString()},
+        {value: maxvalue.toString(),label: maxvalue.toString()},
       ];
 
     const Ddlhandle = (e) => {
