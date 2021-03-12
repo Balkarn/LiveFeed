@@ -1,8 +1,8 @@
 from typing import Tuple
 #import moodparser
-import stanza
-from textblob import TextBlob, Blobber
-from textblob.sentiments import NaiveBayesAnalyzer
+#import stanza
+#from textblob import TextBlob, Blobber
+#from textblob.sentiments import NaiveBayesAnalyzer
 import flair
 import nltk.sentiment
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
@@ -12,6 +12,9 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from hyperopt import hp
 from flair.hyperparameter.param_selection import SearchSpace, Parameter
 import timeit
+import spacy
+from sense2vec import Sense2VecComponent
+
 
 
 def bold_print(msg: str) -> str:
@@ -101,6 +104,7 @@ class TextBlobTest:
     def __init__(self):
         self._score = 0
         self.bl = Blobber(analyzer=NaiveBayesAnalyzer())
+        self.bl("Testing, testing, 1, 2, 3.")
     def run(self, texts):
         for (text, _sentiment, _weight) in texts:
             testimonial = self.bl(text)
@@ -236,27 +240,32 @@ def time_all(texts: Tuple) -> None:
     print("---Speed Test---")
     print("\n-----Stanza-----\n")
     stanza_time = timeit.repeat(stmt="stanza_.run(feedback3)", setup="from __main__ import stanza_, feedback3",
-                        repeat=3, number=5)
+                        repeat=3, number=10)
     print("\n\n-----Flair-----\n")
     flair_time = timeit.repeat(stmt="flair1_.run(feedback3)", setup="from __main__ import flair1_, feedback3",
-                        repeat=3, number=5)
+                        repeat=3, number=10)
     print("\n\n-----Flair-RNN-----\n")
     flairrnn_time = timeit.repeat(stmt="flair2_.run(feedback3)", setup="from __main__ import flair2_, "
                                                                             "feedback3",
-                        repeat=3, number=5)
+                        repeat=3, number=10)
     print("\n\n-----Vader-----\n")
     vader_time = timeit.repeat(stmt="vader_.run(feedback3)", setup="from __main__ import vader_, feedback3",
-                        repeat=3, number=5)
+                        repeat=3, number=10)
     print("\n\n-----TextBlob-----\n")
     textblob_time = timeit.repeat(stmt="textblob_.run(feedback3)", setup="from __main__ import textblob_, "
                                                                          "feedback3",
-                                  repeat=3, number=5)
+                                  repeat=3, number=10)
     print("\n\nResults: ")
     print("Stanza Score: " + str(stanza_time))
+    print("Stanza Average: " + str(sum(stanza_time)/len(stanza_time)) )
     print("TextBlob Score: " + str(textblob_time))
+    print("TextBlob Average: " + str(sum(textblob_time)/len(textblob_time)) )
     print("Flair Score: " + str(flair_time))
+    print("Flair Average: " + str(sum(flair_time)/len(flair_time)) )
     print("Flair RNN Score: " + str(flairrnn_time))
+    print("Flair RNN Average: " + str(sum(flairrnn_time)/len(flairrnn_time)) )
     print("Vader Score: " + str(vader_time))
+    print("Vader Average: " + str(sum(vader_time)/len(vader_time)) )
 
 
 def parse_sa_dataset():
@@ -266,6 +275,15 @@ def parse_sa_dataset():
             sentiment, text = line.split("|")
             feedback.append((text.strip(), sentiment.strip(), 2))
     return feedback
+
+def spacy_test_1():
+    nlp = spacy.load("en_core_web_trf")
+    s2v = nlp.add_pipe("sense2vec")
+    s2v.from_disk("../s2v_reddit_2015_md")
+    a = nlp("very bad")
+    b = nlp("very good")
+    c = nlp("great ")
+    print(a[0:].s2v_most_similar(3))
 
 
 if __name__ == "__main__":
@@ -289,8 +307,9 @@ if __name__ == "__main__":
         ("Why are you still doing this to us.", 'negative', 1)
     )
 
+    spacy_test_1()
     #test_all(feedback1+feedback2)
-
+"""
     feedback3 = parse_sa_dataset()
 
     stanza_ = StanzaTest()
@@ -300,3 +319,4 @@ if __name__ == "__main__":
     textblob_ = TextBlobTest()
     #test_all(tuple(feedback3))
     time_all(tuple(feedback3))
+"""

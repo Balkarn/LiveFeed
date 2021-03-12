@@ -309,7 +309,7 @@ class DatabaseInteraction {
 
 			$id = $this->conn->insert_id;
 
-			$code = $id."-".$code;
+			$code = $id.$code;
 
 			$this->prepared_stmt("UPDATE meetings SET meetingcode=? WHERE meetingid=?", false, true,
 					"si", $code, $id);
