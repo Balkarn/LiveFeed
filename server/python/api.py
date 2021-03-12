@@ -4,18 +4,6 @@ from multiprocessing import Process
 from analysis import *
 
 """
-API Functionality: 
-- Receive notification from PHP when feedback has been received into the DB
-- Get queried by ReactJS, asking when the feedback has finished processing
-- Get notification from ReactJS when the meeting has ended, so Python can render a summary
-
-
-Asynchronous:
-- Using Celery vs multiprocessing/threading modules
-
-"""
-
-"""
 PHP --send notifications--> python
 ReactJS --send request--> python
 	- for historic meetings, query the php
@@ -28,19 +16,13 @@ class FeedbackReceivedNotif(Resource):
 		if not sa.new_feedback:
 			sa.new_feedback = True
 			sa.analyse()
+			rfa.analyse()
 		return True
 
 class RequestFeedback(Resource):
 	def post(self):
-		"""
-			- Repeat DB queries to check whether the all the sent feedback has been processed
-				- Check whether last_id in sentimentanalysis and repeatfeedbackanalysis is >= the greatest feedbackid
-				with a corresponding entry in the templatefeedback table.
-			- Start with just polling and slowly layer on efficiency
-		"""
 		templateid = request.form.get('templateid')
-		rfa_lastid = max(rfa.last_id.values())
-		return polling.checktemplatefeedback(templateid, sa.last_id, rfa_lastid)
+		return polling.checktemplatefeedback(templateid, sa.last_id, rfa.last_id)
 
 
 class MeetingEnded(Resource):

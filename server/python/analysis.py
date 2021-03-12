@@ -6,16 +6,10 @@ from datetime import datetime, timedelta
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from nltk import Tree, RegexpParser, pos_tag
-from nltk.corpus import webtext, twitter_samples, knbc
 import re
-import spacy
 
 import gensim.downloader as gensim_dl
-from gensim.models import Word2Vec
 from scipy.spatial.distance import cosine
-from sklearn.cluster import AffinityPropagation
-import numpy as np
-
 
 class DatabaseInteraction():
 	def __init__(self):
@@ -110,6 +104,7 @@ class RepeatFeedbackAnalysis():
 		self.model = gensim_dl.load('glove-twitter-200')
 		self.feedback_data = {}
 		self.last_clean_op = datetime.now()
+		self.last_id = 0
 
 	def remove_meeting_data(self, meetingid):
 		del self.feedback_data[meetingid]
@@ -158,17 +153,6 @@ class RepeatFeedbackAnalysis():
 		print(list(filtered_data))
 		Tree.fromstring(str(filtered_data)).pretty_print()
 		return filtered_data
-	
-	def chunk_noun_phrases(self, pos_tokens):
-		grammar = """
-		            NP: 	{(<PDT>?<DT>|<PRP.>) <RB>? (<JJ.*>|<RB.*>)* (<CC>?(<JJ.*>|<RB.*>))* (<NN><POS>?)+ (<CC>?(<NN><POS>?))*}
-		                    {<.*> (<NN><POS>?)+ (<CC>?(<NN><POS>?))*}
-		                    {<PDT>?<DT>}
-		                    {<TO><PRP>} 
-		            NOTNP:  {<.*>*}
-		                    }<NP>|<NP><CC><NP>{                    
-		"""
-		return self.chunk_data(pos_tokens, grammar)
 
 	def chunk_adjective_phrases(self, pos_tokens):
 		grammar = """
@@ -186,61 +170,27 @@ class RepeatFeedbackAnalysis():
 			vector += self.model.wv.get_vector(word)
 		return vector
 
-	def analyse(self, meetingid):
-		feedback_list = self.fetch_meeting_feedback(meetingid)
-
-		processed_feedback = []
-		phrases = []
-		vectors = []
-
-		for (feedbackid, feedback) in feedback_list:
-			processed = self.clean_data(feedback, ())
-			processed = pos_tag(processed)
-			processed = self.chunk_noun_phrases(processed)
-			for chunk1 in processed:
-				if isinstance(chunk1, Tree) and chunk1.label() == "NOTNP":
-					processed_chunk = self.chunk_adjective_phrases(chunk1)
-					for chunk2 in processed_chunk:
-						if isinstance(chunk2, Tree) and chunk2.label() == "AJJP":
-							processed_feedback.append(list(chunk2))
-							phrases.append(" ".join(word[0] for word in list(chunk2)))
-							#vectors.append(self.str_to_vec(chunk))
-		if meetingid in self.feedback_data:
-			self.feedback[meetingid][0] += phrases
-			self.feedback[meetingid][1] += processed_feedback
-			self.feedback[meetingid][2] += vectors
-		else:
-			self.feedback_data[meetingid] = [phrases, processed_feedback, vectors]
-
-	def analyse2(self, meetingid):
-		feedback_list = self.fetch_meeting_feedback(meetingid)
-
-		processed_feedback = []
-		phrases = []
-		vectors = []
-
-		for (feedbackid, feedback) in feedback_list:
+	def analyse(self):
+		feedback_list = self.fetch_feedback()
+		for (feedbackid, meetingid, questionid, feedback) in feedback_list:
 			processed = self.clean_data(feedback, ())
 			processed = pos_tag(processed)
 			processed = self.chunk_adjective_phrases(processed)
 			for chunk in processed:
 				if isinstance(chunk, Tree) and chunk.label() == "AJJP":
-					processed_feedback.append(list(chunk))
-					phrases.append(" ".join(word[0] for word in list(chunk)))
-					vectors.append(self.str_to_vec(chunk))
-		if meetingid in self.feedback_data:
-			self.feedback[meetingid][0] += phrases
-			self.feedback[meetingid][1] += processed_feedback
-			self.feedback[meetingid][2] += vectors
-		else:
-			self.feedback_data[meetingid] = [phrases, processed_feedback, vectors]
+					phrase = " ".join(word[0] for word in list(chunk))
+					if len(phrase) > 2: # eliminate one and two letter words
+						if questionid == None:
+							questionid = "_"
+						if meetingid not in self.feedback_data or questionid not in self.feedback_data[meetingid]:
+							self.feedback_data[meetingid] = {}
+							self.feedback_data[meetingid][questionid] = []
+						self.feedback_data[meetingid][questionid][0].append(phrase)
+						self.feedback_data[meetingid][questionid][1].append(self.str_to_vec(chunk))
 
-	def find_similar_phrases3(self, meetingid):
-		vectors = self.feedback_data[meetingid][2]
-		phrases = self.feedback_data[meetingid][0]
+	def findsimilar(self, vectors, phrases):
 		similar_phrases = []
 		working_idx = list(range(0, len(vectors)-1))
-		min_distance = {}
 		while len(working_idx) > 0:
 			current_vec = working_idx[0]
 			similar_phrases.append([phrases[current_vec]])
@@ -250,76 +200,44 @@ class RepeatFeedbackAnalysis():
 				if distance <= 0.20:
 					working_idx.remove(vec_i)
 					similar_phrases[-1].append(phrases[vec_i])
+
+			if len(similar_phrases[-1]) == 1:
+				similar_phrases.pop(-1)
 		return similar_phrases
 
+	def meeting_findsimilar(self, meetingid):
+		vectors = [x for y in self.feedback_data[meetingid].values() for x in y[1]]
+		phrases = [x for y in self.feedback_data[meetingid][0] for x in y[0]]
+		return self.findsimilar(vectors, phrases)
 
 
-	def find_similar_phrases(self, meetingid):
-		vectors = self.feedback_data[meetingid][2]
-		phrases = self.feedback_data[meetingid][0]
-		similar_phrases2 = []
-		similar_phrases = {}
-		for i in range(0, len(vectors)):
-			similar_phrases2.append([phrases[i]])
-			similar_phrases[phrases[i]] = []
-			for j in range(i+1, len(vectors)):
-				if phrases[j] in similar_phrases:
-					continue
-				#distance = cosine(vectors[i], vectors[j])
-				distance = vectors[i].similarity(vectors[j])
-				if distance <= 0.3:
-					similar_phrases2[-1].append((phrases[j], distance))
-					similar_phrases[phrases[i]].append(phrases[j])
+	def question_findsimilar(self, meetingid, questionid):
+		vectors = self.feedback_data[meetingid][questionid][1]
+		phrases = self.feedback_data[meetingid][questionid][0]
+		return self.findsimilar(vectors, phrases)
 
 
-			if len(similar_phrases2[-1]) == 1:
-				similar_phrases2.pop(-1)
-			if len(similar_phrases[phrases[i]]) == 0:
-				del similar_phrases[phrases[i]]
-		self.feedback_data[meetingid].append(similar_phrases)
-		return (similar_phrases, similar_phrases2)
-
-	def find_similar_phrases2(self, meetingid):
-		phrases = np.asarray(self.feedback_data[meetingid][0])
-		similarity = np.array([[cosine(i, j) for j in self.feedback_data[meetingid][2]] for i in self.feedback_data[meetingid][2]])
-
-		#from sklearn.metrics.pairwise import cosine_distances
-		#similarity2 = cosine_distances(phrases)
-		affprop = AffinityPropagation(affinity="precomputed", damping=0.5)
-		affprop.fit(similarity)
-		for cluster_id in np.unique(affprop.labels_):
-			example = phrases[affprop.cluster_centers_indices_[cluster_id]]
-			cluster = np.unique(phrases[np.nonzero(affprop.labels_ == cluster_id)])
-			cluster_str = ", ".join(cluster)
-			print(" - *%s:* %s" % (example, cluster_str))
-
-
-	
-	def fetch_meeting_feedback(self, meetingid):
-		if meetingid not in self.last_id:
-			self.last_id[meetingid] = 0
+	def fetch_feedback(self):
 		conn = None
 		try:
 			conn = sql.connect(**self.db_obj.dbconfig)
 			c = conn.cursor()
 			query = """
-				(SELECT FeedbackID, Feedback FROM feedback 
-				INNER JOIN general_feedback USING (FeedbackID) 
-				WHERE MeetingID = %s
-				AND FeedbackID > %s) 
-				UNION 
-				(SELECT FeedbackID, Feedback FROM feedback 
+				(SELECT FeedbackID, MeetingID, QuestionID, Feedback FROM feedback 
 				INNER JOIN template_feedback USING (FeedbackID) 
 				INNER JOIN template_questions USING (QuestionID) 
-				WHERE MeetingID = %s
-				AND FeedbackID > %s
+				WHERE FeedbackID > %s
 				AND (QuestionType = 'open'))
+				UNION
+				(SELECT FeedbackID, MeetingID, NULL, Feedback FROM feedback 
+				INNER JOIN general_feedback USING (FeedbackID) 
+				WHERE FeedbackID > %s) 
 				ORDER BY FeedbackID; 
 			"""
-			c.execute(query, (meetingid, self.last_id[meetingid], meetingid, self.last_id[meetingid]))
+			c.execute(query, (self.last_id, self.last_id))
 			result = c.fetchall()
 			if len(result) > 0:
-				self.last_id[meetingid] = result[-1][0]
+				self.last_id = result[-1][0]
 
 			# cleanup old meetings
 			if datetime.now() - self.last_clean_op >= timedelta(1):
@@ -352,6 +270,42 @@ class RepeatFeedbackAnalysis():
 		finally:
 			if conn:
 				conn.close()
+
+
+	def insert_repeat_feedback(self, meetingid, feedback: list):
+		if len(feedback) == 0:
+			return False
+		query1 = "INSERT INTO popular_feedback VALUES (NULL, %s, %s)"
+		query2 = "INSERT INTO popular_feedback VALUES (%s, %s, %s)"
+		conn = None
+		try:
+			conn = sql.connect(**self.db_obj.dbconfig)
+			c = conn.cursor()
+			c.execute(query1, (meetingid, feedback[0]))
+			if len(feedback) > 1:
+				clusterid = conn.insert_id()
+				query_args = []
+				for f in feedback[1:]:
+					query_args.extend((clusterid, meetingid, f))
+				c.executemany(query2, query_args)
+			conn.commit()
+			return True
+		except sql.Error as err:
+			print(f"-[MySQL Error] {err}")
+			return False
+		finally:
+			if conn:
+				conn.close()
+
+	def get_meeting_summary(self, meetingid):
+		similar_phrases = self.meeting_findsimilar(meetingid)
+		del self.feedback_data[meetingid]
+		self.insert_repeat_feedback(meetingid, similar_phrases)
+		return sorted(similar_phrases, key=lambda p: len(p))
+
+	def get_question_summary(self, meetingid, questionid):
+		similar_phrases = self.question_findsimilar(meetingid, questionid)
+		return sorted(similar_phrases, key=lambda p: len(p))
 
 class GenerateMeetingSummary():
 	def __init__(self, database):
@@ -409,8 +363,23 @@ class GenerateMeetingSummary():
 			if conn:
 				conn.close()
 
-	def get_repeatfeedback(self):
+	def multiple_getresponse(self, questionid):
 		pass
+
+	def end_meeting(self, meetingid):
+		query = "UPDATE meetings SET EndTime=now() WHERE MeetingID=?"
+		conn = None
+		try:
+			conn = sql.connect(**self.db_obj.dbconfig)
+			c = conn.cursor()
+			c.execute(query, (meetingid, ))
+		except sql.Error as err:
+			print(f"-[MySQL Error] {err}")
+			return False
+		finally:
+			if conn:
+				conn.close()
+
 
 class Polling():
 	def __init__(self, database):
@@ -466,15 +435,14 @@ class Testing():
 
 	def test_popular(self, meetingid):
 		self.popular.analyse(meetingid)
-		print(self.popular.find_similar_phrases3(meetingid))
+		print(self.popular.find_similar_phrases(meetingid))
 		print(self.popular.feedback_data[1][0])
 		print(self.popular.feedback_data[1][1])
 		self.popular.last_id = {}
 		print(self.popular.fetch_meeting_feedback(1))
 
-		#a, b = self.popular.find_similar_phrases(meetingid)
-		#print(a)
-		#print(b)
+	def test_popular2(self):
+		print(self.popular.fetch_feedback())
 
 	def test_popular_summary(self):
 		pass
@@ -483,6 +451,6 @@ if __name__ == "__main__":
 	test = Testing()
 	#test.test_sa()
 	#test.test_sa_summary(1)
-	test.test_popular(1)
+	test.test_popular2()
 
 
