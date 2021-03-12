@@ -23,18 +23,18 @@ import {
 
 const DisplayAnalysis = ({question}) => {
     const multipleChoiceData = [
-        { name: 'Group A', value: 400 },
-        { name: 'Group B', value: 300 },
-        { name: 'Group C', value: 200 },
-        { name: 'Group D', value: 100 },
+        { name: 'Group A', Quantity: 400 },
+        { name: 'Group B', Quantity: 300 },
+        { name: 'Group C', Quantity: 200 },
+        { name: 'Group D', Quantity: 100 },
     ];
 
     const numericalScoreData = [
-        { name: '1', value: 400 },
-        { name: '2', value: 300 },
-        { name: '3', value: 200 },
-        { name: '4', value: 100 },
-        { name: '5', value: 300 },
+        { name: '1', Quantity: 400 },
+        { name: '2', Quantity: 300 },
+        { name: '3', Quantity: 200 },
+        { name: '4', Quantity: 100 },
+        { name: '5', Quantity: 300 },
     ];
 
     const moodData = [
@@ -145,7 +145,7 @@ const DisplayAnalysis = ({question}) => {
                         labelLine={true}
                         outerRadius={110}
                         fill="#8884d8"
-                        dataKey="value"
+                        dataKey="Quantity"
                         label
                     >
                         {numericalScoreData.map((entry, index) => (
@@ -155,6 +155,26 @@ const DisplayAnalysis = ({question}) => {
                     </Pie>
 
                 </PieChart>
+
+                {/* <ComposedChart
+                    width={600}
+                    height={350}
+                    data={numericalScoreData}
+                    margin={{
+                        top: 5,
+                        right: 20,
+                        bottom: 5,
+                        left: 20,
+                    }}
+                >
+                    <CartesianGrid stroke="#f5f5f5" />
+                    <XAxis dataKey="name" scale="band" />
+                    <YAxis />
+                    <Tooltip />
+                    <Bar dataKey="Quantity" barSize={20} fill="#413ea0" />
+                    <Line type="monotone" dataKey="Quantity" stroke="#ff7300" /> */}
+                {/* </ComposedChart> */}
+
                 </div>
             );
         case 'Multiple Choice':
