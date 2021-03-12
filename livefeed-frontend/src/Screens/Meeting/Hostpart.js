@@ -14,6 +14,7 @@ import Typography from '@material-ui/core/Typography';
 import AssessmentOutlinedIcon from '@material-ui/icons/AssessmentOutlined';
 import SendIcon from '@material-ui/icons/Send';
 import { PieChart, Pie, Sector, Cell, ResponsiveContainer, Legend } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 
 
 const DisplayAnalysis = ({question}) => {
@@ -22,6 +23,21 @@ const DisplayAnalysis = ({question}) => {
         { name: 'Group B', value: 300 },
         { name: 'Group C', value: 200 },
         { name: 'Group D', value: 100 },
+    ];
+
+    const data2 = [
+        {
+            name: 'Very Positive',
+            number: 4,
+        },
+        {
+            name: 'Somewhat Positive',
+            number: 3,
+        },
+        {
+            name: 'Negative',
+            number: 5,
+        },
     ];
 
     const COLORS = ['#0088FE', '#00C49F', '#ff4040', '#ff9d00'];
@@ -37,7 +53,27 @@ const DisplayAnalysis = ({question}) => {
 
         case 'Written Question':
             return (
+                <div>
                 <Typography>Mood distribution and repeat analysis</Typography>
+                <BarChart
+                width={500}
+                height={350}
+                data={data2}
+                margin={{
+                    top: 5,
+                    right: 30,
+                    left: 20,
+                    bottom: 5,
+                }}
+                >
+                <CartesianGrid strokeDasharray="5 5" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Legend layout="vertical" verticalAlign="top" align="right"/>
+                <Bar dataKey="number" fill="#0088FE" />
+                </BarChart>
+                </div>
             );
         case 'Numerical Rating':
             return (
@@ -45,6 +81,7 @@ const DisplayAnalysis = ({question}) => {
                 <p>A Pie chart to show the distribution of numerical scores</p>
                 <PieChart width={400} height={350}>
                     <Legend layout="vertical" verticalAlign="top" align="right" />
+                    <Tooltip />
                     <Pie
                         data={data}
                         cx="50%"
@@ -75,6 +112,7 @@ const DisplayAnalysis = ({question}) => {
                 <p>A Pie chart to show the distribution of multiple choice answers</p>
                 <PieChart width={400} height={350}>
                     <Legend layout="vertical" verticalAlign="top" align="right" />
+                    <Tooltip />
                     <Pie
                         data={data}
                         cx="50%"

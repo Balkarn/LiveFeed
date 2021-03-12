@@ -99,7 +99,7 @@ body {
 
 .list2 {
   width: 80vw;
-  height: calc(90vh - 90px - 150px);
+  height: calc(90vh - 150px);
   overflow: auto;
 }
 
