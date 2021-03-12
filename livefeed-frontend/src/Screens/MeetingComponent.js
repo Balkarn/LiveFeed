@@ -81,7 +81,7 @@ const MeetingComponent = (props) => {
         return (
     
             <div className="meeting-screen">
-                <Paper>
+                <Paper elevation={10}>
                     <div className="centering2">
                 <Header sessionname = {sessionname}
                         sessiondate = {sessiondate}
