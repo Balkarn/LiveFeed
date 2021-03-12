@@ -107,9 +107,9 @@ const Hostpart = () => {
 
     useEffect(() => {
         setQuestions([
-            { templateid: 1, templatename: 'Question 1', questioncontent: 'content of Q1', questiontype: 'Written Question' },
-            { templateid: 2, templatename: 'Question 2', questioncontent: 'content of Q2', questiontype: 'Numerical Rating' },
-            { templateid: 3, templatename: 'Question 3', questioncontent: 'content of Q3', questiontype: 'Multiple Choice' },
+            { questionid: 1, questionname: 'What do you think of this event so far?', questiontype: 'Written Question' },
+            { questionid: 2, questionname: 'Please rate how entertaining this event was from 1-5.', questiontype: 'Numerical Rating' },
+            { questionid: 3, questionname: 'Which of the following parts of the event was the best?', questiontype: 'Multiple Choice' },
         ]);
     }, []); // Only run once
 
@@ -123,9 +123,9 @@ const Hostpart = () => {
                     <Divider />
                     {questions.map(question => (
                         <div>
-                            <ListItem key={question.templateid}>
+                            <ListItem key={question.questionid}>
                                 <div>
-                                    <h3> {question.templatename} </h3>
+                                    <h3> {question.questiontype + " - " + question.questionname} </h3>
                                     <DisplayAnalysis question={question}/>
                                 </div>
 
