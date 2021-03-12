@@ -21,6 +21,9 @@ const MeetingComponent = (props) => {
     const [hostname,setHostname] = React.useState("James");
     let {id} = useParams();
 
+    const [para,setPara] = React.useState(id.split('&'));
+    
+
     const [templateset,setTemplateset] = React.useState([
         { templateid : 1 , templatename : 'Question 1',questioncontent : 'content of Q1',questiontype : 'Written Question'},
         { templateid : 2 , templatename : 'Question 2',questioncontent : 'content of Q2',questiontype : 'Numerical Rating'},
@@ -32,7 +35,7 @@ const MeetingComponent = (props) => {
         {id : 3, name : 'attendee 3'},
     ]);//avoid space in name
 
-    if(id === userid){
+    if(para[0] === userid){
         return (
     
             <div className="meeting-screen">
@@ -76,7 +79,6 @@ const MeetingComponent = (props) => {
                     sessiondate = {sessiondate}
                     hostname = {hostname}
             />
-
             <div className="meeting-content">
             
                 <QuestionList role ='attendee'
