@@ -15,7 +15,11 @@ import AssessmentOutlinedIcon from '@material-ui/icons/AssessmentOutlined';
 import SendIcon from '@material-ui/icons/Send';
 import { PieChart, Pie, Sector, Cell, ResponsiveContainer, Legend } from 'recharts';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
-
+import {
+    ComposedChart,
+    Line,
+    Area,
+} from 'recharts';
 
 const DisplayAnalysis = ({question}) => {
     const data = [
@@ -31,12 +35,30 @@ const DisplayAnalysis = ({question}) => {
             number: 4,
         },
         {
-            name: 'Somewhat Positive',
+            name: 'Neutral',
             number: 3,
         },
         {
             name: 'Negative',
             number: 5,
+        },
+    ];
+
+    const data3 = [
+        {
+            name: 'Feedback 1',
+            feedback: 'Turn up the volume',
+            number: 12,
+        },
+        {
+            name: 'Feedback 2',
+            feedback: 'Boring',
+            number: 4,
+        },
+        {
+            name: 'Feedback 3',
+            feedback: 'Its really cold in here',
+            number: 3,
         },
     ];
 
@@ -72,6 +94,30 @@ const DisplayAnalysis = ({question}) => {
                     <Tooltip />
                     <Bar dataKey="number" fill="#0088FE" />
                     </BarChart>
+
+                    <Typography>Top 3 Most frequently repeated feedback: <br/>
+                    
+                    </Typography>
+                    
+
+                    <ComposedChart
+                        layout="vertical"
+                        width={600}
+                        height={350}
+                        data={data3}
+                        margin={{
+                            top: 5,
+                            right: 20,
+                            bottom: 5,
+                            left: 20,
+                        }}
+                    >
+                        <CartesianGrid stroke="#f5f5f5" />
+                        <XAxis type="number" />
+                        <YAxis dataKey="name" type="category" scale="band" />
+                        <Tooltip />
+                        <Bar dataKey="number" barSize={20} fill="#413ea0" />
+                    </ComposedChart>
                 </div>
             );
         case 'Numerical Rating':
