@@ -32,15 +32,15 @@ const DisplayAnalysis = ({question}) => {
     const data2 = [
         {
             name: 'Very Positive',
-            number: 4,
+            Quantity: 4,
         },
         {
             name: 'Neutral',
-            number: 3,
+            Quantity: 3,
         },
         {
             name: 'Negative',
-            number: 5,
+            Quantity: 5,
         },
     ];
 
@@ -48,17 +48,17 @@ const DisplayAnalysis = ({question}) => {
         {
             name: 'Feedback 1',
             feedback: 'Turn up the volume',
-            number: 12,
+            Quantity: 12,
         },
         {
             name: 'Feedback 2',
             feedback: 'Boring',
-            number: 4,
+            Quantity: 4,
         },
         {
             name: 'Feedback 3',
             feedback: 'Its really cold in here',
-            number: 3,
+            Quantity: 3,
         },
     ];
 
@@ -92,11 +92,14 @@ const DisplayAnalysis = ({question}) => {
                     <XAxis dataKey="name" />
                     <YAxis />
                     <Tooltip />
-                    <Bar dataKey="number" fill="#0088FE" />
+                    <Bar dataKey="Quantity" fill="#0088FE" />
                     </BarChart>
 
-                    <Typography>Top 3 Most frequently repeated feedback: <br/>
-                    
+                    <h4>Top 3 Most frequently repeated feedback: </h4>
+                    <Typography>
+                    {"1: " + data3[0].feedback} <br/>
+                    {"2: " + data3[1].feedback} <br />
+                    {"3: " + data3[2].feedback} <br />
                     </Typography>
                     
 
@@ -112,11 +115,11 @@ const DisplayAnalysis = ({question}) => {
                             left: 20,
                         }}
                     >
-                        <CartesianGrid stroke="#f5f5f5" />
+                        <CartesianGrid strokeDasharray="5 5"  />
                         <XAxis type="number" />
                         <YAxis dataKey="name" type="category" scale="band" />
                         <Tooltip />
-                        <Bar dataKey="number" barSize={20} fill="#413ea0" />
+                        <Bar dataKey="Quantity" barSize={20} fill="#0088FE" />
                     </ComposedChart>
                 </div>
             );
@@ -208,7 +211,7 @@ const Hostpart = () => {
                         <div>
                             <ListItem key={question.questionid}>
                                 <div>
-                                    <h3> {question.questiontype + " - " + question.questionname} </h3>
+                                    <h2> {question.questiontype + " - " + question.questionname} </h2>
                                     <DisplayAnalysis question={question}/>
                                 </div>
 
