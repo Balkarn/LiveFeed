@@ -44,50 +44,10 @@ const DisplayAnalysis = ({question}) => {
     var data = question.questiondata
     switch (question.questiontype) {
         case 'Written Question':
-            const writtenQuestionData = {
-                mood:
-                    [
-                        {
-                            name: 'Positive',
-                            Quantity: 0,
-                        },
-                        {
-                            name: 'Ambivalent',
-                            Quantity: 0,
-                        },
-                        {
-                            name: 'Negative',
-                            Quantity: 0,
-                        },
-                    ], popular:
-                    [
-                        {
-                            name: 'Feedback 1',
-                            feedback: '',
-                            Quantity: 0,
-                        },
-                        {
-                            name: 'Feedback 2',
-                            feedback: '',
-                            Quantity: 0,
-                        },
-                        {
-                            name: 'Feedback 3',
-                            feedback: '',
-                            Quantity: 0,
-                        },
-                    ]
-            }
-            if (question.questiondata.length === 0) {
-                data = writtenQuestionData
-            } else {
-                if (question.questiondata.mood.length === 0 || question.questiondata.popular.length === 0 ) {
-                    data = writtenQuestionData
-                }
-            }
             console.log("DEBUG")
-            console.log(data.popular[0])
+            console.log(data)
             return (
+                question.questiondata.length === 0 || question.questiondata.mood.length === 0 || question.questiondata.popular.length === 0 ? <p>Loading...</p> :
                 <div>
                 <Typography>A bar chart to show the mood distribution</Typography>
 
@@ -141,14 +101,8 @@ const DisplayAnalysis = ({question}) => {
 
         case 'Numerical Rating':
 
-            const numericalScoreData = [
-                { name: '1', Quantity: 1 }
-            ];
-            if (question.questiondata.length === 0) {
-                data = numericalScoreData
-            }
             return (
-
+                question.questiondata.length === 0 ? <p>Loading ...</p> :
                 <div>
 
                     <p>A Pie chart to show the distribution of numerical scores</p>
@@ -198,14 +152,8 @@ const DisplayAnalysis = ({question}) => {
             );
 
         case 'Multiple Choice':
-
-            const multipleChoiceData = [
-                { name: 'Group A', Quantity: 1 }
-            ];
-            if (question.questiondata.length === 0) {
-                data = multipleChoiceData
-            }
             return (
+                question.questiondata.length === 0 ? <p>Loading ...</p> :
                 <div>
 
                     <p>A Pie chart to show the distribution of multiple choice answers</p>
@@ -236,12 +184,27 @@ const DisplayAnalysis = ({question}) => {
 
 }
 
+function gettemplateid(meetingid) {
+    return axios.post(phpurl, qs.stringify({function:'getmeetingtemplates', arguments:[meetingid]}))
+        .then(res => {
+            if (res.data.error) {
+                console.log(res.data.error);
+                return Promise.reject(err);
+            }
+            if (res.data.result) {
+                console.log(res.data.result);
+                return res.data.result[0].TemplateID
+            }
+        })
+        .catch(err => {console.log(err); return Promise.reject(err);});
+}
+
 
 const Hostpart = () => {
     const [questions,setQuestions] = React.useState([]);
     const [data,setData] = React.useState([]);
     const [currentTemplate,setCurrentTemplate] = React.useState(-1);
-    const [returnVal, setReturnVal] = React.useState((<div></div>));
+    const [returnVal, setReturnVal] = React.useState(<p>Loading...</p>);
 
     //The following 3 consts are temporary data for testing only
     // const multipleChoiceData = [
@@ -296,199 +259,213 @@ const Hostpart = () => {
     //End of temporary testing data
 
     // In here goes the code to fetch the data from the server,
+    Promise.all([
     useEffect(() => {
-
         const meetingid = 1;
         var questionList = [];
-        axios.post(phpurl, qs.stringify({function:'getmeetingtemplates', arguments:['1']}))
-            .then(res => {
-                if (res.data.error) {
-                    console.log(res.data.error);
-                }
-                if (res.data.result) {
-                    console.log(res.data.result);
-                    setCurrentTemplate(res.data.result[0].TemplateID)
-                }
-            })
-            .catch(err => console.log(err));
-        axios.post(phpurl, qs.stringify({function:'gettemplatequestions', arguments:['1']}))
-            .then(res1 => {
-                if (res1.data.error) {
-                    console.log(res1.data.error)
-                }
-                if (res1.data.result) {
-                    console.log(res1.data.result)
-                    //var questionList = []
-                    var qdata = {}
-                    for (const [key, value] of Object.entries(res1.data.result)) {
-                        console.log("Question "+key)
-                        qdata[key] = []
-                        switch (value[1]) {
-                            case "multiple":
-                                console.log("Multiple")
-                                axios.post(pythonurl+"questiontally", qs.stringify({questionid:key}))
-                                    .then(res2 => {
-                                        console.log(res2.data);
-                                        if (res2.data != null) {
-                                            console.log("Multiple: Q"+key+" Return:"+res2.data)
-                                            for (const [key2, value2] of Object.entries(res2.data)) {
-                                                qdata[key].push({name: key2, Quantity: value2})
-                                            }
-                                        }
-                                    })
-                                    .catch(err => console.log(err));
-                                console.log("QUestion name:" + value[0]);
-                                console.log(qdata[key]);
-                                questionList.push({questionid: key, questionname: value[0], questiontype: "Multiple Choice", questiondata: qdata[key]})
-                                setQuestions(questionList)
-                                break;
-                            case "open":
-                                console.log("Open")
-                                qdata[key] = {mood: [], popular: []}
-                                axios.post(pythonurl+"questionmood", qs.stringify({questionid:key}))
-                                    .then(res2 => {
-                                        console.log(res2.data);
-                                        if (res2.data != null) {
-                                            console.log("Open1: Q" + key + " Return:" + res2.data)
-                                            var qdata1 = []
-                                            for (const [key2, value2] of Object.entries(res2.data)) {
-                                                var mood = "";
-                                                switch (key2) {
-                                                    case 'happy':
-                                                        mood = "Positive"
-                                                        break;
-                                                    case 'neutral':
-                                                        mood = "Ambivalent"
-                                                        break;
-                                                    case 'sad':
-                                                        mood = "Negative"
-                                                        break;
-                                                }
-                                                qdata1.push({name: mood, Quantity: value2})
-
-                                            }
-                                            qdata[key].mood = qdata1
-                                        } else {
-                                            qdata[key].mood = []
-                                        }
-                                    })
-                                    .catch(err => console.log(err));
-                                axios.post(pythonurl+"questionpopular", qs.stringify({meetingid:meetingid,questionid:key}))
-                                    .then(res2 => {
-                                        console.log(res2.data);
-                                        if (res2.data != null && res2.data.length > 0) {
-                                            console.log("Open2: Q"+key+" Return:"+res2.data)
-                                            var limit = 4
-                                            if (res2.data.length < 3) {
-                                                limit = res2.data.length+1
-                                            }
-                                            var qdata2 = []
-                                            for (var i=1; i<limit; i++) {
-                                                qdata2.push({
-                                                    name: "Feedback " + i,
-                                                    feedback: res2.data[i - 1][0],
-                                                    feedbacklist: res2.data[i - 1].slice(1),
-                                                    Quantity: res2.data[i - 1].length
-                                                })
-                                            }
-                                            if (limit < 4) {
-                                                for (var j=limit; j<4; j++) {
-                                                    qdata2.push({
-                                                        name: "Feedback " + j,
-                                                        feedback: "",
-                                                        feedbacklist: "",
-                                                        Quantity: 0
-                                                    })
-                                                }
-                                            }
-                                            qdata[key].popular = qdata2
-                                        } else {
-                                            qdata2 = []
-                                            for (var k=1; k<4; k++) {
-                                                qdata2.push({
-                                                    name: "Feedback " + k,
-                                                    feedback: "",
-                                                    feedbacklist: "",
-                                                    Quantity: 0
-                                                })
-                                            }
-                                            qdata[key].popular = qdata2
-                                        }
-
-                                    })
-                                    .catch(err => console.log(err));
-                                console.log("QUestion name:" + value[0]);
-                                console.log(qdata[key]);
-                                questionList.push({questionid: key, questionname: value[0], questiontype: "Written Question", questiondata: qdata[key]})
-                                setQuestions(questionList)
-                                break;
-                            case "rating":
-                                console.log("Rating")
-                                axios.post(pythonurl+"questiontally", qs.stringify({questionid:key}))
-                                    .then(res2 => {
-                                        console.log(res2.data);
-                                        if (res2.data != null) {
-                                            console.log("Rating: Q"+key+" Return:"+res2.data)
-                                            for (const [key2, value2] of Object.entries(res2.data)) {
-                                                qdata[key].push({name: key2, Quantity: value2})
-                                            }
-                                        }
-                                    })
-                                    .catch(err => console.log(err));
-                                console.log("QUestion name:" + value[0]);
-                                console.log(qdata[key]);
-                                questionList.push({questionid: key, questionname: value[0], questiontype: "Numerical Rating", questiondata: qdata[key]})
-                                setQuestions(questionList)
-                                break;
-                            default:
-                                console.log("other")
-                                break;
+        return Promise.all([gettemplateid(meetingid)])
+            .then(function (results) {
+                axios.post(phpurl, qs.stringify({function:'gettemplatequestions', arguments:[results[0]]}))
+                    .then(res1 => {
+                        if (res1.data.error) {
+                            console.log(res1.data.error)
                         }
-                    }
-                    console.log("Question List: ");
-                    console.log(questionList);
-                    console.log(qdata);
-                }
-            })
-            .catch(err => console.log(err));
-        setQuestions(questionList);
+                        if (res1.data.result) {
+                            console.log(res1.data.result)
+                            //var questionList = []
+                            var qdata = {}
+                            for (const [key, value] of Object.entries(res1.data.result)) {
+                                console.log("Question "+key)
+                                qdata[key] = []
+                                switch (value[1]) {
+                                    case "multiple":
+                                        console.log("Multiple")
+                                        axios.post(pythonurl+"questiontally", qs.stringify({questionid:key}))
+                                            .then(res2 => {
+                                                console.log(res2.data);
+                                                if (res2.data != null) {
+                                                    console.log("Multiple: Q"+key+" Return:"+res2.data)
+                                                    for (const [key2, value2] of Object.entries(res2.data)) {
+                                                        qdata[key].push({name: key2, Quantity: value2})
+                                                    }
+                                                }
+                                            })
+                                            .catch(err => console.log(err));
+                                        console.log("QUestion name:" + value[0]);
+                                        console.log(qdata[key]);
+                                        questionList.push({questionid: key, questionname: value[0], questiontype: "Multiple Choice", questiondata: qdata[key]})
+                                        setQuestions(questionList)
+                                        break;
+                                    case "open":
+                                        console.log("Open")
+                                        qdata[key] = {mood: [], popular: []}
+                                        axios.post(pythonurl+"questionmood", qs.stringify({questionid:key}))
+                                            .then(res2 => {
+                                                console.log(res2.data);
+                                                if (res2.data != null) {
+                                                    console.log("Open1: Q" + key + " Return:" + res2.data)
+                                                    var qdata1 = []
+                                                    for (const [key2, value2] of Object.entries(res2.data)) {
+                                                        var mood = "";
+                                                        switch (key2) {
+                                                            case 'happy':
+                                                                mood = "Positive"
+                                                                break;
+                                                            case 'neutral':
+                                                                mood = "Ambivalent"
+                                                                break;
+                                                            case 'sad':
+                                                                mood = "Negative"
+                                                                break;
+                                                        }
+                                                        qdata1.push({name: mood, Quantity: value2})
 
-        console.log("debug3");
-        console.log(questionList);
-        console.log("end debug3");
+                                                    }
+                                                    qdata[key].mood = qdata1
+                                                } else {
+                                                    qdata[key].mood = []
+                                                }
+                                            })
+                                            .catch(err => console.log(err));
+                                        axios.post(pythonurl+"questionpopular", qs.stringify({meetingid:meetingid,questionid:key}))
+                                            .then(res2 => {
+                                                console.log(res2.data);
+                                                if (res2.data != null && res2.data.length > 0) {
+                                                    console.log("Open2: Q"+key+" Return:"+res2.data)
+                                                    var limit = 4
+                                                    if (res2.data.length < 3) {
+                                                        limit = res2.data.length+1
+                                                    }
+                                                    var qdata2 = []
+                                                    for (var i=1; i<limit; i++) {
+                                                        qdata2.push({
+                                                            name: "Feedback " + i,
+                                                            feedback: res2.data[i - 1][0],
+                                                            feedbacklist: res2.data[i - 1].slice(1),
+                                                            Quantity: res2.data[i - 1].length
+                                                        })
+                                                    }
+                                                    if (limit < 4) {
+                                                        for (var j=limit; j<4; j++) {
+                                                            qdata2.push({
+                                                                name: "Feedback " + j,
+                                                                feedback: "",
+                                                                feedbacklist: "",
+                                                                Quantity: 0
+                                                            })
+                                                        }
+                                                    }
+                                                    qdata[key].popular = qdata2
+                                                } else {
+                                                    qdata2 = []
+                                                    for (var k=1; k<4; k++) {
+                                                        qdata2.push({
+                                                            name: "Feedback " + k,
+                                                            feedback: "",
+                                                            feedbacklist: "",
+                                                            Quantity: 0
+                                                        })
+                                                    }
+                                                    qdata[key].popular = qdata2
+                                                }
 
-    }, []); // Only run once whenever component is mounted
+                                            })
+                                            .catch(err => console.log(err));
+                                        console.log("QUestion name:" + value[0]);
+                                        console.log(qdata[key]);
+                                        questionList.push({questionid: key, questionname: value[0], questiontype: "Written Question", questiondata: qdata[key]})
+                                        setQuestions(questionList)
+                                        break;
+                                    case "rating":
+                                        console.log("Rating")
+                                        axios.post(pythonurl+"questiontally", qs.stringify({questionid:key}))
+                                            .then(res2 => {
+                                                console.log(res2.data);
+                                                if (res2.data != null) {
+                                                    console.log("Rating: Q"+key+" Return:"+res2.data)
+                                                    for (const [key2, value2] of Object.entries(res2.data)) {
+                                                        qdata[key].push({name: key2, Quantity: value2})
+                                                    }
+                                                }
+                                            })
+                                            .catch(err => console.log(err));
+                                        console.log("QUestion name:" + value[0]);
+                                        console.log(qdata[key]);
+                                        questionList.push({questionid: key, questionname: value[0], questiontype: "Numerical Rating", questiondata: qdata[key]})
+                                        setQuestions(questionList)
+                                        break;
+                                    default:
+                                        console.log("other")
+                                        break;
+                                }
+                            }
+                            console.log("Question List: ");
+                            console.log(questionList);
+                            console.log(qdata);
+                        }
+                        return (<p>Loading 2...</p>)
+                    })
+                    .catch(err => console.log(err));
+                setQuestions(questionList);
+                setReturnVal(<div>
+                    <div className="list2">
 
-    // console.log("debug4")
-    // console.log(questions)
-    // console.log(returnVal)
-    // console.log("end debug4")
-    return (
-        <div>
-            <div className="list2">
-
-                <List>
-                    <Divider />
-                    {questions.map(question => (
-                        <div>
-                            <ListItem key={question.questionid}>
+                        <List>
+                            <Divider />
+                            {questions.map(question => (
                                 <div>
-                                    <h2> {question.questiontype + " - " + question.questionname} </h2>
-                                    <DisplayAnalysis question={question} />
+                                    <ListItem key={question.questionid}>
+                                        <div>
+                                            <h2> {question.questiontype + " - " + question.questionname} </h2>
+                                            <DisplayAnalysis question={question} />
+                                        </div>
+
+                                    </ListItem>
+                                    <Divider />
                                 </div>
 
-                            </ListItem>
-                            <Divider />
-                        </div>
+                            ))}
+
+                        </List>
+
+                    </div>
+
+                </div>)
+            });
+    }, [])// Only run once whenever component is mounted
+    ])
+        .then(
+            console.log("debug4")
+            console.log(questions)
+            console.log("end debug4")
+            return (
+                questions.length === 0 ? <p>Loading...</p> :
+                    <div>
+                    <div className="list2">
+
+                    <List>
+                    <Divider />
+                    {questions.map(question => (
+                    <div>
+                    <ListItem key={question.questionid}>
+                    <div>
+                    <h2> {question.questiontype + " - " + question.questionname} </h2>
+                    <DisplayAnalysis question={question} />
+                    </div>
+
+                    </ListItem>
+                    <Divider />
+                    </div>
 
                     ))}
 
-                </List>
+                    </List>
 
-            </div>
+                    </div>
 
-        </div>
-    );
+                    </div>
+            )
+        )
 
 }
 
