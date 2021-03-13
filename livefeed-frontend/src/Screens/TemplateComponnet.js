@@ -189,7 +189,7 @@ const TemplateComponent = (props) => {
         function: "addtemplate",
         arguments: [
           currentTemplateName,
-          3,
+          props.userID,
           currentTemplateQuestions
         ] 
       }

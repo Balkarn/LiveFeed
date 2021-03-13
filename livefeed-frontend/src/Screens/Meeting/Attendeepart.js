@@ -72,7 +72,7 @@ const Attendeepart = ({templateset}) => {
         setMultianswer(Array.isArray(e)?e.map(x=>x.label):[]);
     }
 
-    const renderSwitch = (param)=> {
+    const renderSwitch = (param) => {
         switch(param){
             case 'open':
                 return (

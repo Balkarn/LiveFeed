@@ -33,15 +33,68 @@ const HostEventComponent = (props) => {
     const php_url = "http://localhost:80/server/php/index.php";
     var qs = require('qs');
 
-    const [current_events, setEvent] = React.useState([...events]);
+    const [current_events, setEvent] = React.useState([]);
     const [userid,setUserid] = React.useState(12);//current user id
     const [linkto,setLinkto] = React.useState('meeting/' + props.userID);//move to meeting screen as host
+    const [available_templates, setAvailableTemplates] = React.useState([]);
+    const [loading, setLoading] = React.useState(true);
 
     // Delete Event 
     const handleDeleteEvent = (_event) => {
         let filtered_events = current_events.filter( event => event !== _event);
         setEvent(filtered_events); 
     }
+
+    // // Get events for user accessing 
+    const getUserEvents = () => {
+
+        var data = {
+            function: 'getmeetings',
+            arguments: [
+                props.userID,
+            ]
+        }
+
+        axios.post(php_url, qs.stringify(data))
+        .then(res => {
+            
+            let events = res.data.result;
+            
+            events.map(event => {
+                setEvent(current_events => current_events.concat(event));
+            })
+            
+            console.log("Current_Events: " + current_events);
+
+            setLoading(false);
+        
+        })
+
+    }
+
+    // Get templates for user accessing
+    const getUserTemplates = () => {
+        var data = {
+            function: 'getusertemplates',
+            arguments: [
+                props.userID,
+            ]
+        }
+
+        axios.post(php_url, qs.stringify(data))
+        .then(res => {
+            // Converting Template Response into Template
+            var templateData = Object.keys(res.data.result).map((key) => [Number(key), res.data.result[key]]);
+            setAvailableTemplates(templateData);
+        })
+    }
+
+    useEffect(() => {
+
+        getUserEvents();
+        getUserTemplates();
+
+    }, []);
 
     // Add new event -- SAVE BUTTON 
     const handleNewMeeting = () => {
@@ -73,8 +126,6 @@ const HostEventComponent = (props) => {
                 console.log(res.data.error);
             }
         }).catch(err => console.log(err));
-
-        setEvent( current_events => [...current_events, _event]);
 
         setCurrentEventName('');
         setCurrentEventDesc('');
@@ -158,29 +209,38 @@ const HostEventComponent = (props) => {
 
     }
 
-    return (
+    return (  loading ? 
+        
+        <>
+            <p>Loading...</p>
+        </>
+
+        :
+    
       <>
         <h1>Host Event</h1>
         <h3>Scheduled Events</h3>
+
 
         <div className="list">
             <List>
                 {
                 current_events.length === 0 ? <p className="centering light">No events scheduled, use the Create New Event button to create some.</p> :  
-                current_events.map( event => (
+                current_events.map( (event, index) => (
+                    
                     <>
+                    
                     <Divider />
                     <ListItem>
-
                         <ListItemText
-                            primary={event.event_name}
-                            secondary={`${event.event_date} | Event Access Code: ${event.event_access_code}`}
+                            primary={event.MeetingName}
+                            secondary={`${event.StartTime} | Event Access Code: ${event.MeetingCode}`}
                         />
 
                         <ListItemSecondaryAction>
                             <IconButton>
 
-                            <Link to={linkto+'&'+event.event_id+'&'+'host'} ><PlayCircleOutlineIcon color="primary"/></Link>
+                            <Link to={linkto+'&'+event.MeetingID+'&'+'host'} ><PlayCircleOutlineIcon color="primary"/></Link>
                             </IconButton>
                             <IconButton>
                                 <DeleteIcon color="error" onClick={() => handleDeleteEvent(event)} />
@@ -291,16 +351,16 @@ const HostEventComponent = (props) => {
                     <div>
                         { openTemplateSelector ? 
 
-                            templates.map( template => (
+                            available_templates.map( template => (
                                 
                                 <div className="vertical-align">
                                     <FormControlLabel
                                     control={<Checkbox 
                                         name="template_id"
-                                        value={template.template_id} 
+                                        value={template[0]} 
                                         onChange={handleSelectedTemplate}
                                         />}
-                                    label={template.template_name}
+                                    label={template[1][0]}
                                     />
                                 </div>
 
