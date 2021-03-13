@@ -203,7 +203,7 @@ const Hostpart = () => {
                 console.log(res.data.error)
             }
             if (res.data.result) {
-                console.log(currentTemplate)
+                console.log(currTemplate)
                 console.log(res.data.result)
                 for (const [key, value] of Object.entries(res.data.result)) {
                     questionList.push({questionid: key, questionname: value[0], questiontype: value[1], questiondata: []})
