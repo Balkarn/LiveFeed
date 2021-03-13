@@ -127,6 +127,7 @@ const HostEventComponent = (props) => {
             }
         }).catch(err => console.log(err));
 
+
         setCurrentEventName('');
         setCurrentEventDesc('');
         setCurrentEventDate('');

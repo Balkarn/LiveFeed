@@ -47,11 +47,31 @@ const TemplateComponent = (props) => {
     const [activeStep, setActiveStep] = React.useState(0);
     const steps = getSteps();
 
+    const [templates, setTemplates] = React.useState([]);
+
     const [sliderValue, setSliderValue] = React.useState([1, 5]);
     const [option1, setOption1Value] = React.useState("");
     const [option2, setOption2Value] = React.useState("");
     const [option3, setOption3Value] = React.useState("");
     const [option4, setOption4Value] = React.useState("");
+
+    // Get Templates to list for user
+    const getUserTemplates = () => {
+      var data = {
+        function: "getusertemplates",
+        arguments: [
+          props.userID,
+        ] 
+      }
+
+      axios.post(php_url, qs.stringify(data))
+        .then(res => {
+            // Converting Template Response into Template
+            var templateData = Object.keys(res.data.result).map((key) => [Number(key), res.data.result[key]]);
+            setTemplates(templateData);
+            console.log(templates);
+        }).catch(err => console.log(err));
+    }
 
     const handleOption1 = event => {
       var eventVal = event.target.value; //setting a state isn't synchronous so store value in a temp variable
@@ -79,6 +99,7 @@ const TemplateComponent = (props) => {
   
     useEffect(() => {
       setCreatingQ(false)
+      getUserTemplates();
       setTemplateNames(["Sample Meeting Template", "Sample Lecture Template", "Sample Social Event Template"/*, 3,4,5,6,7,8,9,10,11,12,13,14,15,16*/]);
       setTemplateQuestions([[],[],[]]);
     }, []); // Only run once on mount
@@ -351,11 +372,11 @@ const TemplateComponent = (props) => {
           <div className="list">
             <List>
               <Divider /> 
-                {templateNames.map((item) => (
+                {templates.map((_template) => (
                   <div>
                   <ListItem>
                     <ListItemText
-                      primary={`${item}`}
+                      primary={`${_template[1][0]}`}
                     />
                     <ListItemSecondaryAction>
                       <IconButton>
