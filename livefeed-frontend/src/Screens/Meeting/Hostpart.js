@@ -267,10 +267,10 @@ const Hostpart = () => {
                 if (res.data.result) {
                     console.log(res.data.result)
                     var questionList = []
+                    var qdata = {}
                     for (const [key, value] of Object.entries(res.data.result)) {
-                        var qdata = []
                         console.log("Question "+key)
-
+                        qdata[key] = []
                         switch (value[1]) {
                             case "multiple":
                                 axios.post(pythonurl+"questiontally", qs.stringify({questionid:key}))
@@ -279,12 +279,13 @@ const Hostpart = () => {
                                         if (res2.data != null) {
                                             console.log("Multiple: Q"+key+" Return:"+res2.data)
                                             for (const [key2, value2] of Object.entries(res2.data)) {
-                                                qdata.push({name: key2, Quantity: value2})
+                                                qdata[key].push({name: key2, Quantity: value2})
                                             }
-                                            questionList.push({questionid: key, questionname: value[0], questiontype: value[1], questiondata: qdata})
                                         }
                                     })
                                     .catch(err => console.log(err));
+                                questionList.push({questionid: key, questionname: value[0], questiontype: value[1], questiondata: qdata[key]})
+                                setQuestions(questionList)
                                 break;
                             case "open":
                                 axios.post(pythonurl+"questionmood", qs.stringify({questionid:key}))
@@ -309,7 +310,7 @@ const Hostpart = () => {
                                                 qdata1.push({name: mood, Quantity: value2})
 
                                             }
-                                            qdata.push(qdata1)
+                                            qdata[key].push(qdata1)
                                         }
                                     })
                                     .catch(err => console.log(err));
@@ -331,11 +332,12 @@ const Hostpart = () => {
                                                     Quantity: res2.data[i - 1].length
                                                 })
                                             }
-                                            qdata.push([])
+                                            qdata[key].push(qdata2)
                                         }
                                     })
                                     .catch(err => console.log(err));
-                                questionList.push({questionid: key, questionname: value[0], questiontype: value[1], questiondata: qdata})
+                                questionList.push({questionid: key, questionname: value[0], questiontype: value[1], questiondata: qdata[key]})
+                                setQuestions(questionList)
                                 break;
                             case "rating":
                                 axios.post(pythonurl+"questiontally", qs.stringify({questionid:key}))
@@ -344,12 +346,13 @@ const Hostpart = () => {
                                         if (res2.data != null) {
                                             console.log("Rating: Q"+key+" Return:"+res2.data)
                                             for (const [key2, value2] of Object.entries(res2.data)) {
-                                                qdata.push({name: key2, Quantity: value2})
+                                                qdata[key].push({name: key2, Quantity: value2})
                                             }
-                                            questionList.push({questionid: key, questionname: value[0], questiontype: value[1], questiondata: qdata})
                                         }
                                     })
                                     .catch(err => console.log(err));
+                                questionList.push({questionid: key, questionname: value[0], questiontype: value[1], questiondata: qdata[key]})
+                                setQuestions(questionList)
                                 break;
                             default:
                                 break;
@@ -357,12 +360,10 @@ const Hostpart = () => {
                     }
                     console.log("Question List: ")
                     console.log(questionList)
-                    setQuestions(questionList);
+                    console.log(qdata)
                 }
-
             })
             .catch(err => console.log(err));
-        //The following line is temporary testing data
     }, []); // Only run once whenever component is mounted
 
 
