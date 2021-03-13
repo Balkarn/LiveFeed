@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_restful import Resource, Api, reqparse
 from multiprocessing import Process
 from analysis import *
@@ -25,22 +25,35 @@ class MeetingEnded(Resource):
 class QuestionTally(Resource):
 	def post(self):
 		questionid = request.form.get('questionid')
-		return summary.response_tally(questionid)
+		response = jsonify(summary.response_tally(int(questionid)))
+		response.headers.add('Access-Control-Allow-Origin', '*')
+		return response
+
 
 class QuestionPopular(Resource):
 	def post(self):
 		meetingid = request.form.get('meetingid')
 		questionid = request.form.get('questionid')
-		return rfa.question_findsimilar(meetingid, questionid)
+		response = jsonify(rfa.get_question_summary(int(meetingid), int(questionid)))
+		response.headers.add('Access-Control-Allow-Origin', '*')
+		return response
 
 class QuestionMood(Resource):
 	def post(self):
 		questionid = request.form.get('questionid')
-		return summary.question_mood_tally(questionid)
+		response = jsonify(summary.question_mood_tally(int(questionid)))
+		response.headers.add('Access-Control-Allow-Origin', '*')
+		return response
 
+class Test(Resource):
+	def get(self):
+		return "test"
+	def post(self):
+		return {"test":5}
 # Flask Initialisation
 app = Flask(__name__)
 api = Api(app)
+
 
 # Initialise NLP objects
 dbi = DatabaseInteraction()
@@ -48,12 +61,15 @@ sa = SentimentAnalysis(dbi)
 rfa = RepeatFeedbackAnalysis(dbi)
 polling = Polling(dbi)
 summary = GenerateMeetingSummary(dbi)
+sa.analyse()
+rfa.analyse()
 
 # Flask endpoints
 api.add_resource(QuestionTally, '/questiontally')
 api.add_resource(QuestionPopular, '/questionpopular')
 api.add_resource(QuestionMood, '/questionmood')
+api.add_resource(Test, '/test')
 
 
 if __name__ == "__main__":
-	app.run(port=5000)
+	app.run(port=81)
