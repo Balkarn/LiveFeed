@@ -120,6 +120,9 @@ if (!isset($_POST['error'])) {
 	}
 }
 
+if (is_resource($database->conn)) {
+	$database->conn->close();
+}
 echo json_encode($reqResult);
 
 ?>

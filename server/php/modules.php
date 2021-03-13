@@ -7,7 +7,7 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 class DatabaseInteraction {
 	private $db_cred;
-	private $conn;
+	public $conn;
 
 	function __construct() {
 		$this->db_cred = parse_ini_file('../config.ini', true);
@@ -405,6 +405,8 @@ class DatabaseInteraction {
 		while ($row=$res->fetch_assoc()) {
 			$this->reqResult['result'][] = $row;
 		}
+		$stmt->close();
+		$this->conn->close();
 		return true;
 	}
 
@@ -445,6 +447,8 @@ class DatabaseInteraction {
 					break;
 			}
 		}
+		$stmt->close();
+		$this->conn->close();
 		return true;
 	}
 
