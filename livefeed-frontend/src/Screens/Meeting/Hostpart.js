@@ -315,6 +315,7 @@ const Hostpart = () => {
     useEffect(() => {
 
         const meetingid = 1;
+        var questionList = [];
         axios.post(phpurl, qs.stringify({function:'getmeetingtemplates', arguments:['1']}))
             .then(res => {
                 if (res.data.error) {
@@ -333,7 +334,7 @@ const Hostpart = () => {
                 }
                 if (res1.data.result) {
                     console.log(res1.data.result)
-                    var questionList = []
+                    //var questionList = []
                     var qdata = {}
                     for (const [key, value] of Object.entries(res1.data.result)) {
                         console.log("Question "+key)
@@ -456,6 +457,10 @@ const Hostpart = () => {
                 }
             })
             .catch(err => console.log(err));
+        setQuestions(questionList);
+        console.log("debug2");
+        console.log(questions);
+        console.log("end debug2")
     }, []); // Only run once whenever component is mounted
 
 
