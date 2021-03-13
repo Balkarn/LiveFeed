@@ -241,7 +241,6 @@ const Hostpart = () => {
     const [questions,setQuestions] = React.useState([]);
     const [data,setData] = React.useState([]);
     const [currentTemplate,setCurrentTemplate] = React.useState(-1);
-    const [returnVal, setReturnVal] = React.useState((<div></div>));
     const [refresh, setRefresh] = React.useState(false);
 
     //The following 3 consts are temporary data for testing only
@@ -296,6 +295,22 @@ const Hostpart = () => {
 
     //End of temporary testing data
 
+    function gettemplateid(meetingid) {
+       return axios.post(phpurl, qs.stringify({function:'getmeetingtemplates', arguments:['1']}))
+            .then(res => {
+                if (res.data.error) {
+                    console.log(res.data.error);
+                    return Promise.reject(res.data.error);
+                }
+                if (res.data.result) {
+                    console.log(res.data.result);
+                    return res.data.result[0].TemplateID
+                }
+            })
+            .catch(err => {console.log(err); return Promise.reject(err)});
+    }
+
+
     // In here goes the code to fetch the data from the server,
     useEffect(() => {
 
@@ -303,159 +318,150 @@ const Hostpart = () => {
 
         const meetingid = 1;
         var questionList = [];
-        axios.post(phpurl, qs.stringify({function:'getmeetingtemplates', arguments:['1']}))
-            .then(res => {
-                if (res.data.error) {
-                    console.log(res.data.error);
-                }
-                if (res.data.result) {
-                    console.log(res.data.result);
-                    setCurrentTemplate(res.data.result[0].TemplateID)
-                }
-            })
-            .catch(err => console.log(err));
-        axios.post(phpurl, qs.stringify({function:'gettemplatequestions', arguments:['1']}))
-            .then(res1 => {
-                if (res1.data.error) {
-                    console.log(res1.data.error)
-                }
-                if (res1.data.result) {
-                    console.log(res1.data.result)
-                    //var questionList = []
-                    var qdata = {}
-                    for (const [key, value] of Object.entries(res1.data.result)) {
-                        console.log("Question "+key)
-                        qdata[key] = []
-                        switch (value[1]) {
-                            case "multiple":
-                                console.log("Multiple")
-                                axios.post(pythonurl+"questiontally", qs.stringify({questionid:key}))
-                                    .then(res2 => {
-                                        console.log(res2.data);
-                                        if (res2.data != null) {
-                                            console.log("Multiple: Q"+key+" Return:"+res2.data)
-                                            for (const [key2, value2] of Object.entries(res2.data)) {
-                                                qdata[key].push({name: key2, Quantity: value2})
-                                            }
-                                        }
-                                    })
-                                    .catch(err => console.log(err));
-                                console.log("QUestion name:" + value[0]);
-                                console.log(qdata[key]);
-                                questionList.push({questionid: key, questionname: value[0], questiontype: "Multiple Choice", questiondata: qdata[key]})
-                                setQuestions(questionList)
-                                break;
-                            case "open":
-                                console.log("Open")
-                                qdata[key] = {mood: [], popular: []}
-                                axios.post(pythonurl+"questionmood", qs.stringify({questionid:key}))
-                                    .then(res2 => {
-                                        console.log(res2.data);
-                                        if (res2.data != null) {
-                                            console.log("Open1: Q" + key + " Return:" + res2.data)
-                                            var qdata1 = []
-                                            for (const [key2, value2] of Object.entries(res2.data)) {
-                                                var mood = "";
-                                                switch (key2) {
-                                                    case 'happy':
-                                                        mood = "Positive"
-                                                        break;
-                                                    case 'neutral':
-                                                        mood = "Ambivalent"
-                                                        break;
-                                                    case 'sad':
-                                                        mood = "Negative"
-                                                        break;
-                                                }
-                                                qdata1.push({name: mood, Quantity: value2})
+        Promise.all([gettemplateid(meetingid)])
+            .then(function (results) {
+                axios.post(phpurl, qs.stringify({function:'gettemplatequestions', arguments:[results[0]]}))
+                    .then(res1 => {
+                              if (res1.data.error) {
+                              console.log(res1.data.error)
+                              }
+                              if (res1.data.result) {
+                              console.log(res1.data.result)
+                              //var questionList = []
+                              var qdata = {}
+                              for (const [key, value] of Object.entries(res1.data.result)) {
+                              console.log("Question "+key)
+                              qdata[key] = []
+                              switch (value[1]) {
+                              case "multiple":
+                              console.log("Multiple")
+                              axios.post(pythonurl+"questiontally", qs.stringify({questionid:key}))
+                              .then(res2 => {
+                              console.log(res2.data);
+                              if (res2.data != null) {
+                              console.log("Multiple: Q"+key+" Return:"+res2.data)
+                              for (const [key2, value2] of Object.entries(res2.data)) {
+                              qdata[key].push({name: key2, Quantity: value2})
+                              }
+                              }
+                              })
+                              .catch(err => console.log(err));
+                              console.log("QUestion name:" + value[0]);
+                              console.log(qdata[key]);
+                              questionList.push({questionid: key, questionname: value[0], questiontype: "Multiple Choice", questiondata: qdata[key]})
+                              setQuestions(questionList)
+                              break;
+                              case "open":
+                              console.log("Open")
+                              qdata[key] = {mood: [], popular: []}
+                              axios.post(pythonurl+"questionmood", qs.stringify({questionid:key}))
+                              .then(res2 => {
+                              console.log(res2.data);
+                              if (res2.data != null) {
+                              console.log("Open1: Q" + key + " Return:" + res2.data)
+                              var qdata1 = []
+                              for (const [key2, value2] of Object.entries(res2.data)) {
+                              var mood = "";
+                              switch (key2) {
+                              case 'happy':
+                              mood = "Positive"
+                              break;
+                              case 'neutral':
+                              mood = "Ambivalent"
+                              break;
+                              case 'sad':
+                              mood = "Negative"
+                              break;
+                              }
+                              qdata1.push({name: mood, Quantity: value2})
 
-                                            }
-                                            qdata[key].mood = qdata1
-                                        } else {
-                                            qdata[key].mood = []
-                                        }
-                                    })
-                                    .catch(err => console.log(err));
-                                axios.post(pythonurl+"questionpopular", qs.stringify({meetingid:meetingid,questionid:key}))
-                                    .then(res2 => {
-                                        console.log(res2.data);
-                                        if (res2.data != null && res2.data.length > 0) {
-                                            console.log("Open2: Q"+key+" Return:"+res2.data)
-                                            var limit = 4
-                                            if (res2.data.length < 3) {
-                                                limit = res2.data.length+1
-                                            }
-                                            var qdata2 = []
-                                            for (var i=1; i<limit; i++) {
-                                                qdata2.push({
-                                                    name: "Feedback " + i,
-                                                    feedback: res2.data[i - 1][0],
-                                                    feedbacklist: res2.data[i - 1].slice(1),
-                                                    Quantity: res2.data[i - 1].length
-                                                })
-                                            }
-                                            if (limit < 4) {
-                                                for (var j=limit; j<4; j++) {
-                                                    qdata2.push({
-                                                        name: "Feedback " + j,
-                                                        feedback: "",
-                                                        feedbacklist: "",
-                                                        Quantity: 0
-                                                    })
-                                                }
-                                            }
-                                            qdata[key].popular = qdata2
-                                        } else {
-                                            qdata2 = []
-                                            for (var k=1; k<4; k++) {
-                                                qdata2.push({
-                                                    name: "Feedback " + k,
-                                                    feedback: "",
-                                                    feedbacklist: "",
-                                                    Quantity: 0
-                                                })
-                                            }
-                                            qdata[key].popular = qdata2
-                                        }
+                              }
+                              qdata[key].mood = qdata1
+                              } else {
+                              qdata[key].mood = []
+                              }
+                              })
+                              .catch(err => console.log(err));
+                              axios.post(pythonurl+"questionpopular", qs.stringify({meetingid:meetingid,questionid:key}))
+                              .then(res2 => {
+                              console.log(res2.data);
+                              if (res2.data != null && res2.data.length > 0) {
+                              console.log("Open2: Q"+key+" Return:"+res2.data)
+                              var limit = 4
+                              if (res2.data.length < 3) {
+                              limit = res2.data.length+1
+                              }
+                              var qdata2 = []
+                              for (var i=1; i<limit; i++) {
+                              qdata2.push({
+                              name: "Feedback " + i,
+                              feedback: res2.data[i - 1][0],
+                              feedbacklist: res2.data[i - 1].slice(1),
+                              Quantity: res2.data[i - 1].length
+                              })
+                              }
+                              if (limit < 4) {
+                              for (var j=limit; j<4; j++) {
+                              qdata2.push({
+                              name: "Feedback " + j,
+                              feedback: "",
+                              feedbacklist: "",
+                              Quantity: 0
+                              })
+                              }
+                              }
+                              qdata[key].popular = qdata2
+                              } else {
+                              qdata2 = []
+                              for (var k=1; k<4; k++) {
+                              qdata2.push({
+                              name: "Feedback " + k,
+                              feedback: "",
+                              feedbacklist: "",
+                              Quantity: 0
+                              })
+                              }
+                              qdata[key].popular = qdata2
+                              }
 
-                                    })
-                                    .catch(err => console.log(err));
-                                console.log("QUestion name:" + value[0]);
-                                console.log(qdata[key]);
-                                questionList.push({questionid: key, questionname: value[0], questiontype: "Written Question", questiondata: qdata[key]})
-                                setQuestions(questionList)
-                                break;
-                            case "rating":
-                                console.log("Rating")
-                                axios.post(pythonurl+"questiontally", qs.stringify({questionid:key}))
-                                    .then(res2 => {
-                                        console.log(res2.data);
-                                        if (res2.data != null) {
-                                            console.log("Rating: Q"+key+" Return:"+res2.data)
-                                            for (const [key2, value2] of Object.entries(res2.data)) {
-                                                qdata[key].push({name: key2, Quantity: value2})
-                                            }
-                                        }
-                                    })
-                                    .catch(err => console.log(err));
-                                console.log("QUestion name:" + value[0]);
-                                console.log(qdata[key]);
-                                questionList.push({questionid: key, questionname: value[0], questiontype: "Numerical Rating", questiondata: qdata[key]})
-                                setQuestions(questionList)
-                                break;
-                            default:
-                                console.log("other")
-                                break;
-                        }
-                    }
-                    console.log("Question List: ");
-                    console.log(questionList);
-                    console.log(qdata);
-                }
-            })
-            .catch(err => console.log(err));
+                              })
+                              .catch(err => console.log(err));
+                              console.log("QUestion name:" + value[0]);
+                              console.log(qdata[key]);
+                              questionList.push({questionid: key, questionname: value[0], questiontype: "Written Question", questiondata: qdata[key]})
+                              setQuestions(questionList)
+                              break;
+                              case "rating":
+                              console.log("Rating")
+                              axios.post(pythonurl+"questiontally", qs.stringify({questionid:key}))
+                              .then(res2 => {
+                              console.log(res2.data);
+                              if (res2.data != null) {
+                              console.log("Rating: Q"+key+" Return:"+res2.data)
+                              for (const [key2, value2] of Object.entries(res2.data)) {
+                              qdata[key].push({name: key2, Quantity: value2})
+                              }
+                              }
+                              })
+                              .catch(err => console.log(err));
+                              console.log("QUestion name:" + value[0]);
+                              console.log(qdata[key]);
+                              questionList.push({questionid: key, questionname: value[0], questiontype: "Numerical Rating", questiondata: qdata[key]})
+                              setQuestions(questionList)
+                              break;
+                              default:
+                              console.log("other")
+                              break;
+                              }
+                              }
+                              console.log("Question List: ");
+                              console.log(questionList);
+                              console.log(qdata);
+                              }
+                              })
+                    .catch(err => console.log(err));
+            });
         setQuestions(questionList);
-
         console.log("debug3");
         console.log(questionList);
         console.log("end debug3");
