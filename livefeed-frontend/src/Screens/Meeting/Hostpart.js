@@ -242,6 +242,7 @@ const Hostpart = () => {
     const [data,setData] = React.useState([]);
     const [currentTemplate,setCurrentTemplate] = React.useState(-1);
     const [returnVal, setReturnVal] = React.useState((<div></div>));
+    const [refresh, setRefresh] = React.useState(false);
 
     //The following 3 consts are temporary data for testing only
     // const multipleChoiceData = [
@@ -297,6 +298,8 @@ const Hostpart = () => {
 
     // In here goes the code to fetch the data from the server,
     useEffect(() => {
+
+        setInterval(function () { setRefresh(!refresh); }, 1000);
 
         const meetingid = 1;
         var questionList = [];
