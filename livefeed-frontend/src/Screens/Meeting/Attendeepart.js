@@ -12,6 +12,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import IconButton from '@material-ui/core/IconButton';
 import Divider from '@material-ui/core/Divider';
+import FormLabel from '@material-ui/core/FormLabel';
 import EditIcon from '@material-ui/icons/Edit';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -20,12 +21,27 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControl from '@material-ui/core/FormControl';
 import Slider from '@material-ui/core/Slider';
 import Select from 'react-select';
+import MenuItem from '@material-ui/core/MenuItem';
+import { makeStyles } from '@material-ui/core/styles';
 import axios from 'axios';
+import InputLabel from '@material-ui/core/InputLabel';
 
 
 
 
 const Attendeepart = ({templateset}) => {
+
+    const useStyles = makeStyles((theme) => ({
+        formControl: {
+          margin: theme.spacing(1),
+          minWidth: 190,
+        },
+        selectEmpty: {
+          marginTop: theme.spacing(2),
+        },
+      }));
+
+      const classes = useStyles();
 
     var qs = require('qs');
     const php_url = "http://localhost:80/server/php/index.php";
@@ -135,14 +151,6 @@ const Attendeepart = ({templateset}) => {
     }
 
 
-      const scores = [
-        {value: minvalue.toString(),label: minvalue.toString()},
-        {value: ((maxvalue-minvalue)/4+minvalue).toString(),label: ((maxvalue-minvalue)/4+minvalue).toString()},
-        {value: ((maxvalue-minvalue)*2/4+minvalue).toString(),label: ((maxvalue-minvalue)*2/4+minvalue).toString()},
-        {value: ((maxvalue-minvalue)*3/4+minvalue).toString(),label: ((maxvalue-minvalue)*3/4+minvalue).toString()},
-        {value: maxvalue.toString(),label: maxvalue.toString()},
-      ];
-
     const Ddlhandle = (e) => {
         setMultianswer(Array.isArray(e)?e.map(x=>x.label):[]);
     }
@@ -152,8 +160,11 @@ const Attendeepart = ({templateset}) => {
       };
 
     const renderSwitch = (param) => {
+        
         switch(param.questiontype){
+
             case 'open':
+    
                 return (
                     <TextField
                         multiline
@@ -165,6 +176,15 @@ const Attendeepart = ({templateset}) => {
                         onChange = {(event)=>setAnswer(event.target.value)}/>
                 )
             case 'rating':
+
+                const scores = [
+                    {value: param.minRating.toString(),label: param.minRating.toString()},
+                    {value: ((param.maxRating-param.minRating)/4+param.minRating).toString(),label: ((param.maxRating-param.minRating)/4+param.minRating).toString()},
+                    {value: ((param.maxRating-param.minRating)*2/4+param.minRating).toString(),label: ((param.maxRating-param.minRating)*2/4+param.minRating).toString()},
+                    {value: ((param.maxRating-param.minRating)*3/4+param.minRating).toString(),label: ((param.maxRating-param.minRating)*3/4+param.minRating).toString()},
+                    {value: param.maxRating.toString(),label: param.maxRating.toString()},
+                  ];
+
                 return (
                     // <FormControl component="fieldset">
                     //     <RadioGroup name="Score"  defaultValue={'1'} onChange={(event)=>{setAnswer(event.target.value)}}>
@@ -175,12 +195,13 @@ const Attendeepart = ({templateset}) => {
                     //         ))}
                     //     </RadioGroup>
                     // </FormControl> 
+
                     <Slider
-                        defaultValue={minvalue}
+                        defaultValue={param.minRating}
                         aria-labelledby="discrete-slider-custom"
                         step={10}
-                        max = {maxvalue}
-                        min = {minvalue}
+                        max = {param.maxRating}
+                        min = {param.minRating}
                         valueLabelDisplay="auto"
                         onChange = {handleChange}
                         marks={scores}
@@ -188,14 +209,23 @@ const Attendeepart = ({templateset}) => {
                 )
             case 'multiple':
                 
-                const options = [
+                const options_ = [
                     { value: param.optionA, label: 'option1' },
                     { value: param.optionB, label: 'option2' },
                     { value: param.optionC, label: 'option3' },
                     { value: param.optionD, label: 'option4' },
-                  ]
+                  ];
+
                 return (
-                    <Select isMulti options={options} onChange={Ddlhandle}/>
+                    <FormControl component="fieldset">
+                    <FormLabel component="legend">Select an option</FormLabel>
+                    <RadioGroup>
+                        <FormControlLabel value={param.optionA} control={<Radio />} label={param.optionA} />
+                        <FormControlLabel value={param.optionB} control={<Radio />} label={param.optionB} />
+                        <FormControlLabel value={param.optionC} control={<Radio />} label={param.optionC} />
+                        <FormControlLabel value={param.optionD} control={<Radio />} label={param.optionD} />
+                    </RadioGroup>
+                    </FormControl>
                 )
         }
     }
