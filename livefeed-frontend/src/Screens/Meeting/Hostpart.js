@@ -271,6 +271,7 @@ const Hostpart = () => {
                     for (const [key, value] of Object.entries(res.data.result)) {
                         console.log("Question "+key)
                         qdata[key] = []
+                        var type = ""
                         switch (value[1]) {
                             case "multiple":
                                 axios.post(pythonurl+"questiontally", qs.stringify({questionid:key}))
@@ -284,7 +285,7 @@ const Hostpart = () => {
                                         }
                                     })
                                     .catch(err => console.log(err));
-                                questionList.push({questionid: key, questionname: value[0], questiontype: value[1], questiondata: qdata[key]})
+                                questionList.push({questionid: key, questionname: value[0], questiontype: "Multiple Choice", questiondata: qdata[key]})
                                 setQuestions(questionList)
                                 break;
                             case "open":
@@ -292,7 +293,7 @@ const Hostpart = () => {
                                     .then(res2 => {
                                         console.log(res2.data);
                                         if (res2.data != null) {
-                                            console.log("Open1: Q"+key+" Return:"+res2.data)
+                                            console.log("Open1: Q" + key + " Return:" + res2.data)
                                             var qdata1 = []
                                             for (const [key2, value2] of Object.entries(res2.data)) {
                                                 var mood = "";
@@ -311,6 +312,8 @@ const Hostpart = () => {
 
                                             }
                                             qdata[key].push(qdata1)
+                                        } else {
+                                            qdata[key].push([])
                                         }
                                     })
                                     .catch(err => console.log(err));
@@ -332,11 +335,32 @@ const Hostpart = () => {
                                                     Quantity: res2.data[i - 1].length
                                                 })
                                             }
+                                            /*if (limit < 4) {
+                                                for (var j=limit; j<4; j++) {
+                                                    qdata2.push({
+                                                        name: "Feedback " + j,
+                                                        feedback: "",
+                                                        feedbacklist: "",
+                                                        Quantity: 0
+                                                    })
+                                                }
+                                            }*/
                                             qdata[key].push(qdata2)
+                                        } else{
+                                            /*qdata2 = []
+                                            for (var k=1; k<4; k++) {
+                                                qdata2.push({
+                                                    name: "Feedback " + k,
+                                                    feedback: "",
+                                                    feedbacklist: "",
+                                                    Quantity: 0
+                                                })
+                                            }*/
+                                            qdata[key].push([])
                                         }
                                     })
                                     .catch(err => console.log(err));
-                                questionList.push({questionid: key, questionname: value[0], questiontype: value[1], questiondata: qdata[key]})
+                                questionList.push({questionid: key, questionname: value[0], questiontype: "Written Question", questiondata: qdata[key]})
                                 setQuestions(questionList)
                                 break;
                             case "rating":
@@ -351,7 +375,7 @@ const Hostpart = () => {
                                         }
                                     })
                                     .catch(err => console.log(err));
-                                questionList.push({questionid: key, questionname: value[0], questiontype: value[1], questiondata: qdata[key]})
+                                questionList.push({questionid: key, questionname: value[0], questiontype: "Numerical Rating", questiondata: qdata[key]})
                                 setQuestions(questionList)
                                 break;
                             default:
@@ -371,7 +395,7 @@ const Hostpart = () => {
     return (
         <div>
             <div className="list2">
-                
+
                 <List>
                     <Divider />
                     {questions.map(question => (
@@ -385,10 +409,10 @@ const Hostpart = () => {
                             </ListItem>
                             <Divider/>
                         </div>
-                    
+
                     ))}
 
-                </List> 
+                </List>
 
             </div>
 
