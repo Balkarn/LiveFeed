@@ -37,8 +37,6 @@ const Attendeepart = ({templateset}) => {
     const [minvalue,setMinvalue] = React.useState(1);
 
 
-
-
     const handleSend = () => {
         let filtered_events = meetingtemplateset.filter( event => event !== current);
         setMeetingtemplate(filtered_events); 
