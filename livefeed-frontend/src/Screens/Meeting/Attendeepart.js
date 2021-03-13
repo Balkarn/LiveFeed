@@ -18,13 +18,9 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControl from '@material-ui/core/FormControl';
-import Select from 'react-select';
-<<<<<<< Updated upstream
 import Slider from '@material-ui/core/Slider';
-
-=======
+import Select from 'react-select';
 import axios from 'axios';
->>>>>>> Stashed changes
 
 
 
@@ -116,7 +112,6 @@ const Attendeepart = ({templateset}) => {
                 
             })
 
-            console.log(templateQuestions);
 
             if (res.data.error) {
                 console.log(res.data.error);
@@ -139,12 +134,6 @@ const Attendeepart = ({templateset}) => {
         setIsanonymous(false);
     }
 
-    const options = [
-        { value: 'multichoice-option1', label: 'option1' },
-        { value: 'multichoice-option2', label: 'option2' },
-        { value: 'multichoice-option3', label: 'option3' },
-        { value: 'multichoice-option4', label: 'option4' },
-      ]
 
       const scores = [
         {value: minvalue.toString(),label: minvalue.toString()},
@@ -163,8 +152,8 @@ const Attendeepart = ({templateset}) => {
       };
 
     const renderSwitch = (param) => {
-        switch(param){
-            case 'Written Question':
+        switch(param.questiontype){
+            case 'open':
                 return (
                     <TextField
                         multiline
@@ -175,7 +164,7 @@ const Attendeepart = ({templateset}) => {
                         fullWidth
                         onChange = {(event)=>setAnswer(event.target.value)}/>
                 )
-            case 'Numerical Rating':
+            case 'rating':
                 return (
                     // <FormControl component="fieldset">
                     //     <RadioGroup name="Score"  defaultValue={'1'} onChange={(event)=>{setAnswer(event.target.value)}}>
@@ -197,7 +186,14 @@ const Attendeepart = ({templateset}) => {
                         marks={scores}
                     />
                 )
-            case 'Multiple Choice':
+            case 'multiple':
+                
+                const options = [
+                    { value: param.optionA, label: 'option1' },
+                    { value: param.optionB, label: 'option2' },
+                    { value: param.optionC, label: 'option3' },
+                    { value: param.optionD, label: 'option4' },
+                  ]
                 return (
                     <Select isMulti options={options} onChange={Ddlhandle}/>
                 )
@@ -206,17 +202,20 @@ const Attendeepart = ({templateset}) => {
 
 
     return (
+
+        templateQuestions.length === 0 ? <p>Loading....</p>
+        :
         <div>
             <div className="list">
                 
                 <List>
-                    {meetingtemplateset.map(question => (
+                    {templateQuestions.map( (question,index) => (
                         <div>
                     {/* <p key = {question.id}>{question.name}</p> */}
                             <Divider /> 
-                                <ListItem key={question.questionid}>
+                                <ListItem key={index}>
                                     <ListItemText
-                                    primary={question.templatename}
+                                    primary={question.question}
                                     secondary = {question.questiontype}
                                     />
                                     <ListItemSecondaryAction>
@@ -238,9 +237,9 @@ const Attendeepart = ({templateset}) => {
                 <DialogTitle id="form-dialog-title">Answer</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        {current.questioncontent}  
+                        {current.question}  
                     </DialogContentText>
-                    {renderSwitch(current.questiontype)} 
+                    {renderSwitch(current)} 
                 </DialogContent>
                 <DialogActions>
                     <FormControlLabel
