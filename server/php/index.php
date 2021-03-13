@@ -55,6 +55,13 @@ if (!isset($_POST['error'])) {
 	      $database->add_meeting(...$_POST['arguments']);
 	    }
 	    break;
+		case 'getmeeting':
+			if (!is_array($_POST['arguments']) || count($_POST['arguments']) < 1) {
+				$reqResult['error'] = "Invalid arguments used.";
+			} else { # argument format: meetingCode
+				$database->get_meeting(...$_POST['arguments']);
+			}
+			break;
 	  case 'addgeneralfeedback':
 	    if (!is_array($_POST['arguments']) || count($_POST['arguments']) < 2) {
 	      $reqResult['error'] = "Invalid arguments used.";
