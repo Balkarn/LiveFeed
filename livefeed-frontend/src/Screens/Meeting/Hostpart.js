@@ -246,10 +246,12 @@ const DisplayAnalysis = ({question}) => {
 
 }
 
+
 const Hostpart = () => {
     const [questions,setQuestions] = React.useState([]);
     const [data,setData] = React.useState([]);
     const [currentTemplate,setCurrentTemplate] = React.useState(-1);
+    const [returnVal, setReturnVal] = React.useState((<div></div>));
 
     //The following 3 consts are temporary data for testing only
     const multipleChoiceData = [
@@ -462,13 +464,7 @@ const Hostpart = () => {
         console.log("debug3");
         console.log(questionList);
         console.log("end debug3");
-
-    }, []); // Only run once whenever component is mounted
-
-
-
-    return (
-        <div>
+        setReturnVal(<div>
             <div className="list2">
 
                 <List>
@@ -491,9 +487,16 @@ const Hostpart = () => {
 
             </div>
 
-        </div>
+        </div>)
 
-    )
+
+    }, []); // Only run once whenever component is mounted
+
+    console.log("debug4")
+    console.log(questions)
+    console.log(returnVal)
+    console.log("end debug4")
+    return returnVal
 
 }
 
