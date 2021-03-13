@@ -183,117 +183,6 @@ const Hostpart = () => {
     const [questions,setQuestions] = React.useState([]);
     const [data,setData] = React.useState([]);
     const [currentTemplate,setCurrentTemplate] = React.useState(-1);
-    const meetingid = 1;
-    var questionList = []
-
-    axios.post(phpurl, qs.stringify({function:'getmeetingtemplates', arguments:['1']}))
-        .then(res => {
-            if (res.data.error) {
-                console.log(res.data.error);
-            }
-            if (res.data.result) {
-                console.log(res.data.result);
-                setCurrentTemplate(res.data.result[0].TemplateID)
-            }
-        })
-        .catch(err => console.log(err));
-    axios.post(phpurl, qs.stringify({function:'gettemplatequestions', arguments:[currentTemplate]}))
-        .then(res => {
-            if (res.data.error) {
-                console.log(res.data.error)
-            }
-            if (res.data.result) {
-                console.log(res.data.result)
-                for (const [key, value] of Object.entries(res.data.result)) {
-                    questionList.push({questionid: key, questionname: value[0], questiontype: value[1], questiondata: []})
-
-
-                    switch (value[1]) {
-                        case "multiple":
-                            axios.post(pythonurl+"questiontally", qs.stringify({questionid:key}))
-                                .then(res2 => {
-                                    console.log(res2.data);
-                                    if (res2.data != null && res2.data.length > 0) {
-                                        for (const [key2, value2] of Object.entries(res2.data)) {
-                                            questionList[questionList.length-1].questiondata.push({name: key2, Quantity: value2})
-                                            console.log(questionList)
-                                        }
-                                    }
-                                })
-                                .catch(err => console.log(err));
-                            break;
-                        case "open":
-                            axios.post(pythonurl+"questionmood", qs.stringify({questionid:key}))
-                                .then(res2 => {
-                                    console.log(res2.data);
-                                    if (res2.data != null && res2.data.length > 0) {
-                                        questionList[questionList.length - 1].questiondata.push([])
-                                        for (const [key2, value2] of Object.entries(res2.data)) {
-                                            var mood = "";
-                                            switch (key2) {
-                                                case 'happy':
-                                                    mood = "Positive"
-                                                    break;
-                                                case 'neutral':
-                                                    mood = "Ambivalent"
-                                                    break;
-                                                case 'sad':
-                                                    mood = "Negative"
-                                                    break;
-                                            }
-                                            questionList[questionList.length - 1].questiondata[questionList[questionList.length - 1].questiondata.length - 1].push({
-                                                name: mood,
-                                                Quantity: value2
-                                            })
-                                        }
-                                    }
-                                })
-                                .catch(err => console.log(err));
-                            axios.post(pythonurl+"questionpopular", qs.stringify({meetingid:meetingid,questionid:key}))
-                                .then(res2 => {
-                                    console.log(res2.data);
-                                    if (res2.data != null && res2.data.length > 0) {
-                                        questionList[questionList.length-1].questiondata.push([])
-                                        var limit = 4
-                                        if (res2.data.length < 3) {
-                                            limit = res2.data.length+1
-                                        }
-                                        for (var i=1; i<limit; i++) {
-                                            questionList[questionList.length - 1].questiondata[questionList[questionList.length - 1].questiondata.length - 1].push({
-                                                name: "Feedback " + i,
-                                                feedback: res2.data[i - 1][0],
-                                                feedbacklist: res2.data[i - 1][0],
-                                                Quantity: res2.data[i - 1].length
-                                            })
-                                        }
-                                    }
-                                })
-                                .catch(err => console.log(err));
-                            break;
-                        case "rating":
-                            axios.post(pythonurl+"questiontally", qs.stringify({questionid:key}))
-                                .then(res2 => {
-                                    console.log(res2.data);
-                                    if (res2.data != null && res2.data.length > 0) {
-                                        for (const [key2, value2] of Object.entries(res2.data)) {
-                                            questionList[questionList.length - 1].questiondata.push({
-                                                name: key2,
-                                                Quantity: value2
-                                            })
-                                        }
-                                    }
-                                })
-                                .catch(err => console.log(err));
-                            break;
-                        default:
-                            questionList.pop()
-                            break;
-                    }
-                }
-                console.log(questionList)
-            }
-        })
-        .catch(err => console.log(err));
 
     //The following 3 consts are temporary data for testing only
     const multipleChoiceData = [
@@ -357,8 +246,123 @@ const Hostpart = () => {
 
     // In here goes the code to fetch the data from the server,
     useEffect(() => {
+
+        const meetingid = 1;
+        axios.post(phpurl, qs.stringify({function:'getmeetingtemplates', arguments:['1']}))
+            .then(res => {
+                if (res.data.error) {
+                    console.log(res.data.error);
+                }
+                if (res.data.result) {
+                    console.log(res.data.result);
+                    setCurrentTemplate(res.data.result[0].TemplateID)
+                }
+            })
+            .catch(err => console.log(err));
+        axios.post(phpurl, qs.stringify({function:'gettemplatequestions', arguments:['1']}))
+            .then(res => {
+                if (res.data.error) {
+                    console.log(res.data.error)
+                }
+                if (res.data.result) {
+                    console.log(res.data.result)
+                    var questionList = []
+                    for (const [key, value] of Object.entries(res.data.result)) {
+                        questionList.push({questionid: key, questionname: value[0], questiontype: value[1], questiondata: []})
+                        var qdata = []
+                        console.log("Question "+key)
+
+                        switch (value[1]) {
+                            case "multiple":
+                                axios.post(pythonurl+"questiontally", qs.stringify({questionid:key}))
+                                    .then(res2 => {
+                                        console.log(res2.data);
+                                        if (res2.data != null) {
+                                            console.log("Multiple: Q"+key+" Return:"+res2.data)
+                                            for (const [key2, value2] of Object.entries(res2.data)) {
+                                                qdata.push({name: key2, Quantity: value2})
+                                            }
+                                            questionList.push({questionid: key, questionname: value[0], questiontype: value[1], questiondata: qdata})
+                                        }
+                                    })
+                                    .catch(err => console.log(err));
+                                break;
+                            case "open":
+                                axios.post(pythonurl+"questionmood", qs.stringify({questionid:key}))
+                                    .then(res2 => {
+                                        console.log(res2.data);
+                                        if (res2.data != null) {
+                                            console.log("Open1: Q"+key+" Return:"+res2.data)
+                                            var qdata1 = []
+                                            for (const [key2, value2] of Object.entries(res2.data)) {
+                                                var mood = "";
+                                                switch (key2) {
+                                                    case 'happy':
+                                                        mood = "Positive"
+                                                        break;
+                                                    case 'neutral':
+                                                        mood = "Ambivalent"
+                                                        break;
+                                                    case 'sad':
+                                                        mood = "Negative"
+                                                        break;
+                                                }
+                                                qdata1.push({name: mood, Quantity: value2})
+
+                                            }
+                                            qdata.push(qdata1)
+                                        }
+                                    })
+                                    .catch(err => console.log(err));
+                                axios.post(pythonurl+"questionpopular", qs.stringify({meetingid:meetingid,questionid:key}))
+                                    .then(res2 => {
+                                        console.log(res2.data);
+                                        if (res2.data != null && res2.data.length > 0) {
+                                            console.log("Open2: Q"+key+" Return:"+res2.data)
+                                            var limit = 4
+                                            if (res2.data.length < 3) {
+                                                limit = res2.data.length+1
+                                            }
+                                            var qdata2 = []
+                                            for (var i=1; i<limit; i++) {
+                                                qdata2.push({
+                                                    name: "Feedback " + i,
+                                                    feedback: res2.data[i - 1][0],
+                                                    feedbacklist: res2.data[i - 1][0],
+                                                    Quantity: res2.data[i - 1].length
+                                                })
+                                            }
+                                            qdata.push([])
+                                        }
+                                    })
+                                    .catch(err => console.log(err));
+                                questionList.push({questionid: key, questionname: value[0], questiontype: value[1], questiondata: qdata})
+                                break;
+                            case "rating":
+                                axios.post(pythonurl+"questiontally", qs.stringify({questionid:key}))
+                                    .then(res2 => {
+                                        console.log(res2.data);
+                                        if (res2.data != null) {
+                                            console.log("Rating: Q"+key+" Return:"+res2.data)
+                                            for (const [key2, value2] of Object.entries(res2.data)) {
+                                                qdata.push({name: key2, Quantity: value2})
+                                            }
+                                            questionList.push({questionid: key, questionname: value[0], questiontype: value[1], questiondata: qdata})
+                                        }
+                                    })
+                                    .catch(err => console.log(err));
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    console.log(questionList)
+                    setQuestions(questionList);
+                }
+
+            })
+            .catch(err => console.log(err));
         //The following line is temporary testing data
-        setQuestions(questionList);
     }, []); // Only run once whenever component is mounted
 
 
