@@ -268,7 +268,6 @@ const Hostpart = () => {
                     console.log(res.data.result)
                     var questionList = []
                     for (const [key, value] of Object.entries(res.data.result)) {
-                        questionList.push({questionid: key, questionname: value[0], questiontype: value[1], questiondata: []})
                         var qdata = []
                         console.log("Question "+key)
 
@@ -356,6 +355,7 @@ const Hostpart = () => {
                                 break;
                         }
                     }
+                    console.log("Question List: ")
                     console.log(questionList)
                     setQuestions(questionList);
                 }
