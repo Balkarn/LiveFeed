@@ -199,7 +199,7 @@ const Attendeepart = ({templateset}) => {
                     <Slider
                         defaultValue={param.minRating}
                         aria-labelledby="discrete-slider-custom"
-                        step={10}
+                        step={1}
                         max = {param.maxRating}
                         min = {param.minRating}
                         valueLabelDisplay="auto"
