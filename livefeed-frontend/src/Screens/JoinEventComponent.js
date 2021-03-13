@@ -18,11 +18,8 @@ const JoinEventComponent = (props) => {
     const [linkto,setLinkto] = React.useState('meeting/'+userid);//make sure user will be attendee in meeting screen
     
 
-    const [error, setError] = React.useState(false);
-
     const handleCurrentEventCodeTextField = event => {
         setCurrentEventCode(event.target.value);
-        setError(event.target.value.length != 8);
     }
 
     const enterMeeting = () => {
@@ -38,7 +35,7 @@ const JoinEventComponent = (props) => {
         axios.post(php_url, qs.stringify(data))
         .then(res => {
             console.log(res.data.result);
-            history.push('/meeting/'+res.data.result.HostID+'&'+res.data.result.MeetingID+'&attendee');
+            history.push('/meeting/'+res.data.result.HostID+'&'+res.data.result.MeetingID+'&attendee&'+props.userID);
             if (res.data.error) {
                 console.log(res.data.error);
             }
@@ -63,9 +60,7 @@ const JoinEventComponent = (props) => {
                         size="medium"
                         fullWidth="true"
                         onChange={handleCurrentEventCodeTextField}
-                        error={error}
                         className="input"
-                        helperText={error ? 'Must be 8 Characters' : ' '}
                     />
                     
                     <Link>
