@@ -40,62 +40,117 @@ const DisplayAnalysis = ({question}) => {
     switch (question.questiontype) {
 
         case 'Written Question':
-
+            const writtenQuestionData = {
+                mood:
+                    [
+                        {
+                            name: 'Positive',
+                            Quantity: 4,
+                        },
+                        {
+                            name: 'Ambivalent',
+                            Quantity: 3,
+                        },
+                        {
+                            name: 'Negative',
+                            Quantity: 5,
+                        },
+                    ], popular:
+                    [
+                        {
+                            name: 'Feedback 1',
+                            feedback: 'Turn up the volume',
+                            Quantity: 12,
+                        },
+                        {
+                            name: 'Feedback 2',
+                            feedback: 'Boring',
+                            Quantity: 4,
+                        },
+                        {
+                            name: 'Feedback 3',
+                            feedback: 'Its really cold in here',
+                            Quantity: 3,
+                        },
+                    ]
+            }
+            var data = question.questiondata
+            if (question.questiondata.length === 0) {
+                data = writtenQuestionData
+            } else {
+                if (question.questiondata.mood.length === 0 || question.questiondata.popular.length === 0 ) {
+                    data = writtenQuestionData
+                }
+            }
+            console.log("DEBUG")
+            console.log(data.popular[0])
             return (
                 <div>
-                    <Typography>A bar chart to show the mood distribution</Typography>
+                <Typography>A bar chart to show the mood distribution</Typography>
 
-                    <BarChart
-                        width={600}
-                        height={350}
-                        data={question.questiondata[0]}
-                        margin={{
-                            top: 5,
-                            right: 30,
-                            left: 20,
-                            bottom: 5,
-                        }}
-                    >
-                        <CartesianGrid strokeDasharray="5 5" />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Bar dataKey="Quantity" fill="#0088FE" />
-                    </BarChart>
+                <BarChart
+                width={600}
+                height={350}
+                data={data.mood}
+                margin={{
+                top: 5,
+                right: 30,
+                left: 20,
+                bottom: 5,
+                }}
+                >
+                <CartesianGrid strokeDasharray="5 5"/>
+                <XAxis dataKey="name"/>
+                <YAxis/>
+                <Tooltip/>
+                <Bar dataKey="Quantity" fill="#0088FE"/>
+                </BarChart>
 
-                    <h4>Top 3 Most frequently repeated feedback: </h4>
+                <h4>Top 3 Most frequently repeated feedback: </h4>
+                <Typography>
+                {"1: " + data.popular[0].feedback} <br/>
+                {"2: " + data.popular[1].feedback} <br/>
+                {"3: " + data.popular[2].feedback} <br/>
+                </Typography>
 
-                    <Typography>
-                        {"1: " + question.questiondata[1][0].feedback} <br/>
-                        {"2: " + question.questiondata[1][1].feedback} <br />
-                        {"3: " + question.questiondata[1][2].feedback} <br />
-                    </Typography>
-                    
 
-                    <ComposedChart
-                        layout="vertical"
-                        width={600}
-                        height={350}
-                        data={question.questiondata[1]}
-                        margin={{
-                            top: 5,
-                            right: 20,
-                            bottom: 5,
-                            left: 20,
-                        }}
-                    >
-                        <CartesianGrid strokeDasharray="5 5"  />
-                        <XAxis type="number" />
-                        <YAxis dataKey="name" type="category" scale="band" />
-                        <Tooltip />
-                        <Bar dataKey="Quantity" barSize={20} fill="#0088FE" />
-                    </ComposedChart>
+                <ComposedChart
+                layout="vertical"
+                width={600}
+                height={350}
+                data={data.popular}
+                margin={{
+                top: 5,
+                right: 20,
+                bottom: 5,
+                left: 20,
+                }}
+                >
+                <CartesianGrid strokeDasharray="5 5"/>
+                <XAxis type="number"/>
+                <YAxis dataKey="name" type="category" scale="band"/>
+                <Tooltip/>
+                <Bar dataKey="Quantity" barSize={20} fill="#0088FE"/>
+                </ComposedChart>
 
                 </div>
             );
 
         case 'Numerical Rating':
 
+            const numericalScoreData = [
+                { name: '1', Quantity: 400 },
+                { name: '2', Quantity: 300 },
+                { name: '3', Quantity: 200 },
+                { name: '4', Quantity: 100 },
+                { name: '5', Quantity: 300 },
+            ];
+            var data = []
+            if (question.questiondata.length === 0) {
+                data = numericalScoreData
+            } else {
+                data = question.questiondata
+            }
             return (
 
                 <div>
@@ -106,7 +161,7 @@ const DisplayAnalysis = ({question}) => {
                         <Legend layout="vertical" verticalAlign="top" align="right" />
                         <Tooltip />
                         <Pie
-                            data={question.questiondata}
+                            data={data}
                             cx="50%"
                             cy="50%"
                             labelLine={true}
@@ -115,7 +170,7 @@ const DisplayAnalysis = ({question}) => {
                             dataKey="Quantity"
                             label
                         >
-                            {question.questiondata.map((entry, index) => (
+                            {data.map((entry, index) => (
                                 <Cell key={`cell-${index}`} fill={colours[Math.max(0, index)]} />
                             ))}
                             
@@ -148,6 +203,18 @@ const DisplayAnalysis = ({question}) => {
 
         case 'Multiple Choice':
 
+            const multipleChoiceData = [
+                { name: 'Group A', Quantity: 400 },
+                { name: 'Group B', Quantity: 300 },
+                { name: 'Group C', Quantity: 200 },
+                { name: 'Group D', Quantity: 100 },
+            ];
+            var data = []
+            if (question.questiondata.length === 0) {
+                data = multipleChoiceData
+            } else {
+                data = question.questiondata
+            }
             return (
                 <div>
 
@@ -157,7 +224,7 @@ const DisplayAnalysis = ({question}) => {
                         <Legend layout="vertical" verticalAlign="top" align="right" />
                         <Tooltip />
                         <Pie
-                            data={question.questiondata}
+                            data={data}
                             cx="50%"
                             cy="50%"
                             labelLine={true}
@@ -166,7 +233,7 @@ const DisplayAnalysis = ({question}) => {
                             dataKey="Quantity"
                             label
                         >
-                            {question.questiondata.map((entry, index) => (
+                            {data.map((entry, index) => (
                                 <Cell key={`cell-${index}`} fill={colours[Math.max(0,index)]} />
                             ))}
                         </Pie>
@@ -214,7 +281,7 @@ const Hostpart = () => {
                 name: 'Negative',
                 Quantity: 5,
             },
-        ], 
+        ],
         [
             {
                 name: 'Feedback 1',
@@ -260,18 +327,17 @@ const Hostpart = () => {
             })
             .catch(err => console.log(err));
         axios.post(phpurl, qs.stringify({function:'gettemplatequestions', arguments:['1']}))
-            .then(res => {
-                if (res.data.error) {
-                    console.log(res.data.error)
+            .then(res1 => {
+                if (res1.data.error) {
+                    console.log(res1.data.error)
                 }
-                if (res.data.result) {
-                    console.log(res.data.result)
+                if (res1.data.result) {
+                    console.log(res1.data.result)
                     var questionList = []
                     var qdata = {}
-                    for (const [key, value] of Object.entries(res.data.result)) {
+                    for (const [key, value] of Object.entries(res1.data.result)) {
                         console.log("Question "+key)
                         qdata[key] = []
-                        var type = ""
                         switch (value[1]) {
                             case "multiple":
                                 axios.post(pythonurl+"questiontally", qs.stringify({questionid:key}))
@@ -289,6 +355,7 @@ const Hostpart = () => {
                                 setQuestions(questionList)
                                 break;
                             case "open":
+                                qdata[key] = {mood: [], popular: []}
                                 axios.post(pythonurl+"questionmood", qs.stringify({questionid:key}))
                                     .then(res2 => {
                                         console.log(res2.data);
@@ -311,9 +378,9 @@ const Hostpart = () => {
                                                 qdata1.push({name: mood, Quantity: value2})
 
                                             }
-                                            qdata[key].push(qdata1)
+                                            qdata[key].mood = qdata1
                                         } else {
-                                            qdata[key].push([])
+                                            qdata[key].mood = []
                                         }
                                     })
                                     .catch(err => console.log(err));
@@ -335,7 +402,7 @@ const Hostpart = () => {
                                                     Quantity: res2.data[i - 1].length
                                                 })
                                             }
-                                            /*if (limit < 4) {
+                                            if (limit < 4) {
                                                 for (var j=limit; j<4; j++) {
                                                     qdata2.push({
                                                         name: "Feedback " + j,
@@ -344,10 +411,10 @@ const Hostpart = () => {
                                                         Quantity: 0
                                                     })
                                                 }
-                                            }*/
-                                            qdata[key].push(qdata2)
-                                        } else{
-                                            /*qdata2 = []
+                                            }
+                                            qdata[key].popular = qdata2
+                                        } else {
+                                            qdata2 = []
                                             for (var k=1; k<4; k++) {
                                                 qdata2.push({
                                                     name: "Feedback " + k,
@@ -355,9 +422,10 @@ const Hostpart = () => {
                                                     feedbacklist: "",
                                                     Quantity: 0
                                                 })
-                                            }*/
-                                            qdata[key].push([])
+                                            }
+                                            qdata[key].popular = qdata2
                                         }
+
                                     })
                                     .catch(err => console.log(err));
                                 questionList.push({questionid: key, questionname: value[0], questiontype: "Written Question", questiondata: qdata[key]})
