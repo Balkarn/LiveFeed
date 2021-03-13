@@ -37,44 +37,43 @@ const DisplayAnalysis = ({question}) => {
     };
 
 
+    var data = question.questiondata
     switch (question.questiontype) {
-
         case 'Written Question':
             const writtenQuestionData = {
                 mood:
                     [
                         {
                             name: 'Positive',
-                            Quantity: 4,
+                            Quantity: 0,
                         },
                         {
                             name: 'Ambivalent',
-                            Quantity: 3,
+                            Quantity: 0,
                         },
                         {
                             name: 'Negative',
-                            Quantity: 5,
+                            Quantity: 0,
                         },
                     ], popular:
                     [
                         {
                             name: 'Feedback 1',
-                            feedback: 'Turn up the volume',
-                            Quantity: 12,
+                            feedback: '',
+                            Quantity: 0,
                         },
                         {
                             name: 'Feedback 2',
-                            feedback: 'Boring',
-                            Quantity: 4,
+                            feedback: '',
+                            Quantity: 0,
                         },
                         {
                             name: 'Feedback 3',
-                            feedback: 'Its really cold in here',
-                            Quantity: 3,
+                            feedback: '',
+                            Quantity: 0,
                         },
                     ]
             }
-            var data = question.questiondata
             if (question.questiondata.length === 0) {
                 data = writtenQuestionData
             } else {
@@ -139,17 +138,10 @@ const DisplayAnalysis = ({question}) => {
         case 'Numerical Rating':
 
             const numericalScoreData = [
-                { name: '1', Quantity: 400 },
-                { name: '2', Quantity: 300 },
-                { name: '3', Quantity: 200 },
-                { name: '4', Quantity: 100 },
-                { name: '5', Quantity: 300 },
+                { name: '1', Quantity: 1 }
             ];
-            var data = []
             if (question.questiondata.length === 0) {
                 data = numericalScoreData
-            } else {
-                data = question.questiondata
             }
             return (
 
@@ -204,16 +196,10 @@ const DisplayAnalysis = ({question}) => {
         case 'Multiple Choice':
 
             const multipleChoiceData = [
-                { name: 'Group A', Quantity: 400 },
-                { name: 'Group B', Quantity: 300 },
-                { name: 'Group C', Quantity: 200 },
-                { name: 'Group D', Quantity: 100 },
+                { name: 'Group A', Quantity: 1 }
             ];
-            var data = []
             if (question.questiondata.length === 0) {
                 data = multipleChoiceData
-            } else {
-                data = question.questiondata
             }
             return (
                 <div>
@@ -302,14 +288,6 @@ const Hostpart = () => {
             },
         ]
     ]
-
-    /*
-    [
-        { questionid: 1, questionname: 'What do you think of this event so far?', questiontype: 'Written Question', questiondata: writtenQuestionData},
-        { questionid: 2, questionname: 'Please rate how entertaining this event was from 1-5.', questiontype: 'Numerical Rating', questiondata: numericalScoreData},
-        { questionid: 3, questionname: 'Which of the following parts of the event was the best?', questiontype: 'Multiple Choice', questiondata: multipleChoiceData},
-    ]
-    */
 
     //End of temporary testing data
 
@@ -401,7 +379,7 @@ const Hostpart = () => {
                                                 qdata2.push({
                                                     name: "Feedback " + i,
                                                     feedback: res2.data[i - 1][0],
-                                                    feedbacklist: res2.data[i - 1][0],
+                                                    feedbacklist: res2.data[i - 1].slice(1),
                                                     Quantity: res2.data[i - 1].length
                                                 })
                                             }
