@@ -59,13 +59,7 @@ const HostEventComponent = (props) => {
         .then(res => {
             
             let events = res.data.result;
-            
-            events.map(event => {
-                setEvent(current_events => current_events.concat(event));
-            })
-            
-            console.log("Current_Events: " + current_events);
-
+            setEvent(events);
             setLoading(false);
         
         })
@@ -127,7 +121,6 @@ const HostEventComponent = (props) => {
             }
         }).catch(err => console.log(err));
 
-
         setCurrentEventName('');
         setCurrentEventDesc('');
         setCurrentEventDate('');
@@ -135,6 +128,7 @@ const HostEventComponent = (props) => {
         setCurrentEventEndTime('');
         setSelectedTemplates([]);
         setOpen(false);
+        getUserEvents();
         setOpenTemplateSelector(false);
 
     }
@@ -210,13 +204,7 @@ const HostEventComponent = (props) => {
 
     }
 
-    return (  loading ? 
-        
-        <>
-            <p>Loading...</p>
-        </>
-
-        :
+    return (  
     
       <>
         <h1>Host Event</h1>
