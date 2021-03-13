@@ -36,6 +36,10 @@ const DisplayAnalysis = ({question}) => {
         );
     };
 
+    // console.log("DEBUGG")
+    // console.log(question);
+    // console.log("DEBUGG")
+
 
     var data = question.questiondata
     switch (question.questiontype) {
@@ -107,9 +111,9 @@ const DisplayAnalysis = ({question}) => {
 
                 <h4>Top 3 Most frequently repeated feedback: </h4>
                 <Typography>
-                {"1: " + data.popular[0].feedback} <br/>
-                {"2: " + data.popular[1].feedback} <br/>
-                {"3: " + data.popular[2].feedback} <br/>
+                        {data.popular.length > 0 ? "1: " + data.popular[0].feedback : ""} <br/>
+                        {data.popular.length > 1 ? "2: " + data.popular[1].feedback : ""} <br/>
+                        {data.popular.length > 2 ? "3: " + data.popular[2].feedback : ""} <br/>
                 </Typography>
 
 
@@ -240,54 +244,54 @@ const Hostpart = () => {
     const [returnVal, setReturnVal] = React.useState((<div></div>));
 
     //The following 3 consts are temporary data for testing only
-    const multipleChoiceData = [
-        { name: 'Group A', Quantity: 400 },
-        { name: 'Group B', Quantity: 300 },
-        { name: 'Group C', Quantity: 200 },
-        { name: 'Group D', Quantity: 100 },
-    ];
+    // const multipleChoiceData = [
+    //     { name: 'Group A', Quantity: 400 },
+    //     { name: 'Group B', Quantity: 300 },
+    //     { name: 'Group C', Quantity: 200 },
+    //     { name: 'Group D', Quantity: 100 },
+    // ];
 
-    const numericalScoreData = [
-        { name: '1', Quantity: 400 },
-        { name: '2', Quantity: 300 },
-        { name: '3', Quantity: 200 },
-        { name: '4', Quantity: 100 },
-        { name: '5', Quantity: 300 },
-    ];
+    // const numericalScoreData = [
+    //     { name: '1', Quantity: 400 },
+    //     { name: '2', Quantity: 300 },
+    //     { name: '3', Quantity: 200 },
+    //     { name: '4', Quantity: 100 },
+    //     { name: '5', Quantity: 300 },
+    // ];
 
-    const writtenQuestionData = [
-        [
-            {
-                name: 'Positive',
-                Quantity: 4,
-            },
-            {
-                name: 'Ambivalent',
-                Quantity: 3,
-            },
-            {
-                name: 'Negative',
-                Quantity: 5,
-            },
-        ],
-        [
-            {
-                name: 'Feedback 1',
-                feedback: 'Turn up the volume',
-                Quantity: 12,
-            },
-            {
-                name: 'Feedback 2',
-                feedback: 'Boring',
-                Quantity: 4,
-            },
-            {
-                name: 'Feedback 3',
-                feedback: 'Its really cold in here',
-                Quantity: 3,
-            },
-        ]
-    ]
+    // const writtenQuestionData = [
+    //     [
+    //         {
+    //             name: 'Positive',
+    //             Quantity: 4,
+    //         },
+    //         {
+    //             name: 'Ambivalent',
+    //             Quantity: 3,
+    //         },
+    //         {
+    //             name: 'Negative',
+    //             Quantity: 5,
+    //         },
+    //     ],
+    //     [
+    //         {
+    //             name: 'Feedback 1',
+    //             feedback: 'Turn up the volume',
+    //             Quantity: 12,
+    //         },
+    //         {
+    //             name: 'Feedback 2',
+    //             feedback: 'Boring',
+    //             Quantity: 4,
+    //         },
+    //         {
+    //             name: 'Feedback 3',
+    //             feedback: 'Its really cold in here',
+    //             Quantity: 3,
+    //         },
+    //     ]
+    // ]
 
     //End of temporary testing data
 
@@ -321,6 +325,7 @@ const Hostpart = () => {
                         qdata[key] = []
                         switch (value[1]) {
                             case "multiple":
+                                console.log("Multiple")
                                 axios.post(pythonurl+"questiontally", qs.stringify({questionid:key}))
                                     .then(res2 => {
                                         console.log(res2.data);
@@ -332,10 +337,13 @@ const Hostpart = () => {
                                         }
                                     })
                                     .catch(err => console.log(err));
+                                console.log("QUestion name:" + value[0]);
+                                console.log(qdata[key]);
                                 questionList.push({questionid: key, questionname: value[0], questiontype: "Multiple Choice", questiondata: qdata[key]})
                                 setQuestions(questionList)
                                 break;
                             case "open":
+                                console.log("Open")
                                 qdata[key] = {mood: [], popular: []}
                                 axios.post(pythonurl+"questionmood", qs.stringify({questionid:key}))
                                     .then(res2 => {
@@ -409,10 +417,13 @@ const Hostpart = () => {
 
                                     })
                                     .catch(err => console.log(err));
+                                console.log("QUestion name:" + value[0]);
+                                console.log(qdata[key]);
                                 questionList.push({questionid: key, questionname: value[0], questiontype: "Written Question", questiondata: qdata[key]})
                                 setQuestions(questionList)
                                 break;
                             case "rating":
+                                console.log("Rating")
                                 axios.post(pythonurl+"questiontally", qs.stringify({questionid:key}))
                                     .then(res2 => {
                                         console.log(res2.data);
@@ -424,16 +435,19 @@ const Hostpart = () => {
                                         }
                                     })
                                     .catch(err => console.log(err));
+                                console.log("QUestion name:" + value[0]);
+                                console.log(qdata[key]);
                                 questionList.push({questionid: key, questionname: value[0], questiontype: "Numerical Rating", questiondata: qdata[key]})
                                 setQuestions(questionList)
                                 break;
                             default:
+                                console.log("other")
                                 break;
                         }
                     }
-                    console.log("Question List: ")
-                    console.log(questionList)
-                    console.log(qdata)
+                    console.log("Question List: ");
+                    console.log(questionList);
+                    console.log(qdata);
                 }
             })
             .catch(err => console.log(err));
@@ -442,7 +456,15 @@ const Hostpart = () => {
         console.log("debug3");
         console.log(questionList);
         console.log("end debug3");
-        setReturnVal(<div>
+
+    }, []); // Only run once whenever component is mounted
+
+    // console.log("debug4")
+    // console.log(questions)
+    // console.log(returnVal)
+    // console.log("end debug4")
+    return (
+        <div>
             <div className="list2">
 
                 <List>
@@ -452,11 +474,11 @@ const Hostpart = () => {
                             <ListItem key={question.questionid}>
                                 <div>
                                     <h2> {question.questiontype + " - " + question.questionname} </h2>
-                                    <DisplayAnalysis question={question}/>
+                                    <DisplayAnalysis question={question} />
                                 </div>
 
                             </ListItem>
-                            <Divider/>
+                            <Divider />
                         </div>
 
                     ))}
@@ -465,16 +487,8 @@ const Hostpart = () => {
 
             </div>
 
-        </div>)
-
-
-    }, []); // Only run once whenever component is mounted
-
-    console.log("debug4")
-    console.log(questions)
-    console.log(returnVal)
-    console.log("end debug4")
-    return returnVal
+        </div>
+    );
 
 }
 

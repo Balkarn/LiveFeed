@@ -1,4 +1,5 @@
 import React ,{ Component, useEffect } from 'react';
+import { Link ,useParams} from 'react-router-dom';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -27,9 +28,10 @@ import axios from 'axios';
 import InputLabel from '@material-ui/core/InputLabel';
 
 
-
-
 const Attendeepart = ({templateset}) => {
+
+    let {id} = useParams();
+    let url_details = id.split('&');
 
     const useStyles = makeStyles((theme) => ({
         formControl: {
@@ -49,7 +51,9 @@ const Attendeepart = ({templateset}) => {
     const [modalisOpen, setModalisOpen] = React.useState(false);
     // const [meetingtemplate, setMeetingtemplate] = React.useState(template);
     const [publishedQuestion,setPublishedQuestion] = React.useState([]);
+
     const [answer,setAnswer] = React.useState('');
+
     const [current,setCurrent] = React.useState([]);
     const [meetingtemplateset,setMeetingtemplate] = React.useState([]);
     const [isanonymous,setIsanonymous] = React.useState(false);
@@ -61,11 +65,26 @@ const Attendeepart = ({templateset}) => {
     const [templateQuestions, setTemplateQuestions] = React.useState([]);
 
 
-    const handleSend = () => {
-        let filtered_events = meetingtemplateset.filter( event => event !== current);
-        setMeetingtemplate(filtered_events); 
-        setSendanonymous(isanonymous);
-        handleCancel();
+    const handleSend = (questionID) => {
+        
+        var data = {
+            function: 'addtemplatefeedback',
+            arguments: [
+                templateset[0][0].TemplateID,
+                questionID, 
+                url_details[3],
+                url_details[1],
+                answer
+            ]
+        }
+
+        setModalisOpen(false);
+
+        axios.post(php_url, qs.stringify(data))
+        .then(res => {
+           console.log(res.data);
+        }).catch(err => console.log(err));
+
     }
 
     const getTemplateQuestions = () => {
@@ -88,6 +107,7 @@ const Attendeepart = ({templateset}) => {
                 if (question[1][1] === "open") {
 
                     let question_obj = {
+                        questionID: question[0],
                         questiontype: question[1][1],
                         question: question[1][0]
                     }
@@ -99,6 +119,7 @@ const Attendeepart = ({templateset}) => {
                 } else if (question[1][1] === "multiple") {
                 
                     let question_obj = {
+                        questionID: question[0],
                         questiontype: question[1][1],
                         question: question[1][0],
                         optionA: question[1][2].OptionA,
@@ -114,6 +135,7 @@ const Attendeepart = ({templateset}) => {
                 } else if (question[1][1] === "rating" ) {
                 
                     let question_obj = {
+                        questionID: question[0],
                         questiontype: question[1][1],
                         question: question[1][0],
                         minRating: question[1][2].MinRating,
@@ -151,8 +173,8 @@ const Attendeepart = ({templateset}) => {
     }
 
 
-    const Ddlhandle = (e) => {
-        setMultianswer(Array.isArray(e)?e.map(x=>x.label):[]);
+    const radioHandleChange = (event) => {
+        setAnswer(event.target.value);
     }
 
     const handleChange = (event, newValue) => {
@@ -220,10 +242,10 @@ const Attendeepart = ({templateset}) => {
                     <FormControl component="fieldset">
                     <FormLabel component="legend">Select an option</FormLabel>
                     <RadioGroup>
-                        <FormControlLabel value={param.optionA} control={<Radio />} label={param.optionA} />
-                        <FormControlLabel value={param.optionB} control={<Radio />} label={param.optionB} />
-                        <FormControlLabel value={param.optionC} control={<Radio />} label={param.optionC} />
-                        <FormControlLabel value={param.optionD} control={<Radio />} label={param.optionD} />
+                        <FormControlLabel value={param.optionA} control={<Radio />} onChange={radioHandleChange} label={param.optionA} />
+                        <FormControlLabel value={param.optionB} control={<Radio />} onChange={radioHandleChange} label={param.optionB} />
+                        <FormControlLabel value={param.optionC} control={<Radio />} onChange={radioHandleChange} label={param.optionC} />
+                        <FormControlLabel value={param.optionD} control={<Radio />} onChange={radioHandleChange} label={param.optionD} />
                     </RadioGroup>
                     </FormControl>
                 )
@@ -283,7 +305,7 @@ const Attendeepart = ({templateset}) => {
                         }
                         label="anonymous"
                     />
-                    <Button onClick={handleSend} 
+                    <Button onClick={() => handleSend(current.questionID)} 
                             color="primary">
                         Send
                     </Button>
