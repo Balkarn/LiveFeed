@@ -22,11 +22,7 @@ const MeetingComponent = (props) => {
     const [hostname,setHostname] = React.useState("James");
     const [templateid,setTemplateid] = React.useState([]);
     const [para,setPara] = React.useState(id.split('&'));// ['user_id','event_id']
-    const [templateset,setTemplateset] = React.useState([
-        { templateid : 1 , templatename : 'Question 1',questioncontent : 'content of Q1',questiontype : 'Written Question'},
-        { templateid : 2 , templatename : 'Question 2',questioncontent : 'content of Q2',questiontype : 'Numerical Rating'},
-        { templateid : 3 , templatename : 'Question 3',questioncontent : 'content of Q3',questiontype : 'Multiple Choice'},
-    ]);
+    const [templateset,setTemplateset] = React.useState([]);
     const [joinedattendee,setJoinedattendee] = React.useState([
         {id : 1, name : 'attendee 1'},
         {id : 2, name : 'attendee 2'},
@@ -44,7 +40,7 @@ const MeetingComponent = (props) => {
                     console.log(res.data.error)
                 }
                 if (res.data.result) {
-                    console.log(res.data.result)
+                    
                     setSessionname(res.data.result.MeetingName)
                     setSessiondate(res.data.result.StartTime)
                     setHostname(res.data.result.HostID)
@@ -53,15 +49,24 @@ const MeetingComponent = (props) => {
             })
             .catch(err => console.log(err));
 
-        axios.post(phpurl, qs.stringify({function:"getmeetingtemplates",arguments:['1']}))
+
+        axios.post(phpurl, qs.stringify({function:"getmeetingtemplates",arguments:[ para[1] ]}))
             .then(res => {
+
+                console.log("Meeting Template: ");
+                console.log(res.data);
+
+                let templates_ = res.data.result;
+                setTemplateset([templates_]);
+                console.log(templateset);
 
                 if (res.data.error) {
                     console.log(res.data.error)
                 }
                 if (res.data.result) {
-                    console.log(res.data.result)
+
                     var templates = []
+
                     for (var i=0; i<res.data.result.length; i++) {
                         templates.push(res.data.result[i].TemplateID)
                     }
@@ -109,6 +114,8 @@ const MeetingComponent = (props) => {
     }else{
 
     return (
+        templateset.length === 0 ? <p>Loading...</p>
+        :
         <>
 
         <div className="meeting-screen">
