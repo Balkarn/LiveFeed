@@ -19,6 +19,8 @@ import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControl from '@material-ui/core/FormControl';
 import Select from 'react-select';
+import Slider from '@material-ui/core/Slider';
+
 
 
 
@@ -70,6 +72,10 @@ const Attendeepart = ({templateset}) => {
         setMultianswer(Array.isArray(e)?e.map(x=>x.label):[]);
     }
 
+    const handleChange = (event, newValue) => {
+        setAnswer(newValue);
+      };
+
     const renderSwitch = (param) => {
         switch(param){
             case 'open':
@@ -85,15 +91,25 @@ const Attendeepart = ({templateset}) => {
                 )
             case 'rating':
                 return (
-                    <FormControl component="fieldset">
-                        <RadioGroup name="Score"  defaultValue={'1'} onChange={(event)=>{setAnswer(event.target.value)}}>
-                            {scores.map(option => (
-                                <div>
-                                <FormControlLabel value={option.value} control={<Radio />} label={option.label} />
-                                </div>
-                            ))}
-                        </RadioGroup>
-                    </FormControl> 
+                    // <FormControl component="fieldset">
+                    //     <RadioGroup name="Score"  defaultValue={'1'} onChange={(event)=>{setAnswer(event.target.value)}}>
+                    //         {scores.map(option => (
+                    //             <div>
+                    //             <FormControlLabel value={option.value} control={<Radio />} label={option.label} />
+                    //             </div>
+                    //         ))}
+                    //     </RadioGroup>
+                    // </FormControl> 
+                    <Slider
+                        defaultValue={minvalue}
+                        aria-labelledby="discrete-slider-custom"
+                        step={10}
+                        max = {maxvalue}
+                        min = {minvalue}
+                        valueLabelDisplay="auto"
+                        onChange = {handleChange}
+                        marks={scores}
+                    />
                 )
             case 'multiple':
                 return (
