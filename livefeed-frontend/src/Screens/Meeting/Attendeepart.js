@@ -70,7 +70,6 @@ const Attendeepart = ({templateset}) => {
         var data = {
             function: 'addtemplatefeedback',
             arguments: [
-                templateset[0][0].TemplateID,
                 questionID, 
                 url_details[3],
                 url_details[1],

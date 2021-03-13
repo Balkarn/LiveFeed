@@ -57,6 +57,7 @@ const TemplateComponent = (props) => {
 
     // Get Templates to list for user
     const getUserTemplates = () => {
+
       var data = {
         function: "getusertemplates",
         arguments: [
