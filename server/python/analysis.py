@@ -421,6 +421,7 @@ class GenerateMeetingSummary():
 				mood_tally[mood_dict[i]] += 1
 			else:
 				mood_tally[mood_dict[i]] = 1
+		return mood_tally
 
 
 	def response_tally(self, questionid):
