@@ -458,12 +458,11 @@ const Hostpart = () => {
             })
             .catch(err => console.log(err));
         setQuestions(questionList);
-        console.log("debug2");
-        console.log(questions);
-        console.log("end debug2");
+
         console.log("debug3");
         console.log(questionList);
         console.log("end debug3");
+
     }, []); // Only run once whenever component is mounted
 
 
