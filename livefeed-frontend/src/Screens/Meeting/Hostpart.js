@@ -23,8 +23,8 @@ import {
 } from 'recharts';
 
 var qs = require('qs');
-const phpurl = "http://localhost:80/index.php"
-const pythonurl = "http://localhost:81/api.py"
+const phpurl = "http://localhost:80/server/php/index.php"
+const pythonurl = "http://localhost:81/"
 
 const DisplayAnalysis = ({question}) => {
 
@@ -197,42 +197,38 @@ const Hostpart = () => {
             }
         })
         .catch(err => console.log(err));
-    axios.post(phpurl, qs.stringify({function:'gettemplatequestions', arguments:['1']}))
+    axios.post(phpurl, qs.stringify({function:'gettemplatequestions', arguments:[currentTemplate]}))
         .then(res => {
             if (res.data.error) {
                 console.log(res.data.error)
             }
             if (res.data.result) {
-                console.log(currTemplate)
                 console.log(res.data.result)
                 for (const [key, value] of Object.entries(res.data.result)) {
                     questionList.push({questionid: key, questionname: value[0], questiontype: value[1], questiondata: []})
+
+
                     switch (value[1]) {
                         case "multiple":
-                            axios.post(pythonurl, qs.stringify({function:'getmeetingtemplates', arguments:['1']}))
+                            axios.post(pythonurl+"questiontally", qs.stringify({questionid:key}))
                                 .then(res2 => {
-                                    if (res2.data.error) {
-                                        console.log(res2.data.error);
-                                    }
-                                    if (res2.data.result) {
-                                        console.log(res2.data.result);
-                                        for (const [key2, value2] of Object.entries(res2.data.result)) {
-                                            questionList[-1].questiondata.push({name: key2, Quantity: value2})
+                                    console.log(res2.data);
+                                    if (res2.data != null && res2.data.length > 0) {
+                                        for (const [key2, value2] of Object.entries(res2.data)) {
+                                            questionList[questionList.length-1].questiondata.push({name: key2, Quantity: value2})
+                                            console.log(questionList)
                                         }
                                     }
                                 })
                                 .catch(err => console.log(err));
                             break;
                         case "open":
-                            axios.post(pythonurl, qs.stringify({function:'getmeetingtemplates', arguments:['1']}))
+                            axios.post(pythonurl+"questionmood", qs.stringify({questionid:key}))
                                 .then(res2 => {
-                                    if (res2.data.error) {
-                                        console.log(res2.data.error);
-                                    }
-                                    if (res2.data.result) {
-                                        console.log(res2.data.result);
-                                        questionList[-1].questiondata.push([])
-                                        for (const [key2, value2] of Object.entries(res2.data.result)) {
+                                    console.log(res2.data);
+                                    if (res2.data != null && res2.data.length > 0) {
+                                        questionList[questionList.length - 1].questiondata.push([])
+                                        for (const [key2, value2] of Object.entries(res2.data)) {
                                             var mood = "";
                                             switch (key2) {
                                                 case 'happy':
@@ -245,59 +241,56 @@ const Hostpart = () => {
                                                     mood = "Negative"
                                                     break;
                                             }
-                                            questionList[-1].questiondata[-1].push({name: mood, Quantity: value2})
+                                            questionList[questionList.length - 1].questiondata[questionList[questionList.length - 1].questiondata.length - 1].push({
+                                                name: mood,
+                                                Quantity: value2
+                                            })
                                         }
                                     }
                                 })
                                 .catch(err => console.log(err));
-                            axios.post(pythonurl, qs.stringify({function:'getmeetingtemplates', arguments:['1']}))
+                            axios.post(pythonurl+"questionpopular", qs.stringify({meetingid:meetingid,questionid:key}))
                                 .then(res2 => {
-                                    if (res2.data.error) {
-                                        console.log(res2.data.error);
-                                    }
-                                    if (res2.data.result) {
-                                        console.log(res2.data.result);
-                                        questionList[-1].questiondata.push([])
-                                        for (const [key2, value2] of Object.entries(res2.data.result)) {
-                                            var mood = "";
-                                            switch (key2) {
-                                                case 'happy':
-                                                    mood = "Positive"
-                                                    break;
-                                                case 'neutral':
-                                                    mood = "Ambivalent"
-                                                    break;
-                                                case 'sad':
-                                                    mood = "Negative"
-                                                    break;
-                                            }
-                                            questionList[-1].questiondata[-1].push({name: mood, Quantity: value2})
+                                    console.log(res2.data);
+                                    if (res2.data != null && res2.data.length > 0) {
+                                        questionList[questionList.length-1].questiondata.push([])
+                                        var limit = 4
+                                        if (res2.data.length < 3) {
+                                            limit = res2.data.length+1
+                                        }
+                                        for (var i=1; i<limit; i++) {
+                                            questionList[questionList.length - 1].questiondata[questionList[questionList.length - 1].questiondata.length - 1].push({
+                                                name: "Feedback " + i,
+                                                feedback: res2.data[i - 1][0],
+                                                feedbacklist: res2.data[i - 1][0],
+                                                Quantity: res2.data[i - 1].length
+                                            })
                                         }
                                     }
                                 })
                                 .catch(err => console.log(err));
                             break;
                         case "rating":
-                            axios.post(pythonurl, qs.stringify({function:'getmeetingtemplates', arguments:['1']}))
+                            axios.post(pythonurl+"questiontally", qs.stringify({questionid:key}))
                                 .then(res2 => {
-                                    if (res2.data.error) {
-                                        console.log(res2.data.error);
-                                    }
-                                    if (res2.data.result) {
-                                        console.log(res2.data.result);
-                                        for (const [key2, value2] of Object.entries(res2.data.result)) {
-                                            questionList[-1].questiondata.push({name: key2, Quantity: value2})
+                                    console.log(res2.data);
+                                    if (res2.data != null && res2.data.length > 0) {
+                                        for (const [key2, value2] of Object.entries(res2.data)) {
+                                            questionList[questionList.length - 1].questiondata.push({
+                                                name: key2,
+                                                Quantity: value2
+                                            })
                                         }
                                     }
                                 })
                                 .catch(err => console.log(err));
                             break;
                         default:
-                           break;
+                            questionList.pop()
+                            break;
                     }
                 }
                 console.log(questionList)
-
             }
         })
         .catch(err => console.log(err));
@@ -350,18 +343,22 @@ const Hostpart = () => {
                 Quantity: 3,
             },
         ]
-    ];
+    ]
+
+    /*
+    [
+        { questionid: 1, questionname: 'What do you think of this event so far?', questiontype: 'Written Question', questiondata: writtenQuestionData},
+        { questionid: 2, questionname: 'Please rate how entertaining this event was from 1-5.', questiontype: 'Numerical Rating', questiondata: numericalScoreData},
+        { questionid: 3, questionname: 'Which of the following parts of the event was the best?', questiontype: 'Multiple Choice', questiondata: multipleChoiceData},
+    ]
+    */
 
     //End of temporary testing data
 
     // In here goes the code to fetch the data from the server,
     useEffect(() => {
         //The following line is temporary testing data
-        setQuestions([
-            { questionid: 1, questionname: 'What do you think of this event so far?', questiontype: 'Written Question', questiondata: writtenQuestionData},
-            { questionid: 2, questionname: 'Please rate how entertaining this event was from 1-5.', questiontype: 'Numerical Rating', questiondata: numericalScoreData},
-            { questionid: 3, questionname: 'Which of the following parts of the event was the best?', questiontype: 'Multiple Choice', questiondata: multipleChoiceData},
-        ]);
+        setQuestions(questionList);
     }, []); // Only run once whenever component is mounted
 
 

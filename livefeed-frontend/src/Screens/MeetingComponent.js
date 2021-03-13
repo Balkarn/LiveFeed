@@ -70,7 +70,7 @@ const MeetingComponent = (props) => {
             console.log(res.data.error)
         }
         if (res.data.result) {
-            setTemplateid([...res.data.result.TemplateID]);
+            setTemplateid([res.data.result[0].TemplateID]);
         }
         })
         .catch(err => console.log(err));
