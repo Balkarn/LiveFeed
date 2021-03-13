@@ -44,48 +44,48 @@ const DisplayAnalysis = ({question}) => {
     switch (question.questiontype) {
 
         case 'Written Question':
-            const writtenQuestionData = {
-                mood:
-                    [
-                        {
-                            name: 'Positive',
-                            Quantity: 4,
-                        },
-                        {
-                            name: 'Ambivalent',
-                            Quantity: 3,
-                        },
-                        {
-                            name: 'Negative',
-                            Quantity: 5,
-                        },
-                    ], popular:
-                    [
-                        {
-                            name: 'Feedback 1',
-                            feedback: 'Turn up the volume',
-                            Quantity: 12,
-                        },
-                        {
-                            name: 'Feedback 2',
-                            feedback: 'Boring',
-                            Quantity: 4,
-                        },
-                        {
-                            name: 'Feedback 3',
-                            feedback: 'Its really cold in here',
-                            Quantity: 3,
-                        },
-                    ]
-            }
+            // const writtenQuestionData = {
+            //     mood:
+            //         [
+            //             {
+            //                 name: 'Positive',
+            //                 Quantity: 4,
+            //             },
+            //             {
+            //                 name: 'Ambivalent',
+            //                 Quantity: 3,
+            //             },
+            //             {
+            //                 name: 'Negative',
+            //                 Quantity: 5,
+            //             },
+            //         ], popular:
+            //         [
+            //             {
+            //                 name: 'Feedback 1',
+            //                 feedback: 'Turn up the volume',
+            //                 Quantity: 12,
+            //             },
+            //             {
+            //                 name: 'Feedback 2',
+            //                 feedback: 'Boring',
+            //                 Quantity: 4,
+            //             },
+            //             {
+            //                 name: 'Feedback 3',
+            //                 feedback: 'Its really cold in here',
+            //                 Quantity: 3,
+            //             },
+            //         ]
+            // }
             var data = question.questiondata
-            if (question.questiondata.length === 0) {
-                data = writtenQuestionData
-            } else {
-                if (question.questiondata.mood.length === 0 || question.questiondata.popular.length === 0 ) {
-                    data = writtenQuestionData
-                }
-            }
+            // if (question.questiondata.length === 0) {
+            //     data = writtenQuestionData
+            // } else {
+            //     if (question.questiondata.mood.length === 0 || question.questiondata.popular.length === 0 ) {
+            //         data = writtenQuestionData
+            //     }
+            // }
             // console.log("DEBUG")
             // console.log(data.popular[0])
             return (
@@ -112,9 +112,9 @@ const DisplayAnalysis = ({question}) => {
 
                 <h4>Top 3 Most frequently repeated feedback: </h4>
                 <Typography>
-                {"1: " + data.popular[0].feedback} <br/>
-                {"2: " + data.popular[1].feedback} <br/>
-                {"3: " + data.popular[2].feedback} <br/>
+                        {data.popular.length > 0 ? "1: " + data.popular[0].feedback : ""} <br/>
+                        {data.popular.length > 1 ? "2: " + data.popular[1].feedback : ""} <br/>
+                        {data.popular.length > 2 ? "3: " + data.popular[2].feedback : ""} <br/>
                 </Typography>
 
 
@@ -142,19 +142,20 @@ const DisplayAnalysis = ({question}) => {
 
         case 'Numerical Rating':
 
-            const numericalScoreData = [
-                { name: '1', Quantity: 400 },
-                { name: '2', Quantity: 300 },
-                { name: '3', Quantity: 200 },
-                { name: '4', Quantity: 100 },
-                { name: '5', Quantity: 300 },
-            ];
+            // const numericalScoreData = [
+            //     { name: '1', Quantity: 400 },
+            //     { name: '2', Quantity: 300 },
+            //     { name: '3', Quantity: 200 },
+            //     { name: '4', Quantity: 100 },
+            //     { name: '5', Quantity: 300 },
+            // ];
             var data = []
-            if (question.questiondata.length === 0) {
-                data = numericalScoreData
-            } else {
-                data = question.questiondata
-            }
+            data = question.questiondata
+            // if (question.questiondata.length === 0) {
+            //     data = numericalScoreData
+            // } else {
+            //     data = question.questiondata
+            // }
             return (
 
                 <div>
@@ -207,18 +208,19 @@ const DisplayAnalysis = ({question}) => {
 
         case 'Multiple Choice':
 
-            const multipleChoiceData = [
-                { name: 'Group A', Quantity: 400 },
-                { name: 'Group B', Quantity: 300 },
-                { name: 'Group C', Quantity: 200 },
-                { name: 'Group D', Quantity: 100 },
-            ];
+            // const multipleChoiceData = [
+            //     { name: 'Group A', Quantity: 400 },
+            //     { name: 'Group B', Quantity: 300 },
+            //     { name: 'Group C', Quantity: 200 },
+            //     { name: 'Group D', Quantity: 100 },
+            // ];
             var data = []
-            if (question.questiondata.length === 0) {
-                data = multipleChoiceData
-            } else {
-                data = question.questiondata
-            }
+            data = question.questiondata
+            // if (question.questiondata.length === 0) {
+            //     data = multipleChoiceData
+            // } else {
+            //     data = question.questiondata
+            // }
             return (
                 <div>
 
@@ -258,54 +260,54 @@ const Hostpart = () => {
     const [returnVal, setReturnVal] = React.useState((<div></div>));
 
     //The following 3 consts are temporary data for testing only
-    const multipleChoiceData = [
-        { name: 'Group A', Quantity: 400 },
-        { name: 'Group B', Quantity: 300 },
-        { name: 'Group C', Quantity: 200 },
-        { name: 'Group D', Quantity: 100 },
-    ];
+    // const multipleChoiceData = [
+    //     { name: 'Group A', Quantity: 400 },
+    //     { name: 'Group B', Quantity: 300 },
+    //     { name: 'Group C', Quantity: 200 },
+    //     { name: 'Group D', Quantity: 100 },
+    // ];
 
-    const numericalScoreData = [
-        { name: '1', Quantity: 400 },
-        { name: '2', Quantity: 300 },
-        { name: '3', Quantity: 200 },
-        { name: '4', Quantity: 100 },
-        { name: '5', Quantity: 300 },
-    ];
+    // const numericalScoreData = [
+    //     { name: '1', Quantity: 400 },
+    //     { name: '2', Quantity: 300 },
+    //     { name: '3', Quantity: 200 },
+    //     { name: '4', Quantity: 100 },
+    //     { name: '5', Quantity: 300 },
+    // ];
 
-    const writtenQuestionData = [
-        [
-            {
-                name: 'Positive',
-                Quantity: 4,
-            },
-            {
-                name: 'Ambivalent',
-                Quantity: 3,
-            },
-            {
-                name: 'Negative',
-                Quantity: 5,
-            },
-        ],
-        [
-            {
-                name: 'Feedback 1',
-                feedback: 'Turn up the volume',
-                Quantity: 12,
-            },
-            {
-                name: 'Feedback 2',
-                feedback: 'Boring',
-                Quantity: 4,
-            },
-            {
-                name: 'Feedback 3',
-                feedback: 'Its really cold in here',
-                Quantity: 3,
-            },
-        ]
-    ]
+    // const writtenQuestionData = [
+    //     [
+    //         {
+    //             name: 'Positive',
+    //             Quantity: 4,
+    //         },
+    //         {
+    //             name: 'Ambivalent',
+    //             Quantity: 3,
+    //         },
+    //         {
+    //             name: 'Negative',
+    //             Quantity: 5,
+    //         },
+    //     ],
+    //     [
+    //         {
+    //             name: 'Feedback 1',
+    //             feedback: 'Turn up the volume',
+    //             Quantity: 12,
+    //         },
+    //         {
+    //             name: 'Feedback 2',
+    //             feedback: 'Boring',
+    //             Quantity: 4,
+    //         },
+    //         {
+    //             name: 'Feedback 3',
+    //             feedback: 'Its really cold in here',
+    //             Quantity: 3,
+    //         },
+    //     ]
+    // ]
 
     /*
     [
