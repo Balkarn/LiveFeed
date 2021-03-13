@@ -250,6 +250,7 @@ const Hostpart = () => {
     const [questions,setQuestions] = React.useState([]);
     const [data,setData] = React.useState([]);
     const [currentTemplate,setCurrentTemplate] = React.useState(-1);
+    const [forceUpdate,setForceUpdate] = React.useState(false);
 
     //The following 3 consts are temporary data for testing only
     const multipleChoiceData = [
@@ -465,7 +466,11 @@ const Hostpart = () => {
 
     }, []); // Only run once whenever component is mounted
 
-
+    //Temporary function that continuously forces updates
+    useEffect(() => {
+        setForceUpdate(!forceUpdate);
+        //console.log(forceUpdate);
+    });
 
     return (
         <div>
