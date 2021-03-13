@@ -36,6 +36,10 @@ const DisplayAnalysis = ({question}) => {
         );
     };
 
+    // console.log("DEBUGG")
+    // console.log(question);
+    // console.log("DEBUGG")
+
 
     switch (question.questiontype) {
 
@@ -82,8 +86,8 @@ const DisplayAnalysis = ({question}) => {
                     data = writtenQuestionData
                 }
             }
-            console.log("DEBUG")
-            console.log(data.popular[0])
+            // console.log("DEBUG")
+            // console.log(data.popular[0])
             return (
                 <div>
                 <Typography>A bar chart to show the mood distribution</Typography>
@@ -343,6 +347,7 @@ const Hostpart = () => {
                         qdata[key] = []
                         switch (value[1]) {
                             case "multiple":
+                                console.log("Multiple")
                                 axios.post(pythonurl+"questiontally", qs.stringify({questionid:key}))
                                     .then(res2 => {
                                         console.log(res2.data);
@@ -358,6 +363,7 @@ const Hostpart = () => {
                                 setQuestions(questionList)
                                 break;
                             case "open":
+                                console.log("Open")
                                 qdata[key] = {mood: [], popular: []}
                                 axios.post(pythonurl+"questionmood", qs.stringify({questionid:key}))
                                     .then(res2 => {
@@ -435,6 +441,7 @@ const Hostpart = () => {
                                 setQuestions(questionList)
                                 break;
                             case "rating":
+                                console.log("Rating")
                                 axios.post(pythonurl+"questiontally", qs.stringify({questionid:key}))
                                     .then(res2 => {
                                         console.log(res2.data);
@@ -450,12 +457,13 @@ const Hostpart = () => {
                                 setQuestions(questionList)
                                 break;
                             default:
+                                console.log("other")
                                 break;
                         }
                     }
-                    console.log("Question List: ")
-                    console.log(questionList)
-                    console.log(qdata)
+                    console.log("Question List: ");
+                    console.log(questionList);
+                    console.log(qdata);
                 }
             })
             .catch(err => console.log(err));
@@ -464,7 +472,15 @@ const Hostpart = () => {
         console.log("debug3");
         console.log(questionList);
         console.log("end debug3");
-        setReturnVal(<div>
+
+    }, []); // Only run once whenever component is mounted
+
+    // console.log("debug4")
+    // console.log(questions)
+    // console.log(returnVal)
+    // console.log("end debug4")
+    return (
+        <div>
             <div className="list2">
 
                 <List>
@@ -474,11 +490,11 @@ const Hostpart = () => {
                             <ListItem key={question.questionid}>
                                 <div>
                                     <h2> {question.questiontype + " - " + question.questionname} </h2>
-                                    <DisplayAnalysis question={question}/>
+                                    <DisplayAnalysis question={question} />
                                 </div>
 
                             </ListItem>
-                            <Divider/>
+                            <Divider />
                         </div>
 
                     ))}
@@ -487,16 +503,8 @@ const Hostpart = () => {
 
             </div>
 
-        </div>)
-
-
-    }, []); // Only run once whenever component is mounted
-
-    console.log("debug4")
-    console.log(questions)
-    console.log(returnVal)
-    console.log("end debug4")
-    return returnVal
+        </div>
+    );
 
 }
 
