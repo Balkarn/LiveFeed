@@ -359,6 +359,8 @@ const Hostpart = () => {
                                         }
                                     })
                                     .catch(err => console.log(err));
+                                console.log("QUestion name:" + value[0]);
+                                console.log(qdata[key]);
                                 questionList.push({questionid: key, questionname: value[0], questiontype: "Multiple Choice", questiondata: qdata[key]})
                                 setQuestions(questionList)
                                 break;
@@ -437,6 +439,8 @@ const Hostpart = () => {
 
                                     })
                                     .catch(err => console.log(err));
+                                console.log("QUestion name:" + value[0]);
+                                console.log(qdata[key]);
                                 questionList.push({questionid: key, questionname: value[0], questiontype: "Written Question", questiondata: qdata[key]})
                                 setQuestions(questionList)
                                 break;
@@ -453,6 +457,8 @@ const Hostpart = () => {
                                         }
                                     })
                                     .catch(err => console.log(err));
+                                console.log("QUestion name:" + value[0]);
+                                console.log(qdata[key]);
                                 questionList.push({questionid: key, questionname: value[0], questiontype: "Numerical Rating", questiondata: qdata[key]})
                                 setQuestions(questionList)
                                 break;
