@@ -1,9 +1,15 @@
 import React, { useEffect/*, useState*/    } from "react";
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { TextField, Button, Checkbox } from '@material-ui/core';
 import 'fontsource-roboto';
+import axios from 'axios';
 
 const JoinEventComponent = (props) => {
+
+    // Server URL details
+    const php_url = "http://localhost:80/server/php/index.php";
+    var qs = require('qs');
+    const history = useHistory();
 
     // Event Access Code
     const [currentEventCode, setCurrentEventCode] = React.useState('');
@@ -17,6 +23,27 @@ const JoinEventComponent = (props) => {
     const handleCurrentEventCodeTextField = event => {
         setCurrentEventCode(event.target.value);
         setError(event.target.value.length != 8);
+    }
+
+    const enterMeeting = () => {
+        
+        // Send data of new event to backend 
+        var data = {
+            function: 'getmeeting',
+            arguments: [
+                currentEventCode
+            ]
+        };
+        
+        axios.post(php_url, qs.stringify(data))
+        .then(res => {
+            console.log(res.data.result);
+            history.push('/meeting/'+res.data.result.HostID+'&'+res.data.result.MeetingID+'&attendee');
+            if (res.data.error) {
+                console.log(res.data.error);
+            }
+        }).catch(err => console.log(err));
+
     }
 
     return (
@@ -41,8 +68,8 @@ const JoinEventComponent = (props) => {
                         helperText={error ? 'Must be 8 Characters' : ' '}
                     />
                     
-                    <Link to={linkto}>
-                        <Button variant="contained" color="primary" fullWidth> Search </Button>
+                    <Link>
+                        <Button variant="contained" color="primary" fullWidth onClick={enterMeeting}> Search </Button>
                     </Link>
 
                 </div>

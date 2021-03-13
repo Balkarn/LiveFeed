@@ -65,7 +65,7 @@ const MeetingComponent = (props) => {
         }
     axios.post(phpurl, qs.stringify(data))
         .then(res => {
-        
+            console.log(res.data.result);
         if (res.data.error) {
             console.log(res.data.error)
         }
