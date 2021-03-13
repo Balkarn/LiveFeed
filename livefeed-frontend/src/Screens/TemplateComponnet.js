@@ -223,6 +223,7 @@ const TemplateComponent = (props) => {
             }
         }).catch(err => console.log(err));
 
+        getUserTemplates();
 
     };
 
