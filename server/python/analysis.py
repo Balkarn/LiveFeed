@@ -375,7 +375,7 @@ class GenerateMeetingSummary():
 				INNER JOIN feedback USING (FeedbackID)
 				INNER JOIN template_feedback USING (FeedbackID)
 				INNER JOIN moods USING (Mood)
-				WHERE QuestionID = 3
+				WHERE QuestionID = %s
 				GROUP BY UserID
 			) avgs ON moods.MoodVal = avgs.moodavg
 			ORDER BY avgs.UserID;
@@ -421,6 +421,7 @@ class GenerateMeetingSummary():
 				mood_tally[mood_dict[i]] += 1
 			else:
 				mood_tally[mood_dict[i]] = 1
+		return mood_tally
 
 
 	def response_tally(self, questionid):

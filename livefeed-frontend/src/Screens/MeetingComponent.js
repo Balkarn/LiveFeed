@@ -37,12 +37,7 @@ const MeetingComponent = (props) => {
     useEffect(() => {
         document.body.style.backgroundColor = "#15bfff"
 
-        var data = {
-            function:"getmeetinginfo",
-            arguments:[Number(para[0]), Number(para[1])]
-        }
-        /*
-        axios.post(phpurl, qs.stringify(data))
+        axios.post(phpurl, qs.stringify({function:"getmeetinginfo",arguments:[Number(para[0]), Number(para[1])]}))
             .then(res => {
 
                 if (res.data.error) {
@@ -66,12 +61,16 @@ const MeetingComponent = (props) => {
                 }
                 if (res.data.result) {
                     console.log(res.data.result)
-                    setTemplateid([res.data.result[0].TemplateID]);
+                    var templates = []
+                    for (var i=0; i<res.data.result.length; i++) {
+                        templates.push(res.data.result[i].TemplateID)
+                    }
+                    setTemplateid(templates);
                 }
             })
             .catch(err => console.log(err));
 
-        console.log(para)*/
+        console.log(para)
     }, []); // Only run once
     
 
