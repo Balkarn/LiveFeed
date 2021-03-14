@@ -208,8 +208,12 @@ class RepeatFeedbackAnalysis():
 		return similar_phrases
 
 	def meeting_findsimilar(self, meetingid):
-		vectors = [x[1] for y in self.feedback_data[meetingid].values() for x in y]
-		phrases = [x[0] for y in self.feedback_data[meetingid].values() for x in y]
+		vectors = []
+		for y in self.feedback_data[meetingid].values():
+			vectors.extend(y[1])
+		phrases = []
+		for y in self.feedback_data[meetingid].values():
+			phrases.extend(y[0])
 		return self.findsimilar(vectors, phrases)
 
 
@@ -283,13 +287,15 @@ class RepeatFeedbackAnalysis():
 		try:
 			conn = sql.connect(**self.db_obj.dbconfig)
 			c = conn.cursor()
-			c.execute(query1, (meetingid, feedback[0]))
-			if len(feedback) > 1:
-				clusterid = conn.insert_id()
-				query_args = []
-				for f in feedback[1:]:
-					query_args.extend((clusterid, meetingid, f))
-				c.executemany(query2, query_args)
+			for f1 in feedback:
+				print(f1)
+				c.execute(query1, (meetingid, f1[0]))
+				if len(f1) > 1:
+					clusterid = conn.insert_id()
+					query_args = []
+					for f2 in f1[1:]:
+						query_args.extend((clusterid, meetingid, f2))
+					c.executemany(query2, query_args)
 			conn.commit()
 			return True
 		except sql.Error as err:
@@ -301,7 +307,7 @@ class RepeatFeedbackAnalysis():
 
 	def get_meeting_summary(self, meetingid):
 		similar_phrases = self.meeting_findsimilar(meetingid)
-		del self.feedback_data[meetingid]
+		#del self.feedback_data[meetingid]
 		self.insert_repeat_feedback(meetingid, similar_phrases)
 		return sorted(similar_phrases, key=lambda p: len(p))
 
@@ -315,6 +321,8 @@ class GenerateMeetingSummary():
 
 	def get_moodaverage(self, meetingid):
 		conn = None
+		moodavgs = {}
+		moodtally = {}
 		try:
 			conn = sql.connect(**self.db_obj.dbconfig)
 			c = conn.cursor()
@@ -333,8 +341,6 @@ class GenerateMeetingSummary():
 			"""
 			c.execute(query, (meetingid, ))
 			result = c.fetchall()
-			moodavgs = {}
-			moodtally = {}
 			avgmood = 0
 			if len(result) == 0:
 				return {}
@@ -366,7 +372,7 @@ class GenerateMeetingSummary():
 			return {'Average': moodavgs, 'Tally': moodtally}
 		except sql.Error as err:
 			print(f"-[MySQL Error] {err}")
-			return False
+			return {'Average': moodavgs, 'Tally': moodtally}
 		finally:
 			if conn:
 				conn.close()
