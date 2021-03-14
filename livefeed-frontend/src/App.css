@@ -79,7 +79,7 @@ body {
 
 
 .page {
-  width: 60vw;
+  width: 80vw;
   height: calc(90vh - 90px);
   display: flex;
   align-items: center;
@@ -92,7 +92,7 @@ body {
 }
 
 .list {
-  width: 40vw;
+  width: 60vw;
   height: calc(90vh - 90px - 150px);
   overflow: auto;
 }
@@ -100,6 +100,12 @@ body {
 .list2 {
   width: 80vw;
   height: calc(90vh - 150px);
+  overflow: auto;
+}
+
+.list3 {
+  width: 80vw;
+  height: calc(90vh - 90px - 150px);
   overflow: auto;
 }
 
@@ -111,6 +117,7 @@ body {
   text-align: center;
   padding-bottom: 3vh;
 }
+
 
 .errorClass { color: 'red' }
 

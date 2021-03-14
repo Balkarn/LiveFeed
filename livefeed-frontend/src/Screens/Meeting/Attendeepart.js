@@ -257,7 +257,7 @@ const Attendeepart = ({templateset}) => {
         templateQuestions.length === 0 ? <p>Loading....</p>
         :
         <div>
-            <div className="list">
+            <div className="list3">
                 
                 <List>
                     {templateQuestions.map( (question,index) => (
