@@ -378,7 +378,7 @@ const Hostpart = () => {
                                       switch (value[1]) {
                                           case "multiple":
                                               console.log("Multiple")
-                                              axios.post(pythonurl+"questiontally", qs.stringify({questionid:key}))
+                                              axios.post(pythonurl+"questiontally", qs.stringify({meetingid: meetingid_, questionid:key}))
                                                   .then(res2 => {
                                                       console.log(res2.data);
                                                       if (res2.data != null) {
@@ -397,7 +397,7 @@ const Hostpart = () => {
                                           case "open":
                                               console.log("Open")
                                               qdata[key] = {mood: [], popular: []}
-                                              axios.post(pythonurl+"questionmood", qs.stringify({questionid:key}))
+                                              axios.post(pythonurl+"questionmood", qs.stringify({meetingid: meetingid_, questionid:key}))
                                                   .then(res2 => {
                                                       console.log(res2.data);
                                                       if (res2.data != null) {
@@ -474,7 +474,7 @@ const Hostpart = () => {
                                               break;
                                           case "rating":
                                               console.log("Rating")
-                                              axios.post(pythonurl+"questiontally", qs.stringify({questionid:key}))
+                                              axios.post(pythonurl+"questiontally", qs.stringify({meetingid: meetingid_, questionid:key}))
                                                   .then(res2 => {
                                                       console.log(res2.data);
                                                       if (res2.data != null) {
