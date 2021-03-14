@@ -27,7 +27,7 @@ var qs = require('qs');
 const phpurl = "http://localhost:80/server/php/index.php"
 const pythonurl = "http://localhost:81/"
 
-const DisplayAnalysis = ({question}) => {
+const DisplayAnalysis = ({question,setPopup,setPopupvals}) => {
 
     const colours = ['#0088FE', '#00C49F', '#ff4040', '#ff9d00', '#d616f7'];
 
@@ -114,18 +114,18 @@ const DisplayAnalysis = ({question}) => {
 
                 { data.popular.length > 0 && data.popular[0].feedback != "" ?
                     <div> 
-                        <Typography>
+                        {/* <Typography>
                             {data.popular.length > 0 && data.popular[0].feedback != "" ? "1: " + data.popular[0].feedback : ""} <br/>
                             {data.popular.length > 1 && data.popular[0].feedback != "" ? "2: " + data.popular[1].feedback : ""} <br/>
                             {data.popular.length > 2 && data.popular[0].feedback != "" ? "3: " + data.popular[2].feedback : ""} <br/>
-                        </Typography>
-                        {/* <List>
+                        </Typography> */}
+                        <List>
                         <Divider />
                         {data.popular.map((i) => (
                             <div>
                                 <ListItem>
                                     <ListItemText
-                                    primary={i.feedback}
+                                    primary={i.feedback != "" ? i.feedback : "(No additional repeated feedback)"}
                                     />
                                     <ListItemSecondaryAction>
                                         <Button
@@ -134,7 +134,7 @@ const DisplayAnalysis = ({question}) => {
                                             size='medium'
                                             fullWidth="true"
                                             endIcon={null}
-                                            onClick={null}
+                                            onClick={() => {setPopup(true); setPopupvals(i.feedbacklist)}}
                                         >
                                             View Feedback List
                                         </Button>
@@ -143,7 +143,7 @@ const DisplayAnalysis = ({question}) => {
                                 <Divider/>
                             </div>
                         ))}
-                        </List> */}
+                        </List>
 
                         <BarChart
                             layout="vertical"
@@ -274,6 +274,8 @@ const Hostpart = () => {
     const [questions,setQuestions] = React.useState([]);
     const [refresh, setRefresh] = React.useState(false);
     const [noTemplates, setNoTemplates] = React.useState(false);
+    const [popup,setPopup] = React.useState(false);
+    const [popupvals,setPopupvals] = React.useState([]);
 
     let {id} = useParams();
     let url_details = id.split('&');
@@ -590,6 +592,30 @@ const Hostpart = () => {
     return (
         noTemplates ? <p>No templates found ...</p> :
         <div>
+            <Dialog
+                open={popup}
+                fullWidth={true}
+                maxWidth={'lg'}
+            >
+
+                <DialogTitle id="alert-dialog-title">View Repeated Feedback</DialogTitle>
+
+                <DialogContent>
+                    {popupvals.length > 0 ? 
+                    popupvals.map(val => (
+                        <div>
+                            {val}
+                            <br/>
+                        </div>
+                    )) :
+                    "No repeat feedback"}
+                </DialogContent>
+
+                <DialogActions>
+                    <Button onClick={() => setPopup(false)} color="secondary">Close</Button>
+                </DialogActions>
+
+            </Dialog>
             <div className="list2">
 
                 <List>
@@ -599,7 +625,7 @@ const Hostpart = () => {
                             <ListItem key={question.questionid}>
                                 <div>
                                     <h2> {question.questionname} </h2>
-                                    <DisplayAnalysis question={question} />
+                                    <DisplayAnalysis question={question} setPopup={setPopup} setPopupvals={setPopupvals}/>
                                 </div>
 
                             </ListItem>
