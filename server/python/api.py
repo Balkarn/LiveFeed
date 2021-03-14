@@ -48,14 +48,14 @@ class QuestionMood(Resource):
 class MeetingPopular(Resource):
 	def post(self):
 		meetingid = request.form.get('meetingid')
-		response = jsonify(rfa.get_meeting_summary(meetingid))
+		response = jsonify(rfa.get_meeting_summary(int(meetingid)))
 		response.headers.add('Access-Control-Allow-Origin', '*')
 		return response
 
 class MeetingMood(Resource):
 	def post(self):
 		meetingid = request.form.get('meetingid')
-		response = jsonify(summary.meeting_mood_tally(meetingid))
+		response = jsonify(summary.meeting_mood_tally(int(meetingid)))
 		response.headers.add('Access-Control-Allow-Origin', '*')
 		return response
 
