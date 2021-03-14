@@ -325,9 +325,13 @@ class DatabaseInteraction {
 		$this->conn->autocommit(false);
 		$code = $this->generate_meeting_code(7);
 		try {
-			$this->prepared_stmt("INSERT INTO meetings VALUES (NULL, ?, ?, ?, NULL, ?)", false, true,
-					"sssi", $meetingName, $code, $meetingStart, $userId);
-
+			if ($meetingStart == "") {
+				$this->prepared_stmt("INSERT INTO meetings VALUES (NULL, ?, ?, current_timestamp(), NULL, ?)", false, true,
+						"ssi", $meetingName, $code, $userId);
+			} else {
+				$this->prepared_stmt("INSERT INTO meetings VALUES (NULL, ?, ?, ?, NULL, ?)", false, true,
+						"sssi", $meetingName, $code, $meetingStart, $userId);
+			}
 			$id = $this->conn->insert_id;
 
 			$code = $id.$code;
