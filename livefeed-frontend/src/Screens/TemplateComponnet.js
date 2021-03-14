@@ -195,7 +195,7 @@ const TemplateComponent = (props) => {
       setCurrentTemplateQuestions([...tempArray]);
     };
 
-    const addTemplate = () => {
+    async function addTemplate() {
       setOpen(false);
       setTemplateNames([...templateNames, currentTemplateName]);
       setTemplateQuestions([...templateQuestions,currentTemplateQuestions]);
@@ -216,13 +216,15 @@ const TemplateComponent = (props) => {
         ] 
       }
 
-      axios.post(php_url, qs.stringify(data))
+      const getData = await axios.post(php_url, qs.stringify(data))
         .then(res => {
             console.log(res);
             if (res.data.error) {
                 console.log(res.data.error);
             }
         }).catch(err => console.log(err));
+
+        let res = getData;
 
         getUserTemplates();
 

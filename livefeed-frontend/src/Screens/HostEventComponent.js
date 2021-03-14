@@ -1,4 +1,4 @@
-import React, { useEffect/*, useState*/    } from "react";
+import React, { useEffect/*, useState*/ } from "react";
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { TextField, Button, Checkbox } from '@material-ui/core';
@@ -38,6 +38,7 @@ const HostEventComponent = (props) => {
     const [linkto,setLinkto] = React.useState('meeting/' + props.userID);//move to meeting screen as host
     const [available_templates, setAvailableTemplates] = React.useState([]);
     const [loading, setLoading] = React.useState(true);
+    const [refresh, setRefresh] = React.useState(false);
 
     // Delete Event 
     const handleDeleteEvent = (_event) => {
@@ -91,7 +92,7 @@ const HostEventComponent = (props) => {
     }, []);
 
     // Add new event -- SAVE BUTTON 
-    const handleNewMeeting = () => {
+     async function handleNewMeeting() {
 
         const _event = {
             event_name: currentEventName,
@@ -112,14 +113,16 @@ const HostEventComponent = (props) => {
             selectedTemplates,
             ]
         }
-        
-        axios.post(php_url, qs.stringify(data))
+
+        const getData = await axios.post(php_url, qs.stringify(data))
         .then(res => {
-            console.log(res);
+            console.log("Working");
             if (res.data.error) {
                 console.log(res.data.error);
             }
         }).catch(err => console.log(err));
+
+        let res = getData;
 
         setCurrentEventName('');
         setCurrentEventDesc('');
@@ -199,14 +202,15 @@ const HostEventComponent = (props) => {
         setCurrentEventEndTime('');
         setSelectedTemplates([]);
         setOpenTemplateSelector(false);
-
         setOpen(false);
 
     }
 
+
     return (  
-    
+
       <>
+
         <h1>Host Event</h1>
         <h3>Scheduled Events</h3>
 
