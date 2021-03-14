@@ -62,11 +62,11 @@ const JoinEventComponent = (props) => {
                         onChange={handleCurrentEventCodeTextField}
                         className="input"
                     />
-                    
-                    <Link>
-                        <Button variant="contained" color="primary" fullWidth onClick={enterMeeting}> Search </Button>
-                    </Link>
-
+                    <div className="button">
+                        <Link>
+                            <Button variant="contained" color="primary" fullWidth onClick={enterMeeting}> Search </Button>
+                        </Link>
+                    </div>
                 </div>
                 
             </form>
