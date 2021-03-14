@@ -65,7 +65,7 @@ const Attendeepart = ({templateset}) => {
     const [templateQuestions, setTemplateQuestions] = React.useState([]);
 
 
-    const handleSend = (questionID) => {
+    const handleSend = (questionID, question) => {
         
         var data = {
             function: 'addtemplatefeedback',
@@ -84,6 +84,17 @@ const Attendeepart = ({templateset}) => {
            console.log(res.data);
         }).catch(err => console.log(err));
 
+        deleteFromList(question);
+
+    }
+
+    const deleteFromList = (question) => {
+        var temp = [...templateQuestions];
+        var index = temp.indexOf(question);
+        if (index !== -1) {
+            temp.splice(index, 1);
+            setTemplateQuestions(temp);
+        }
     }
 
     const getTemplateQuestions = () => {
@@ -265,7 +276,7 @@ const Attendeepart = ({templateset}) => {
 
     return (
 
-        templateQuestions.length === 0 ? <p>Loading....</p>
+        templateQuestions.length === 0 ? <p>No Questions...</p>
         :
         <div>
             <div className="list3">
@@ -315,7 +326,7 @@ const Attendeepart = ({templateset}) => {
                         }
                         label="anonymous"
                     />
-                    <Button onClick={() => handleSend(current.questionID)} 
+                    <Button onClick={() => handleSend(current.questionID, current)} 
                             color="primary">
                         Send
                     </Button>
