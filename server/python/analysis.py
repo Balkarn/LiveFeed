@@ -281,20 +281,21 @@ class RepeatFeedbackAnalysis():
 	def insert_repeat_feedback(self, meetingid, feedback: list):
 		if len(feedback) == 0:
 			return False
-		query1 = "INSERT INTO popular_feedback VALUES (NULL, %s, %s)"
-		query2 = "INSERT INTO popular_feedback VALUES (%s, %s, %s)"
+		query1 = "INSERT INTO popular_feedback VALUES (NULL, 0, %s, %s)"
+		query2 = "INSERT INTO popular_feedback VALUES (%s, %s, %s, %s)"
 		conn = None
 		try:
 			conn = sql.connect(**self.db_obj.dbconfig)
 			c = conn.cursor()
 			for f1 in feedback:
-				print(f1)
 				c.execute(query1, (meetingid, f1[0]))
 				if len(f1) > 1:
-					clusterid = conn.insert_id()
+					clusterid = c.lastrowid
 					query_args = []
+					index = 1
 					for f2 in f1[1:]:
-						query_args.extend((clusterid, meetingid, f2))
+						query_args.append((clusterid, index, meetingid, f2))
+						index += 1
 					c.executemany(query2, query_args)
 			conn.commit()
 			return True
