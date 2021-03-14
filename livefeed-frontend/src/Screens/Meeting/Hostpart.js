@@ -37,9 +37,9 @@ const DisplayAnalysis = ({question}) => {
         );
     };
 
-    // console.log("DEBUGG")
-    // console.log(question);
-    // console.log("DEBUGG")
+    console.log("DEBUGG")
+    console.log(question);
+    console.log("DEBUGG")
 
 
     var data = question.questiondata
@@ -322,7 +322,7 @@ const Hostpart = () => {
     // In here goes the code to fetch the data from the server,
     useEffect(() => {
 
-        setInterval(function () { setRefresh(!refresh); }, 2000);
+        setInterval(function () { setRefresh(!refresh); }, 3000);
 
         var questionList = [];
         Promise.all([gettemplateid(meetingid_)])
