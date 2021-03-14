@@ -89,6 +89,7 @@ function insert_data() {
 	$template_feedback = array(
 			array(1, 1, 1, "This doesn't seem like a good organisation. "),
 			array(2, 1, 1, "This was a very challenging workshop. "),
+			array(2, 1, 1, "This workshop was very hard!"),
 			array(3, 1, 1, "happy"),
 			array(4, 1, 1, "A"),
 			array(5, 1, 1, "1"),
