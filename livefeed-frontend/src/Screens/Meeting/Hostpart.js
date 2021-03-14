@@ -93,49 +93,57 @@ const DisplayAnalysis = ({question}) => {
                 <Typography>A bar chart to show the mood distribution</Typography>
 
                 <BarChart
-                width={600}
-                height={350}
-                data={data.mood}
-                margin={{
-                top: 5,
-                right: 30,
-                left: 20,
-                bottom: 5,
+                    width={600}
+                    height={350}
+                    data={data.mood}
+                    margin={{
+                    top: 5,
+                    right: 30,
+                    left: 20,
+                    bottom: 5,
                 }}
                 >
-                <CartesianGrid strokeDasharray="5 5"/>
-                <XAxis dataKey="name"/>
-                <YAxis/>
-                <Tooltip/>
-                <Bar dataKey="Quantity" fill="#0088FE"/>
+                    <CartesianGrid strokeDasharray="5 5"/>
+                    <XAxis dataKey="name"/>
+                    <YAxis/>
+                    <Tooltip/>
+                    <Bar dataKey="Quantity" fill="#0088FE"/>
                 </BarChart>
 
-                <h4>Top 3 Most frequently repeated feedback: </h4>
-                <Typography>
-                        {data.popular.length > 0 ? "1: " + data.popular[0].feedback : ""} <br/>
-                        {data.popular.length > 1 ? "2: " + data.popular[1].feedback : ""} <br/>
-                        {data.popular.length > 2 ? "3: " + data.popular[2].feedback : ""} <br/>
-                </Typography>
+                <h4>Most frequently repeated feedback: </h4>
 
+                { data.popular.length > 0 && data.popular[0].feedback != "" ?
 
-                <ComposedChart
-                layout="vertical"
-                width={600}
-                height={350}
-                data={data.popular}
-                margin={{
-                top: 5,
-                right: 20,
-                bottom: 5,
-                left: 20,
-                }}
-                >
-                <CartesianGrid strokeDasharray="5 5"/>
-                <XAxis type="number"/>
-                <YAxis dataKey="name" type="category" scale="band"/>
-                <Tooltip/>
-                <Bar dataKey="Quantity" barSize={20} fill="#0088FE"/>
-                </ComposedChart>
+                    <div> 
+                        <Typography>
+                            {data.popular.length > 0 && data.popular[0].feedback != "" ? "1: " + data.popular[0].feedback : ""} <br/>
+                            {data.popular.length > 1 && data.popular[0].feedback != "" ? "2: " + data.popular[1].feedback : ""} <br/>
+                            {data.popular.length > 2 && data.popular[0].feedback != "" ? "3: " + data.popular[2].feedback : ""} <br/>
+                        </Typography>
+
+                        <BarChart
+                            layout="vertical"
+                            width={600}
+                            height={350}
+                            data={data.popular}
+                            margin={{
+                            top: 5,
+                            right: 20,
+                            bottom: 5,
+                            left: 20,
+                        }}
+                        >
+                            <CartesianGrid strokeDasharray="5 5"/>
+                            <XAxis type="number"/>
+                            <YAxis dataKey="name" type="category" scale="band"/>
+                            <Tooltip/>
+                            <Bar dataKey="Quantity" barSize={20} fill="#0088FE"/>
+                        </BarChart>
+
+                    </div>
+                :
+                    "No repeat feedback has been identified so far, please wait for more responses"
+                }
 
                 </div>
             );
@@ -566,7 +574,7 @@ const Hostpart = () => {
                         <div>
                             <ListItem key={question.questionid}>
                                 <div>
-                                    <h2> {question.questiontype + " - " + question.questionname} </h2>
+                                    <h2> {question.questionname} </h2>
                                     <DisplayAnalysis question={question} />
                                 </div>
 
