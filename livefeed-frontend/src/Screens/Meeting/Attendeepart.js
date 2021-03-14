@@ -185,7 +185,6 @@ const Attendeepart = ({templateset}) => {
         switch(param.questiontype){
 
             case 'open':
-    
                 return (
                     <TextField
                         multiline
@@ -205,7 +204,6 @@ const Attendeepart = ({templateset}) => {
                     {value: ((param.maxRating-param.minRating)*3/4+param.minRating).toString(),label: ((param.maxRating-param.minRating)*3/4+param.minRating).toString()},
                     {value: param.maxRating.toString(),label: param.maxRating.toString()},
                   ];
-
                 return (
                     // <FormControl component="fieldset">
                     //     <RadioGroup name="Score"  defaultValue={'1'} onChange={(event)=>{setAnswer(event.target.value)}}>
@@ -216,7 +214,7 @@ const Attendeepart = ({templateset}) => {
                     //         ))}
                     //     </RadioGroup>
                     // </FormControl> 
-
+                    
                     <Slider
                         defaultValue={param.minRating}
                         aria-labelledby="discrete-slider-custom"
@@ -229,7 +227,6 @@ const Attendeepart = ({templateset}) => {
                     />
                 )
             case 'multiple':
-                
                 const options_ = [
                     { value: param.optionA, label: 'option1' },
                     { value: param.optionB, label: 'option2' },
@@ -251,6 +248,20 @@ const Attendeepart = ({templateset}) => {
         }
     }
 
+    const dosetAnswer = (param) => {
+        switch (param.questiontype) {
+            case 'open':
+                setAnswer("")
+                break
+            case 'rating':
+                setAnswer(param.minRating)
+                break
+            case 'multiple':
+                setAnswer(param.optionA)
+                break
+
+        }
+    }
 
     return (
 
@@ -271,7 +282,7 @@ const Attendeepart = ({templateset}) => {
                                     />
                                     <ListItemSecondaryAction>
                                     <IconButton>
-                                        <EditIcon color="primary" onClick = {()=>{setModalisOpen(true);setCurrent(question)}}/>
+                                        <EditIcon color="primary" onClick = {()=>{setModalisOpen(true);setCurrent(question);dosetAnswer(question)}}/>
                                     </IconButton>
                                     </ListItemSecondaryAction>
                                 </ListItem>
