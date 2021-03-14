@@ -113,13 +113,37 @@ const DisplayAnalysis = ({question}) => {
                 <h4>Most frequently repeated feedback: </h4>
 
                 { data.popular.length > 0 && data.popular[0].feedback != "" ?
-
                     <div> 
                         <Typography>
                             {data.popular.length > 0 && data.popular[0].feedback != "" ? "1: " + data.popular[0].feedback : ""} <br/>
                             {data.popular.length > 1 && data.popular[0].feedback != "" ? "2: " + data.popular[1].feedback : ""} <br/>
                             {data.popular.length > 2 && data.popular[0].feedback != "" ? "3: " + data.popular[2].feedback : ""} <br/>
                         </Typography>
+                        {/* <List>
+                        <Divider />
+                        {data.popular.map((i) => (
+                            <div>
+                                <ListItem>
+                                    <ListItemText
+                                    primary={i.feedback}
+                                    />
+                                    <ListItemSecondaryAction>
+                                        <Button
+                                            variant='contained'
+                                            color='primary'
+                                            size='medium'
+                                            fullWidth="true"
+                                            endIcon={null}
+                                            onClick={null}
+                                        >
+                                            View Feedback List
+                                        </Button>
+                                    </ListItemSecondaryAction>
+                                </ListItem>
+                                <Divider/>
+                            </div>
+                        ))}
+                        </List> */}
 
                         <BarChart
                             layout="vertical"
