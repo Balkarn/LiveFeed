@@ -175,7 +175,7 @@ class RepeatFeedbackAnalysis():
 		for (feedbackid, meetingid, questionid, feedback) in feedback_list:
 			processed = self.clean_data(feedback, ())
 			processed = pos_tag(processed)
-			if len(processed) <= 3:
+			if len(processed) <= 2:
 				processed = self.chunk_data(processed, "AJJP: {<.*>*}")
 			else:
 				processed = self.chunk_adjective_phrases(processed)
