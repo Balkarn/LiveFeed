@@ -84,6 +84,7 @@ api.add_resource(QuestionPopular, '/questionpopular')
 api.add_resource(QuestionMood, '/questionmood')
 api.add_resource(MeetingMood, '/meetingmood')
 api.add_resource(MeetingPopular, '/meetingpopular')
+api.add_resource(FeedbackReceivedNotif, '/feedbackreceived')
 api.add_resource(Test, '/test')
 
 
