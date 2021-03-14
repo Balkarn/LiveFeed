@@ -175,7 +175,10 @@ class RepeatFeedbackAnalysis():
 		for (feedbackid, meetingid, questionid, feedback) in feedback_list:
 			processed = self.clean_data(feedback, ())
 			processed = pos_tag(processed)
-			processed = self.chunk_adjective_phrases(processed)
+			if len(processed) <= 3:
+				processed = self.chunk_data(processed, "AJJP: {<.*>*}")
+			else:
+				processed = self.chunk_adjective_phrases(processed)
 			for chunk in processed:
 				if isinstance(chunk, Tree) and chunk.label() == "AJJP":
 					phrase = " ".join(word[0] for word in list(chunk))
@@ -208,6 +211,8 @@ class RepeatFeedbackAnalysis():
 		return similar_phrases
 
 	def meeting_findsimilar(self, meetingid):
+		if meetingid not in self.feedback_data:
+			return []
 		vectors = []
 		for y in self.feedback_data[meetingid].values():
 			vectors.extend(y[1])
@@ -218,6 +223,8 @@ class RepeatFeedbackAnalysis():
 
 
 	def question_findsimilar(self, meetingid, questionid):
+		if meetingid not in self.feedback_data or questionid not in self.feedback_data[meetingid]:
+			return []
 		vectors = self.feedback_data[meetingid][questionid][1]
 		phrases = self.feedback_data[meetingid][questionid][0]
 		return self.findsimilar(vectors, phrases)
@@ -378,7 +385,7 @@ class GenerateMeetingSummary():
 			if conn:
 				conn.close()
 
-	def question_getmoodaverage(self, questionid):
+	def question_getmoodaverage(self, meetingid, questionid):
 		query = """
 			SELECT avgs.UserID, moods.Mood, avgs.moodavg
 			FROM moods
@@ -389,6 +396,7 @@ class GenerateMeetingSummary():
 				INNER JOIN template_feedback USING (FeedbackID)
 				INNER JOIN moods USING (Mood)
 				WHERE QuestionID = %s
+				AND MeetingID = %s
 				GROUP BY UserID
 			) avgs ON moods.MoodVal = avgs.moodavg
 			ORDER BY avgs.UserID;
@@ -397,7 +405,7 @@ class GenerateMeetingSummary():
 		try:
 			conn = sql.connect(**self.db_obj.dbconfig)
 			c = conn.cursor()
-			c.execute(query, (questionid, ))
+			c.execute(query, (questionid, meetingid))
 			result = c.fetchall()
 			moodavgs = {}
 			moodtally = {}
@@ -438,21 +446,22 @@ class GenerateMeetingSummary():
 		else:
 			return moodsummary['Tally']
 
-	def question_mood_tally(self, questionid):
-		moodsummary = self.question_getmoodaverage(questionid)
-		if not moodsummary:
-			return {}
-		else:
+	def question_mood_tally(self, meetingid, questionid):
+		moodsummary = self.question_getmoodaverage(meetingid, questionid)
+		if moodsummary:
 			return moodsummary['Tally']
+		return {}
 
 
-	def response_tally(self, questionid):
+	def response_tally(self, meetingid, questionid):
 		conn = None
-		query = "SELECT Feedback FROM template_feedback WHERE QuestionID=%s"
+		query = "SELECT Feedback FROM template_feedback " \
+				"INNER JOIN feedback USING (FeedbackID) " \
+				"WHERE QuestionID=%s and MeetingID=%s"
 		try:
 			conn = sql.connect(**self.db_obj.dbconfig)
 			c = conn.cursor()
-			c.execute(query, (questionid, ))
+			c.execute(query, (questionid, meetingid))
 			tally = {}
 			for feedback in c.fetchall():
 				if feedback[0] in tally:

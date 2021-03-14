@@ -10,13 +10,16 @@ class FeedbackReceivedNotif(Resource):
 			sa.new_feedback = True
 			sa.analyse()
 			rfa.analyse()
-		return True
+			sa.new_feedback = False
+
+		response = jsonify(True)
+		response.headers.add('Access-Control-Allow-Origin', '*')
+		return response
 
 class RequestFeedback(Resource):
 	def post(self):
 		templateid = request.form.get('templateid')
 		return polling.checktemplatefeedback(templateid, sa.last_id, rfa.last_id)
-
 
 class MeetingEnded(Resource):
 	def post(self):
@@ -24,8 +27,9 @@ class MeetingEnded(Resource):
 
 class QuestionTally(Resource):
 	def post(self):
+		meetingid = request.form.get('meetingid')
 		questionid = request.form.get('questionid')
-		response = jsonify(summary.response_tally(int(questionid)))
+		response = jsonify(summary.response_tally(int(meetingid), int(questionid)))
 		response.headers.add('Access-Control-Allow-Origin', '*')
 		return response
 
@@ -40,8 +44,9 @@ class QuestionPopular(Resource):
 
 class QuestionMood(Resource):
 	def post(self):
+		meetingid = request.form.get('meetingid')
 		questionid = request.form.get('questionid')
-		response = jsonify(summary.question_mood_tally(int(questionid)))
+		response = jsonify(summary.question_mood_tally(int(meetingid), int(questionid)))
 		response.headers.add('Access-Control-Allow-Origin', '*')
 		return response
 
