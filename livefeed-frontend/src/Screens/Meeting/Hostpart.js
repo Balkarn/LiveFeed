@@ -240,9 +240,8 @@ const DisplayAnalysis = ({question}) => {
 
 const Hostpart = () => {
     const [questions,setQuestions] = React.useState([]);
-    const [data,setData] = React.useState([]);
-    const [currentTemplate,setCurrentTemplate] = React.useState(-1);
     const [refresh, setRefresh] = React.useState(false);
+    const [noTemplates, setNoTemplates] = React.useState(false);
 
     let {id} = useParams();
     let url_details = id.split('&');
@@ -301,7 +300,7 @@ const Hostpart = () => {
     //End of temporary testing data
 
     function gettemplateid(meetingid) {
-       return axios.post(phpurl, qs.stringify({function:'getmeetingtemplates', arguments:['1']}))
+       return axios.post(phpurl, qs.stringify({function:'getmeetingtemplates', arguments:[meetingid]}))
             .then(res => {
                 if (res.data.error) {
                     console.log(res.data.error);
@@ -309,7 +308,11 @@ const Hostpart = () => {
                 }
                 if (res.data.result) {
                     console.log(res.data.result);
-                    return res.data.result[0].TemplateID
+                    if (res.data.result.length == 0) {
+                        return false
+                    } else {
+                        return res.data.result[0].TemplateID
+                    }
                 }
             })
             .catch(err => {console.log(err); return Promise.reject(err)});
@@ -324,6 +327,10 @@ const Hostpart = () => {
         var questionList = [];
         Promise.all([gettemplateid(meetingid_)])
             .then(function (results) {
+                if (results[0] === false) {
+                    setNoTemplates(true)
+                    return
+                }
                 axios.post(phpurl, qs.stringify({function:'gettemplatequestions', arguments:[results[0]]}))
                     .then(res1 => {
                               if (res1.data.error) {
@@ -549,6 +556,7 @@ const Hostpart = () => {
     // console.log(returnVal)
     // console.log("end debug4")
     return (
+        noTemplates ? <p>No templates found ...</p> :
         <div>
             <div className="list2">
 
