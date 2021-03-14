@@ -43,4 +43,4 @@ This is a web application which allows you to create events and templates and ge
 
 1. Run the PHP webserver on port 80
 2. Run the Python file: "/server/python/api.py"
-3. Run the command npm-run in the terminal in the directory "livefeed-frontend"
+3. Run the command "npm start" in the terminal in the directory "livefeed-frontend"
