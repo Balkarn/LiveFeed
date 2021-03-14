@@ -45,6 +45,20 @@ class QuestionMood(Resource):
 		response.headers.add('Access-Control-Allow-Origin', '*')
 		return response
 
+class MeetingPopular(Resource):
+	def post(self):
+		meetingid = request.form.get('meetingid')
+		response = jsonify(rfa.get_meeting_summary(meetingid))
+		response.headers.add('Access-Control-Allow-Origin', '*')
+		return response
+
+class MeetingMood(Resource):
+	def post(self):
+		meetingid = request.form.get('meetingid')
+		response = jsonify(summary.meeting_mood_tally(meetingid))
+		response.headers.add('Access-Control-Allow-Origin', '*')
+		return response
+
 class Test(Resource):
 	def get(self):
 		return "test"
@@ -68,6 +82,8 @@ rfa.analyse()
 api.add_resource(QuestionTally, '/questiontally')
 api.add_resource(QuestionPopular, '/questionpopular')
 api.add_resource(QuestionMood, '/questionmood')
+api.add_resource(MeetingMood, '/meetingmood')
+api.add_resource(MeetingPopular, '/meetingpopular')
 api.add_resource(Test, '/test')
 
 

@@ -208,8 +208,8 @@ class RepeatFeedbackAnalysis():
 		return similar_phrases
 
 	def meeting_findsimilar(self, meetingid):
-		vectors = [x for y in self.feedback_data[meetingid].values() for x in y[1]]
-		phrases = [x for y in self.feedback_data[meetingid].values() for x in y[0]]
+		vectors = [x[1] for y in self.feedback_data[meetingid].values() for x in y]
+		phrases = [x[0] for y in self.feedback_data[meetingid].values() for x in y]
 		return self.findsimilar(vectors, phrases)
 
 
@@ -334,10 +334,16 @@ class GenerateMeetingSummary():
 			c.execute(query, (meetingid, ))
 			result = c.fetchall()
 			moodavgs = {}
+			moodtally = {}
 			avgmood = 0
 			if len(result) == 0:
 				return {}
 			for row in result:
+				if row[1] in moodtally:
+					moodtally[row[1]] += 1
+				else:
+					moodtally[row[1]] = 1
+
 				moodavgs[row[0]] = row[1]
 				avgmood += row[2]
 			avgmood /= len(result)
@@ -357,7 +363,7 @@ class GenerateMeetingSummary():
 			"""
 			c.execute(query3, (meetingid, moodavgs['totalavg']))
 			conn.commit()
-			return moodavgs
+			return {'Average': moodavgs, 'Tally': moodtally}
 		except sql.Error as err:
 			print(f"-[MySQL Error] {err}")
 			return False
@@ -387,10 +393,15 @@ class GenerateMeetingSummary():
 			c.execute(query, (questionid, ))
 			result = c.fetchall()
 			moodavgs = {}
+			moodtally = {}
 			avgmood = 0
 			if len(result) == 0:
 				return {}
 			for row in result:
+				if row[1] in moodtally:
+					moodtally[row[1]] += 1
+				else:
+					moodtally[row[1]] = 1
 				moodavgs[row[0]] = row[1]
 				avgmood += row[2]
 			avgmood /= len(result)
@@ -405,7 +416,7 @@ class GenerateMeetingSummary():
 			if len(result2) == 0:
 				return {}
 			moodavgs['totalavg'] = result2[0][0]
-			return moodavgs
+			return {'Average':moodavgs, 'Tally':moodtally}
 		except sql.Error as err:
 			print(f"-[MySQL Error] {err}")
 			return False
@@ -413,15 +424,19 @@ class GenerateMeetingSummary():
 			if conn:
 				conn.close()
 
+	def meeting_mood_tally(self, meetingid):
+		moodsummary = self.get_moodaverage(meetingid)
+		if not moodsummary:
+			return {}
+		else:
+			return moodsummary['Tally']
+
 	def question_mood_tally(self, questionid):
-		mood_tally = {}
-		mood_dict = self.question_getmoodaverage(questionid)
-		for i in mood_dict:
-			if mood_dict[i] in mood_tally:
-				mood_tally[mood_dict[i]] += 1
-			else:
-				mood_tally[mood_dict[i]] = 1
-		return mood_tally
+		moodsummary = self.question_getmoodaverage(questionid)
+		if not moodsummary:
+			return {}
+		else:
+			return moodsummary['Tally']
 
 
 	def response_tally(self, questionid):
