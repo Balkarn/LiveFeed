@@ -1,0 +1,6 @@
+Flask~=1.1.2
+flair~=0.7
+mysql-connector-python~=8.0.23
+gensim~=3.8.3
+nltk~=3.5
+scipy~=1.6.1
