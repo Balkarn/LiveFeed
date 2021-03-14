@@ -34,7 +34,7 @@ CREATE TABLE `feedback` (
   KEY `feedback-meetingid_idx` (`MeetingID`),
   CONSTRAINT `feedback-meetingid` FOREIGN KEY (`MeetingID`) REFERENCES `meetings` (`MeetingID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `feedback-userid` FOREIGN KEY (`UserID`) REFERENCES `users` (`UserID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -43,7 +43,7 @@ CREATE TABLE `feedback` (
 
 LOCK TABLES `feedback` WRITE;
 /*!40000 ALTER TABLE `feedback` DISABLE KEYS */;
-INSERT INTO `feedback` VALUES (1,1,1,'2021-03-10 16:24:26'),(2,3,1,'2021-03-10 16:24:26'),(3,4,1,'2021-03-10 16:24:26'),(4,1,1,'2021-03-10 16:24:26'),(5,3,1,'2021-03-10 16:24:26'),(6,4,1,'2021-03-10 16:24:26'),(7,1,1,'2021-03-10 16:24:26'),(8,3,1,'2021-03-10 16:24:26'),(9,4,1,'2021-03-10 16:24:26'),(10,4,1,'2021-03-10 16:24:26'),(11,1,1,'2021-03-10 16:24:26'),(12,1,1,'2021-03-10 16:24:26'),(13,1,1,'2021-03-10 16:24:26'),(14,1,1,'2021-03-10 16:24:26'),(15,1,1,'2021-03-10 16:24:26'),(16,3,1,'2021-03-10 16:24:26'),(17,3,1,'2021-03-10 16:24:26'),(18,3,1,'2021-03-10 16:24:26'),(19,3,1,'2021-03-10 16:24:26'),(20,3,1,'2021-03-10 16:24:26'),(21,4,1,'2021-03-10 16:24:26'),(22,4,1,'2021-03-10 16:24:26'),(23,4,1,'2021-03-10 16:24:26'),(24,4,1,'2021-03-10 16:24:26'),(25,2,1,'2021-03-10 16:24:26'),(26,3,1,'2021-03-10 16:24:26'),(27,4,1,'2021-03-10 16:24:26'),(28,5,1,'2021-03-10 16:24:26'),(29,1,1,'2021-03-10 16:24:26'),(30,3,1,'2021-03-10 16:24:26'),(31,4,1,'2021-03-10 16:24:26'),(32,5,1,'2021-03-10 16:24:26');
+INSERT INTO `feedback` VALUES (1,1,1,'2021-03-14 10:47:07'),(2,3,1,'2021-03-14 10:47:07'),(3,4,1,'2021-03-14 10:47:07'),(4,1,1,'2021-03-14 10:47:07'),(5,3,1,'2021-03-14 10:47:07'),(6,4,1,'2021-03-14 10:47:07'),(7,1,1,'2021-03-14 10:47:07'),(8,3,1,'2021-03-14 10:47:07'),(9,4,1,'2021-03-14 10:47:07'),(10,4,1,'2021-03-14 10:47:07'),(11,1,1,'2021-03-14 10:47:07'),(12,1,1,'2021-03-14 10:47:07'),(13,1,1,'2021-03-14 10:47:07'),(14,1,1,'2021-03-14 10:47:07'),(15,1,1,'2021-03-14 10:47:07'),(16,1,1,'2021-03-14 10:47:07'),(17,3,1,'2021-03-14 10:47:07'),(18,3,1,'2021-03-14 10:47:07'),(19,3,1,'2021-03-14 10:47:07'),(20,3,1,'2021-03-14 10:47:07'),(21,3,1,'2021-03-14 10:47:07'),(22,4,1,'2021-03-14 10:47:07'),(23,4,1,'2021-03-14 10:47:07'),(24,4,1,'2021-03-14 10:47:07'),(25,4,1,'2021-03-14 10:47:07'),(26,2,1,'2021-03-14 10:47:07'),(27,3,1,'2021-03-14 10:47:07'),(28,4,1,'2021-03-14 10:47:07'),(29,5,1,'2021-03-14 10:47:07'),(30,1,1,'2021-03-14 10:47:07'),(31,3,1,'2021-03-14 10:47:07'),(32,4,1,'2021-03-14 10:47:07'),(33,5,1,'2021-03-14 10:47:07');
 /*!40000 ALTER TABLE `feedback` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -95,7 +95,7 @@ CREATE TABLE `login` (
 
 LOCK TABLES `login` WRITE;
 /*!40000 ALTER TABLE `login` DISABLE KEYS */;
-INSERT INTO `login` VALUES (1,'test','$2y$10$VwL8.uYfNokxyEmlpXIUueKv1W3T5pS.1fR51HwfrfI.B3aAqm9fu'),(2,'testadmin','$2y$10$aNlABMhyL9xjTxQewuVXoOmTH34Q3SCbvbyUBciO/oyqVR.9Ye4i2'),(3,'test2','$2y$10$1iuGauXbFMgqcHbjNkt9l.UktQGjGsbkpJEyQUBeiSBhidXXLrU/i'),(4,'test3','$2y$10$04JDONnJu8nthQn6AqKrO.kbo9ub8wKumBoGt6W7kEHhxaQZ/4/06'),(5,'testadmin2','$2y$10$MlwpVD5DHjGMJtIeoZFMCuRLDc2.rGlhwrOYY8OLqeDzuKjfn3PDO');
+INSERT INTO `login` VALUES (1,'test','$2y$10$LGZ3XaGH/fLmgAltMoQXduU59SkAyEdCvsEXAhEQ6KGVYxq1zrty6'),(2,'testadmin','$2y$10$jUhtCFIzBBYXfunn7y2R3uQDlkCU4KnHbyAK5UMspKGs3zhree2cC'),(3,'test2','$2y$10$mnQI0pKbN6bJWI6TZTLxWuEbzDU6FJ81iL8mGGBtVjULMGTo2Rgx2'),(4,'test3','$2y$10$scrtc8MpFt3I4m7ncitJIOWLC4QAx1iCFmF5DWaYnACqQmoX8HL/e'),(5,'testadmin2','$2y$10$MEbEWKs5d9wDid.JYH8jP.b4aCA0qcnVNtYmAT/N.GvwuAkVHt9hy');
 /*!40000 ALTER TABLE `login` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -152,7 +152,7 @@ CREATE TABLE `meetings` (
 
 LOCK TABLES `meetings` WRITE;
 /*!40000 ALTER TABLE `meetings` DISABLE KEYS */;
-INSERT INTO `meetings` VALUES (1,'Test Meeting 1','1-UNKCEs2','2021-02-19 10:10:10',NULL,2),(2,'Test Meeting 2','2-hid8hw6','2021-02-19 10:10:10',NULL,2);
+INSERT INTO `meetings` VALUES (1,'Test Meeting 1','1LzzQKwr','2021-02-19 10:10:10',NULL,2),(2,'Test Meeting 2','2njzIDeb','2021-02-19 10:10:10',NULL,2);
 /*!40000 ALTER TABLE `meetings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -201,7 +201,7 @@ CREATE TABLE `mood_feedback` (
 
 LOCK TABLES `mood_feedback` WRITE;
 /*!40000 ALTER TABLE `mood_feedback` DISABLE KEYS */;
-INSERT INTO `mood_feedback` VALUES (13,'happy'),(18,'neutral'),(25,'sad'),(26,'happy'),(27,'neutral'),(28,'sad'),(29,'happy'),(30,'happy'),(31,'sad'),(32,'sad');
+INSERT INTO `mood_feedback` VALUES (14,'happy'),(19,'neutral'),(26,'sad'),(27,'happy'),(28,'neutral'),(29,'sad'),(30,'happy'),(31,'happy'),(32,'sad'),(33,'sad');
 /*!40000 ALTER TABLE `mood_feedback` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -227,6 +227,33 @@ LOCK TABLES `moods` WRITE;
 /*!40000 ALTER TABLE `moods` DISABLE KEYS */;
 INSERT INTO `moods` VALUES ('happy',3),('neutral',2),('sad',1);
 /*!40000 ALTER TABLE `moods` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `popular_feedback`
+--
+
+DROP TABLE IF EXISTS `popular_feedback`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `popular_feedback` (
+  `ClusterID` int(11) NOT NULL AUTO_INCREMENT,
+  `ItemID` int(11) NOT NULL,
+  `MeetingID` int(11) NOT NULL,
+  `Phrase` varchar(144) NOT NULL,
+  PRIMARY KEY (`ClusterID`,`ItemID`),
+  KEY `popular_feedback-meetingid_idx` (`MeetingID`),
+  CONSTRAINT `popular_feedback-meetingid` FOREIGN KEY (`MeetingID`) REFERENCES `meetings` (`MeetingID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `popular_feedback`
+--
+
+LOCK TABLES `popular_feedback` WRITE;
+/*!40000 ALTER TABLE `popular_feedback` DISABLE KEYS */;
+/*!40000 ALTER TABLE `popular_feedback` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -307,7 +334,7 @@ CREATE TABLE `template_feedback` (
 
 LOCK TABLES `template_feedback` WRITE;
 /*!40000 ALTER TABLE `template_feedback` DISABLE KEYS */;
-INSERT INTO `template_feedback` VALUES (11,1,'This doesn\'t seem like a good organisation. '),(12,2,'This was a very challenging workshop. '),(13,3,'happy'),(14,4,'A'),(15,5,'1'),(16,1,'I think I would like to work here someday. '),(17,2,'I enjoyed the challenge. '),(18,3,'neutral'),(19,4,'A'),(20,5,'3'),(21,1,'It\'s decent. '),(22,2,'It was too difficult. '),(23,4,'C'),(24,5,'7');
+INSERT INTO `template_feedback` VALUES (11,1,'This doesn\'t seem like a good organisation. '),(12,2,'This was a very challenging workshop. '),(13,2,'This workshop was very hard!'),(14,3,'happy'),(15,4,'A'),(16,5,'1'),(17,1,'I think I would like to work here someday. '),(18,2,'I enjoyed the challenge. '),(19,3,'neutral'),(20,4,'A'),(21,5,'3'),(22,1,'It\'s decent. '),(23,2,'It was too difficult. '),(24,4,'C'),(25,5,'7');
 /*!40000 ALTER TABLE `template_feedback` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -431,4 +458,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-03-10 16:25:32
+-- Dump completed on 2021-03-14 10:47:42
